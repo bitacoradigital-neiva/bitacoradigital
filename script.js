@@ -1,7 +1,11 @@
-// Configuración
+"use strict";
+
 const WHATSAPP_NUMBER = "573144321446";
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const desktopMotion = window.matchMedia("(min-width: 821px) and (hover: hover) and (pointer: fine)").matches;
+const desktopParallax = window.matchMedia("(min-width: 901px) and (hover: hover) and (pointer: fine)");
+const desktopProcessLine = window.matchMedia("(min-width: 901px)");
+if (!reducedMotion) document.documentElement.classList.add("motion-ready");
 const menuToggle = document.querySelector(".menu-toggle");
 const navMenu = document.querySelector(".nav-menu");
 const contactForm = document.getElementById("contact-form");
@@ -9,26 +13,17 @@ const serviceSelect = document.getElementById("servicio");
 const yearSpan = document.getElementById("year");
 const navbar = document.querySelector(".navbar");
 const progressBar = document.getElementById("scroll-progress-bar");
+const floatingWhatsApp = document.getElementById("float-whatsapp");
 
+if (window.lucide?.createIcons) window.lucide.createIcons();
+if (yearSpan) yearSpan.textContent = String(new Date().getFullYear());
 
-if (window.lucide) {
-    window.lucide.createIcons();
-}
-
-if (yearSpan) {
-    yearSpan.textContent = new Date().getFullYear();
-}
-
-function setMenuOpen(isOpen) {
+function setMenuOpen(isOpen, returnFocus = false) {
     if (!menuToggle || !navMenu) return;
     navMenu.classList.toggle("active", isOpen);
     menuToggle.setAttribute("aria-expanded", String(isOpen));
     menuToggle.setAttribute("aria-label", isOpen ? "Cerrar menú" : "Abrir menú");
-    const icon = menuToggle.querySelector("[data-lucide]");
-    if (icon) {
-        icon.setAttribute("data-lucide", isOpen ? "x" : "menu");
-        if (window.lucide) window.lucide.createIcons();
-    }
+    if (!isOpen && returnFocus) menuToggle.focus();
 }
 
 menuToggle?.addEventListener("click", () => {
@@ -39,14 +34,34 @@ navMenu?.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => setMenuOpen(false));
 });
 
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && menuToggle?.getAttribute("aria-expanded") === "true") {
+        setMenuOpen(false, true);
+    }
+});
+
+document.addEventListener("click", (event) => {
+    if (
+        menuToggle?.getAttribute("aria-expanded") === "true"
+        && !navMenu?.contains(event.target)
+        && !menuToggle.contains(event.target)
+    ) setMenuOpen(false);
+});
+
+window.matchMedia("(min-width: 901px)").addEventListener("change", (event) => {
+    if (event.matches) setMenuOpen(false);
+});
+
 document.querySelectorAll(".service-card .btn-consultar").forEach((button) => {
     button.addEventListener("click", () => {
         const service = button.closest(".service-card")?.dataset.service;
         if (serviceSelect && service) {
-            const matchingOption = Array.from(serviceSelect.options).find((option) => option.value === service);
-            if (matchingOption) serviceSelect.value = service;
+            const option = Array.from(serviceSelect.options).find((item) => item.value === service);
+            if (option) serviceSelect.value = service;
+            serviceSelect.dispatchEvent(new Event("change", { bubbles: true }));
         }
         document.getElementById("contacto")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+        window.setTimeout(() => document.getElementById("nombre")?.focus({ preventScroll: true }), reducedMotion ? 0 : 450);
     });
 });
 
@@ -54,11 +69,10 @@ const officeNote = document.querySelector(".office-note");
 function updateOfficeNote() {
     if (!officeNote || !serviceSelect) return;
     const selectedService = serviceSelect.value.toLowerCase();
-    const shouldShow = selectedService.includes("office") || selectedService === "formateo e instalación de sistemas operativos".toLowerCase();
+    const shouldShow = selectedService.includes("office") || selectedService === "formateo e instalación de sistemas operativos";
     officeNote.classList.toggle("is-visible", shouldShow);
     officeNote.setAttribute("aria-hidden", String(!shouldShow));
 }
-
 serviceSelect?.addEventListener("change", updateOfficeNote);
 updateOfficeNote();
 
@@ -75,43 +89,41 @@ contactForm?.addEventListener("submit", (event) => {
     const licenseQuestion = asksAboutLicense ? "\n¿Ya cuento con licencia original? (Sí / No)" : "";
     const descriptionLine = description ? `\nDetalles de mi solicitud: ${description}` : "";
     const message = `Hola, Bitácora Digital. Mi nombre es ${name} y estoy interesado en el servicio de ${service}. Me gustaría conocer el precio y la disponibilidad.${descriptionLine}${licenseQuestion}\nGracias.`;
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
 });
 
-const floatingWhatsApp = document.getElementById("float-whatsapp");
 floatingWhatsApp?.addEventListener("click", (event) => {
     event.preventDefault();
     const message = "Hola, Bitácora Digital. Me gustaría solicitar información sobre sus servicios.";
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
 });
 
-// La animación de entrada y los efectos que siguen al puntero no se ejecutan si se reduce el movimiento.
-if (window.AOS) {
+if (window.AOS?.init) {
     window.AOS.init({
         once: true,
-        duration: reducedMotion ? 0 : 650,
+        duration: reducedMotion ? 0 : 600,
         easing: "ease-out-cubic",
-        offset: 70,
+        offset: 55,
         disable: reducedMotion
     });
+    if (!reducedMotion) document.documentElement.classList.add("aos-enabled");
 } else {
     document.querySelectorAll("[data-aos]").forEach((element) => element.removeAttribute("data-aos"));
 }
 
-if (!reducedMotion && desktopMotion && window.tsParticles) {
+if (!reducedMotion && desktopMotion && window.tsParticles?.load) {
     window.tsParticles.load({
         id: "tsparticles",
         options: {
             fullScreen: { enable: false },
             background: { color: { value: "transparent" } },
             particles: {
-                number: { value: 38, density: { enable: true, width: 900, height: 650 } },
+                number: { value: 18, density: { enable: true, width: 900, height: 650 } },
                 color: { value: ["#1685FF", "#48D7FF"] },
-                opacity: { value: { min: 0.12, max: 0.38 } },
-                size: { value: { min: 1, max: 2.4 } },
-                links: { enable: true, distance: 135, color: "#48D7FF", opacity: 0.12, width: 1 },
-                move: { enable: true, speed: 0.35, direction: "none", outModes: { default: "out" } }
+                opacity: { value: { min: 0.08, max: 0.2 } },
+                size: { value: { min: 1, max: 2 } },
+                links: { enable: true, distance: 150, color: "#48D7FF", opacity: 0.08, width: 1 },
+                move: { enable: true, speed: 0.2, direction: "none", outModes: { default: "out" } }
             },
             detectRetina: true,
             interactivity: { events: { onHover: { enable: false }, onClick: { enable: false } } }
@@ -126,71 +138,43 @@ if (typedTarget && window.Typed) {
     } else {
         new window.Typed(typedTarget, {
             strings: ["Soporte técnico", "Desarrollo web", "Diseño digital", "Instalación de programas"],
-            typeSpeed: 48,
-            backSpeed: 28,
-            backDelay: 1500,
+            typeSpeed: 45,
+            backSpeed: 25,
+            backDelay: 1400,
             loop: true,
             smartBackspace: true
         });
     }
 } else if (typedTarget) {
-    typedTarget.textContent = "Soluciones digitales";
-}
-
-if (!reducedMotion && desktopMotion && window.VanillaTilt) {
-    window.VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
-        max: 5,
-        speed: 500,
-        glare: true,
-        "max-glare": 0.12
-    });
-}
-
-const counters = document.querySelectorAll(".counter");
-if (counters.length) {
-    const countUp = (counter) => {
-        const target = Number(counter.dataset.count);
-        if (!Number.isFinite(target)) return;
-        if (reducedMotion) {
-            counter.textContent = String(target);
-            return;
-        }
-        const start = performance.now();
-        const duration = 1200;
-        const animate = (now) => {
-            const progress = Math.min((now - start) / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            counter.textContent = String(Math.round(target * eased));
-            if (progress < 1) requestAnimationFrame(animate);
-        };
-        requestAnimationFrame(animate);
-    };
-
-    if ("IntersectionObserver" in window) {
-        const counterObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    countUp(entry.target);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.45 });
-        counters.forEach((counter) => counterObserver.observe(counter));
-    } else {
-        counters.forEach(countUp);
-    }
+    typedTarget.textContent = "Soporte técnico";
 }
 
 const processGrid = document.querySelector(".process-grid");
-if (processGrid && "IntersectionObserver" in window) {
-    const processObserver = new IntersectionObserver((entries, observer) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-            processGrid.classList.add("is-visible");
-            observer.disconnect();
-        }
-    }, { threshold: 0.2 });
-    processObserver.observe(processGrid);
+const processSteps = processGrid ? Array.from(processGrid.querySelectorAll(".process-step")) : [];
+if (!reducedMotion && processGrid && processSteps.length) {
+    processGrid.classList.add("is-scroll-animated");
+    if ("IntersectionObserver" in window) {
+        const processStepObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting || desktopProcessLine.matches) return;
+                entry.target.classList.add("is-reached");
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.55, rootMargin: "0px 0px -15% 0px" });
+        processSteps.forEach((step) => processStepObserver.observe(step));
+    } else if (!desktopProcessLine.matches) {
+        processSteps.forEach((step) => step.classList.add("is-reached"));
+    }
 }
+
+document.querySelectorAll(".faq-item").forEach((item) => {
+    item.addEventListener("toggle", () => {
+        if (!item.open) return;
+        document.querySelectorAll(".faq-item").forEach((other) => {
+            if (other !== item) other.open = false;
+        });
+    });
+});
 
 const sections = document.querySelectorAll("main section[id]");
 const navLinks = document.querySelectorAll('.nav-menu a[href^="#"]');
@@ -198,8 +182,13 @@ if ("IntersectionObserver" in window && sections.length && navLinks.length) {
     const sectionObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
+            const activeLink = Array.from(navLinks).find((link) => link.getAttribute("href") === `#${entry.target.id}`);
+            if (!activeLink) return;
             navLinks.forEach((link) => {
-                link.classList.toggle("is-active", link.getAttribute("href") === `#${entry.target.id}`);
+                const isActive = link === activeLink;
+                link.classList.toggle("is-active", isActive);
+                if (isActive) link.setAttribute("aria-current", "location");
+                else link.removeAttribute("aria-current");
             });
         });
     }, { rootMargin: "-35% 0px -55% 0px" });
@@ -207,48 +196,44 @@ if ("IntersectionObserver" in window && sections.length && navLinks.length) {
 }
 
 let scrollQueued = false;
-window.addEventListener("scroll", () => {
+function updateScrollEffects() {
+    navbar?.classList.toggle("scrolled", window.scrollY > 24);
+    if (progressBar) {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+        progressBar.style.width = `${Math.min(progress, 100)}%`;
+    }
+    if (!reducedMotion) {
+        const hero = document.querySelector(".hero");
+        const heroImage = document.querySelector(".hero-art-img");
+        if (heroImage && !desktopParallax.matches) heroImage.style.transform = "";
+        else if (hero && heroImage && hero.getBoundingClientRect().bottom > 0) {
+            const parallaxOffset = Math.min(window.scrollY * 0.035, 26);
+            heroImage.style.transform = `translate3d(0, ${-parallaxOffset.toFixed(2)}px, 0)`;
+        }
+    }
+    if (!reducedMotion && processGrid && processSteps.length && desktopProcessLine.matches) {
+        const gridTop = processGrid.getBoundingClientRect().top;
+        const start = window.innerHeight * 0.82;
+        const end = window.innerHeight * 0.42;
+        const progress = Math.max(0, Math.min(1, (start - gridTop) / (start - end)));
+        processGrid.style.setProperty("--process-progress", progress.toFixed(3));
+        processSteps.forEach((step, index) => {
+            const milestone = processSteps.length > 1 ? index / (processSteps.length - 1) : 0;
+            if (progress >= milestone) step.classList.add("is-reached");
+        });
+    }
+}
+
+function queueScrollEffects() {
     if (scrollQueued) return;
     scrollQueued = true;
     window.requestAnimationFrame(() => {
-        navbar?.classList.toggle("scrolled", window.scrollY > 24);
-        if (progressBar) {
-            const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
-            progressBar.style.width = `${Math.min(progress, 100)}%`;
-        }
+        updateScrollEffects();
         scrollQueued = false;
     });
-}, { passive: true });
-
-const hero = document.querySelector(".hero");
-const cursorGlow = document.querySelector(".hero-cursor-glow");
-if (!reducedMotion && desktopMotion && hero && cursorGlow) {
-    hero.addEventListener("pointermove", (event) => {
-        const bounds = hero.getBoundingClientRect();
-        cursorGlow.style.transform = `translate(${event.clientX - bounds.left}px, ${event.clientY - bounds.top}px) translate(-50%, -50%)`;
-    }, { passive: true });
 }
 
-const submitButton = contactForm?.querySelector(".btn-whatsapp");
-submitButton?.addEventListener("click", (event) => {
-    if (reducedMotion) return;
-    const bounds = submitButton.getBoundingClientRect();
-    submitButton.style.setProperty("--ripple-x", `${event.clientX - bounds.left}px`);
-    submitButton.style.setProperty("--ripple-y", `${event.clientY - bounds.top}px`);
-    submitButton.classList.remove("is-rippling");
-    requestAnimationFrame(() => submitButton.classList.add("is-rippling"));
-    window.setTimeout(() => submitButton.classList.remove("is-rippling"), 600);
-});
-
-if (floatingWhatsApp && !reducedMotion) {
-    const tooltip = document.createElement("span");
-    tooltip.className = "whatsapp-tooltip";
-    tooltip.textContent = "¿Hablamos?";
-    tooltip.setAttribute("aria-hidden", "true");
-    floatingWhatsApp.append(tooltip);
-    window.setTimeout(() => {
-        floatingWhatsApp.classList.add("show-tooltip");
-        window.setTimeout(() => floatingWhatsApp.classList.remove("show-tooltip"), 4500);
-    }, 5000);
-}
+window.addEventListener("scroll", queueScrollEffects, { passive: true });
+window.addEventListener("resize", queueScrollEffects, { passive: true });
+updateScrollEffects();

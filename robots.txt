@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://soportedigital.vercel.app/sitemap.xml
+Sitemap: https://bitacoradigital-lyart.vercel.app/sitemap.xml

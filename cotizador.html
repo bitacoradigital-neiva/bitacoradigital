@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b13">
+    <meta name="description" content="Arma a tu medida tu cotización de soporte, desarrollo web y diseño con Bitácora Digital.">
+    <title>Bitácora Digital | Cotizador de servicios digitales</title>
+    <link rel="canonical" href="https://bitacoradigital-lyart.vercel.app/cotizador.html">
+    <meta property="og:url" content="https://bitacoradigital-lyart.vercel.app/cotizador.html">
+    <link rel="icon" type="image/png" sizes="64x64" href="img/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            color-scheme: dark;
+            --page: #080b13;
+            --surface: #101522;
+            --surface-raised: #151c2a;
+            --surface-soft: #111a29;
+            --ink: #f4f7ff;
+            --muted: #aab4c8;
+            --muted-strong: #c4cce0;
+            --blue: #70a7ff;
+            --cyan: #62e2e8;
+            --purple: #b19aff;
+            --green: #64e6b0;
+            --line: rgba(179, 199, 236, 0.13);
+            --line-active: rgba(112, 167, 255, 0.56);
+            --content: 1180px;
+            --ease: cubic-bezier(.2, .75, .25, 1);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+        body {
+            min-width: 320px;
+            margin: 0;
+            overflow-x: hidden;
+            background: var(--page);
+            color: var(--ink);
+            font: 400 16px/1.65 "Plus Jakarta Sans", "Segoe UI", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        button, select, a, input, label { font: inherit; }
+        button, select, a, input[type="checkbox"], label { cursor: pointer; }
+        button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible, label:focus-within {
+            outline: 3px solid var(--cyan);
+            outline-offset: 4px;
+        }
+        a { color: inherit; }
+        svg { display: block; }
+        h1, h2, h3, h4, p { margin-top: 0; }
+        h1, h2, h3, h4 { font-family: "Bricolage Grotesque", "Arial", sans-serif; }
+        ::selection { color: #07101d; background: var(--cyan); }
+
+        /* Las luces ambientales se mueven despacio y quedan detrás del contenido. */
+        .ambient {
+            position: fixed;
+            z-index: -2;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 18% 0%, rgba(35, 83, 163, .27), transparent 38%),
+                radial-gradient(ellipse at 89% 31%, rgba(80, 46, 142, .2), transparent 34%),
+                var(--page);
+        }
+        .ambient::before, .ambient::after {
+            position: absolute;
+            width: min(52vw, 680px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            content: "";
+            filter: blur(100px);
+            opacity: .16;
+            animation: drift 26s ease-in-out infinite alternate;
+        }
+        .ambient::before { top: 8%; left: -22%; background: #347dff; }
+        .ambient::after { top: 48%; right: -24%; background: #8d5be9; animation-delay: -12s; }
+        @keyframes drift {
+            from { transform: translate3d(0, 0, 0) scale(.92); }
+            to { transform: translate3d(5vw, 6vh, 0) scale(1.08); }
+        }
+
+        .container { width: min(var(--content), calc(100% - 48px)); margin-inline: auto; }
+        .site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            min-height: 92px;
+            border-bottom: 1px solid var(--line);
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--ink);
+            font-size: 1.03rem;
+            font-weight: 800;
+            letter-spacing: -.04em;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid rgba(112, 167, 255, .28);
+            border-radius: 13px;
+            background: rgba(112, 167, 255, .12);
+            color: var(--blue);
+        }
+        .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+        .currency-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--muted-strong);
+            font-size: .88rem;
+            font-weight: 700;
+        }
+        .currency-control:focus-within { outline: none; }
+        .currency-control select {
+            min-height: 44px;
+            padding: 0 38px 0 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--ink);
+            transition: border-color .25s ease, background .25s ease, box-shadow .25s ease;
+        }
+        .currency-control select:hover { border-color: var(--line-active); background: var(--surface-raised); }
+        .currency-control select:focus,
+        .currency-control select:focus-visible {
+            outline: none;
+            outline-offset: 0;
+            border-color: rgba(98, 226, 232, .62);
+            box-shadow: 0 0 0 2px rgba(98, 226, 232, .12);
+        }
+        .site-header .brand:focus-visible { outline: none; }
+        .site-header .brand:focus-visible .brand-mark { box-shadow: 0 0 0 2px rgba(98, 226, 232, .42); }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(250px, .7fr);
+            align-items: end;
+            gap: 36px;
+            padding: clamp(62px, 9vw, 112px) 0 54px;
+        }
+        .hero h1 {
+            max-width: 800px;
+            margin: 0;
+            font-size: clamp(3.2rem, 8.3vw, 7.15rem);
+            font-weight: 700;
+            letter-spacing: -.075em;
+            line-height: .92;
+            text-wrap: balance;
+        }
+        .hero h1 .word { display: inline-block; }
+        .hero-copy {
+            max-width: 390px;
+            margin: 0 0 5px;
+            color: var(--muted-strong);
+            font-size: clamp(1rem, 1.5vw, 1.13rem);
+            line-height: 1.75;
+        }
+        .hero-copy strong { color: var(--ink); font-weight: 700; }
+        .hero-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 20px;
+            color: var(--cyan);
+            font-size: .94rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: gap .25s var(--ease), color .25s ease;
+        }
+        .hero-link:hover { gap: 14px; color: #a1f4f4; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 350px;
+            align-items: start;
+            gap: clamp(28px, 5vw, 64px);
+            padding-bottom: 100px;
+        }
+        .service-category { margin: 0 0 42px; }
+        .category-heading {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin: 0 0 19px;
+            font-size: clamp(1.35rem, 2vw, 1.75rem);
+            font-weight: 600;
+            letter-spacing: -.045em;
+        }
+        .category-icon, .service-icon, .step-icon, .line-icon {
+            display: grid;
+            flex: 0 0 auto;
+            place-items: center;
+            color: var(--cyan);
+            background: rgba(98, 226, 232, .095);
+        }
+        .category-icon { width: 42px; height: 42px; border-radius: 14px; }
+        .service-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+        .service-card {
+            position: relative;
+            display: block;
+            min-height: 224px;
+            padding: 23px 23px 21px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background:
+                radial-gradient(230px circle at var(--pointer-x, 50%) var(--pointer-y, 0%), rgba(100, 164, 255, .12), transparent 72%),
+                linear-gradient(145deg, rgba(20, 27, 41, .96), rgba(13, 18, 29, .96));
+            transform-style: preserve-3d;
+            transition: border-color .25s ease, background-color .25s ease, box-shadow .25s ease, transform .25s var(--ease);
+        }
+        .service-card:hover { border-color: rgba(112, 167, 255, .48); }
+        .service-card:focus-within { border-color: var(--cyan); }
+        .service-card.is-selected {
+            border-color: transparent;
+            background:
+                linear-gradient(145deg, rgba(24, 33, 52, .98), rgba(15, 23, 38, .98)) padding-box,
+                linear-gradient(130deg, rgba(98, 226, 232, .8), rgba(112, 167, 255, .6), rgba(177, 154, 255, .8)) border-box;
+            box-shadow: 0 0 30px rgba(90, 139, 255, .18);
+        }
+        .service-card.is-selected .service-icon { color: var(--cyan); background: rgba(98, 226, 232, .16); }
+        .service-card input {
+            position: absolute;
+            z-index: 1;
+            top: 22px;
+            right: 21px;
+            width: 22px;
+            height: 22px;
+            margin: 0;
+            accent-color: var(--cyan);
+        }
+        .service-icon { width: 46px; height: 46px; margin-bottom: 20px; border-radius: 15px; color: var(--blue); background: rgba(112, 167, 255, .12); transition: transform .3s var(--ease), color .25s ease; }
+        .service-card.is-selected .service-icon { animation: check-bounce .45s var(--ease); }
+        @keyframes check-bounce { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.16); } 70% { transform: scale(.96); } }
+        .service-card h3 { margin: 0 35px 7px 0; font-size: 1.18rem; font-weight: 600; letter-spacing: -.035em; line-height: 1.3; }
+        .service-card p { margin: 0 0 19px; color: var(--muted); font-size: .9rem; line-height: 1.55; }
+        .service-price { color: var(--ink); font-size: 1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .popular-badge {
+            position: absolute;
+            top: 13px;
+            left: 13px;
+            padding: 5px 10px;
+            border: 1px solid rgba(98, 226, 232, .25);
+            border-radius: 999px;
+            background: #142a37;
+            color: #b7f4f0;
+            font-size: .72rem;
+            font-weight: 800;
+            animation: badge-shine 3.2s ease-in-out infinite;
+        }
+        .service-card.is-popular .service-icon { margin-top: 27px; }
+        @keyframes badge-shine { 0%, 100% { box-shadow: 0 0 0 rgba(98, 226, 232, 0); } 50% { box-shadow: 0 0 15px rgba(98, 226, 232, .24); } }
+
+        .summary {
+            position: sticky;
+            top: 22px;
+            padding: 25px;
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: linear-gradient(155deg, rgba(19, 26, 40, .97), rgba(13, 18, 29, .97));
+        }
+        .summary h2 { margin: 0 0 5px; font-size: 1.6rem; font-weight: 600; letter-spacing: -.05em; }
+        .summary-lead { margin: 0 0 20px; color: var(--muted); font-size: .87rem; }
+        .summary-list { position: relative; display: grid; gap: 10px; }
+        .summary-empty { padding: 15px 0 18px; color: var(--muted); font-size: .9rem; }
+        .summary-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; color: var(--muted-strong); font-size: .84rem; }
+        .summary-item__name { display: flex; align-items: flex-start; gap: 9px; }
+        .line-icon { width: 25px; height: 25px; border-radius: 8px; color: var(--cyan); }
+        .summary-item__price { flex: 0 0 auto; color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+        .summary-item.is-entering { animation: line-in .35s var(--ease) both; }
+        .summary-item.is-leaving { animation: line-out .25s var(--ease) both; pointer-events: none; }
+        @keyframes line-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes line-out { to { opacity: 0; transform: translateX(-12px); } }
+        .summary-total-label { display: block; margin-top: 23px; color: var(--muted); font-size: .85rem; font-weight: 700; }
+        .total {
+            margin: 0;
+            color: var(--ink);
+            font-family: "Bricolage Grotesque", "Arial", sans-serif;
+            font-size: clamp(2rem, 4vw, 2.7rem);
+            font-weight: 700;
+            letter-spacing: -.06em;
+            line-height: 1.2;
+            font-variant-numeric: tabular-nums;
+        }
+        .total.is-pulsing { animation: total-pulse .42s ease; }
+        @keyframes total-pulse { 50% { color: var(--cyan); transform: scale(1.035); } }
+        .encouragement { min-height: 26px; margin: 6px 0 5px; color: var(--cyan); font-size: .8rem; font-weight: 700; }
+        .inclusions {
+            margin: 16px 0 19px;
+            padding: 15px 0 0;
+            border-top: 1px solid var(--line);
+        }
+        .inclusions h3 { margin: 0 0 8px; font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif; font-size: .84rem; font-weight: 800; }
+        .inclusions ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+        .inclusions li { display: flex; align-items: flex-start; gap: 8px; color: var(--muted-strong); font-size: .8rem; }
+        .inclusions li svg { flex: 0 0 auto; margin-top: 3px; color: var(--green); }
+        .btn-whatsapp {
+            position: relative;
+            display: flex;
+            min-height: 54px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            overflow: visible;
+            border: 0;
+            border-radius: 14px;
+            background: #25D366;
+            color: #fff;
+            font-size: .93rem;
+            font-weight: 800;
+            text-align: center;
+            text-decoration: none;
+            transition: background .25s ease, transform .25s var(--ease);
+            animation: whatsapp-pulse 3s ease-out infinite;
+        }
+        .btn-whatsapp:hover { transform: translateY(-2px); background: #1ebe5a; }
+        .btn-whatsapp .wa-icon { width: 22px; height: 22px; }
+        @keyframes whatsapp-pulse {
+            0%, 72%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, .22); }
+            84% { box-shadow: 0 0 0 8px rgba(37, 211, 102, 0); }
+        }
+        .whatsapp-note { margin: 11px 0 0; color: var(--muted); font-size: .73rem; text-align: center; }
+
+        .how-section {
+            position: relative;
+            padding: 44px 0 90px;
+            border-top: 1px solid var(--line);
+        }
+        .how-heading { max-width: 620px; margin: 0 0 30px; font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 600; letter-spacing: -.065em; line-height: 1; }
+        .how-intro { max-width: 590px; margin-bottom: 35px; color: var(--muted-strong); }
+        .steps { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+        .steps-track, .steps-progress { position: absolute; top: 25px; left: 8.3%; height: 2px; }
+        .steps-track { right: 8.3%; background: rgba(179, 199, 236, .17); }
+        .steps-progress { z-index: 1; width: 0; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+        .step { position: relative; z-index: 2; padding-top: 0; }
+        .step-icon { width: 52px; height: 52px; margin-bottom: 20px; border: 5px solid var(--page); border-radius: 50%; color: var(--cyan); background: #15253b; }
+        .step h3 { margin: 0 0 7px; font-size: 1.35rem; font-weight: 600; letter-spacing: -.035em; }
+        .step p { max-width: 290px; margin: 0; color: var(--muted); font-size: .92rem; }
+        .site-footer { padding: 25px 0 36px; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+        .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .footer-inner p { margin: 0; }
+        .footer-brand { color: var(--muted-strong); font-weight: 800; }
+        .float-whatsapp {
+            position: fixed;
+            z-index: 9;
+            right: 25px;
+            bottom: 24px;
+            display: grid;
+            width: 58px;
+            height: 58px;
+            place-items: center;
+            border-radius: 50%;
+            background: #25D366;
+            color: #fff;
+            box-shadow: 0 7px 24px rgba(0, 0, 0, .28);
+            transition: transform .25s var(--ease), background .25s ease;
+        }
+        .float-whatsapp::before {
+            position: absolute;
+            z-index: -1;
+            inset: -5px;
+            border: 1px solid rgba(37, 211, 102, .56);
+            border-radius: inherit;
+            content: "";
+            animation: float-wave 2.5s ease-out infinite;
+        }
+        .float-whatsapp:hover { transform: translateY(-3px) scale(1.04); background: #1ebe5a; }
+        .float-whatsapp .wa-icon { width: 30px; height: 30px; }
+        @keyframes float-wave { 0% { opacity: .7; transform: scale(.88); } 100% { opacity: 0; transform: scale(1.45); } }
+        .mobile-bar { display: none; }
+
+        /* Las entradas se animan solo al mejorar la experiencia; el contenido siempre es visible por defecto. */
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; gap: 22px; padding-top: 72px; }
+            .hero-copy { max-width: 540px; }
+            .main-layout { grid-template-columns: minmax(0, 1fr) 310px; gap: 24px; }
+            .summary { padding: 21px; }
+        }
+        @media (max-width: 720px) {
+            .container { width: min(100% - 36px, var(--content)); }
+            .site-header { min-height: 76px; }
+            .brand { gap: 9px; font-size: .93rem; }
+            .brand-mark { width: 34px; height: 34px; }
+            .currency-control { gap: 8px; font-size: .79rem; }
+            .currency-control select { min-height: 41px; padding-left: 11px; }
+            .hero { gap: 17px; padding: 65px 0 40px; }
+            .hero h1 { max-width: 620px; font-size: clamp(3.15rem, 12.7vw, 5.2rem); }
+            .hero-copy { font-size: 1rem; }
+            .main-layout { grid-template-columns: 1fr; gap: 20px; padding-bottom: 130px; }
+            .service-category { margin-bottom: 32px; }
+            .service-grid { gap: 12px; }
+            .service-card { min-height: 216px; padding: 20px 17px; border-radius: 17px; }
+            .service-card h3 { font-size: 1.06rem; }
+            .service-card p { font-size: .84rem; }
+            .summary { position: static; }
+            .how-section { padding: 38px 0 58px; }
+            .steps { grid-template-columns: 1fr; gap: 25px; }
+            .steps-track, .steps-progress { top: 14px; bottom: 14px; left: 25px; width: 2px; height: auto; }
+            .steps-progress { height: 0; }
+            .step { display: grid; grid-template-columns: 52px 1fr; column-gap: 17px; }
+            .step-icon { grid-row: span 2; margin: 0; }
+            .step h3 { align-self: end; }
+            .step p { max-width: none; }
+            .float-whatsapp { display: none; }
+            .mobile-bar {
+                position: fixed;
+                z-index: 10;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                padding: 12px max(18px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+                border-top: 1px solid rgba(179, 199, 236, .15);
+                background: rgba(8, 11, 19, .97);
+            }
+            .mobile-total { min-width: 0; }
+            .mobile-total span { display: block; color: var(--muted); font-size: .7rem; font-weight: 700; }
+            .mobile-total strong { display: block; overflow: hidden; color: var(--ink); font-family: "Bricolage Grotesque", "Arial", sans-serif; font-size: 1.2rem; letter-spacing: -.04em; text-overflow: ellipsis; white-space: nowrap; }
+            .mobile-quote {
+                display: inline-flex;
+                min-height: 46px;
+                flex: 0 0 auto;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 0 17px;
+                border-radius: 13px;
+                background: #25D366;
+                color: #fff;
+                font-size: .83rem;
+                font-weight: 800;
+                text-decoration: none;
+            }
+            .mobile-quote:hover { background: #1ebe5a; }
+            .mobile-quote .wa-icon { width: 22px; height: 22px; }
+            .site-footer { padding-bottom: 34px; }
+            .footer-inner { align-items: flex-start; flex-direction: column; gap: 5px; }
+        }
+        @media (max-width: 390px) {
+            .container { width: calc(100% - 30px); }
+            .service-grid { grid-template-columns: 1fr; }
+            .service-card { min-height: auto; }
+        }
+        @media (hover: none), (pointer: coarse) {
+            .service-card { transform: none !important; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient" aria-hidden="true"></div>
+    <div class="container">
+        <header class="site-header">
+            <a class="brand" href="index.html" aria-label="Bitácora Digital, inicio">
+                <span class="brand-mark"><img src="img/bitacora-mark.png" alt="" width="38" height="38"></span>
+                <span>Bitácora Digital</span>
+            </a>
+            <label class="currency-control" for="currency">
+                <span>Moneda</span>
+                <select id="currency" aria-label="Selecciona la moneda" onchange="render()">
+                    <option value="COP">COP ($)</option>
+                    <option value="USD">USD ($)</option>
+                </select>
+            </label>
+        </header>
+
+        <section class="hero" aria-labelledby="page-title">
+            <h1 id="page-title">Tecnología que trabaja para ti.</h1>
+            <div>
+                <p class="hero-copy"><strong>Arma tu cotización</strong> de soporte, desarrollo web y diseño. Elige lo que necesitas y mira cómo cambia tu inversión al instante.</p>
+                <a class="hero-link" href="#servicios">Explorar servicios <i data-lucide="arrow-down-right" aria-hidden="true"></i></a>
+            </div>
+        </section>
+
+        <main class="main-layout" id="servicios">
+            <section id="services-container" aria-label="Servicios disponibles"></section>
+            <aside class="summary" aria-labelledby="summary-heading">
+                <h2 id="summary-heading">Tu cotización</h2>
+                <p class="summary-lead">Una propuesta clara, hecha a tu medida.</p>
+                <div id="summary-list" class="summary-list" aria-live="polite"></div>
+                <span class="summary-total-label">Inversión estimada</span>
+                <p class="total" id="total-display" aria-live="polite">$0</p>
+                <p class="encouragement" id="encouragement" aria-live="polite"></p>
+                <div id="inclusions-section"></div>
+                <a id="whatsapp-btn" class="btn-whatsapp" href="https://wa.me/573144321446" target="_blank" rel="noopener noreferrer">
+                    <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg> Cotizar por WhatsApp
+                </a>
+                <p class="whatsapp-note">Sin compromiso. Hablemos de tu proyecto.</p>
+            </aside>
+        </main>
+
+        <section class="how-section" id="como-trabajo" aria-labelledby="how-heading">
+            <h2 class="how-heading" id="how-heading">De la idea al siguiente paso.</h2>
+            <p class="how-intro">Un proceso sencillo y cercano para que sepas qué esperar desde el primer mensaje.</p>
+            <div class="steps" id="steps">
+                <div class="steps-track" aria-hidden="true"></div>
+                <div class="steps-progress" id="steps-progress" aria-hidden="true"></div>
+                <article class="step">
+                    <span class="step-icon"><i data-lucide="list-checks" aria-hidden="true"></i></span>
+                    <h3>Cuéntame qué necesitas</h3>
+                    <p>Selecciona los servicios y comparte tu cotización por WhatsApp.</p>
+                </article>
+                <article class="step">
+                    <span class="step-icon"><i data-lucide="messages-square" aria-hidden="true"></i></span>
+                    <h3>Conversamos los detalles</h3>
+                    <p>Revisamos el alcance, resolvemos tus dudas y afinamos la propuesta.</p>
+                </article>
+                <article class="step">
+                    <span class="step-icon"><i data-lucide="rocket" aria-hidden="true"></i></span>
+                    <h3>Empezamos a crear</h3>
+                    <p>Con todo claro, damos el siguiente paso para poner tu proyecto en marcha.</p>
+                </article>
+            </div>
+        </section>
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <p><span class="footer-brand">Bitácora Digital</span> · Soluciones digitales a tu medida.</p>
+                <p>Construyamos algo que funcione para ti.</p>
+            </div>
+        </footer>
+    </div>
+
+    <a href="https://wa.me/573144321446" class="float-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
+        <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
+    <div class="mobile-bar" aria-label="Cotización rápida">
+        <div class="mobile-total"><span>Total estimado</span><strong id="mobile-total">$0</strong></div>
+        <a id="mobile-whatsapp-btn" class="mobile-quote" href="https://wa.me/573144321446" target="_blank" rel="noopener noreferrer">
+            <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg> Cotizar
+        </a>
+    </div>
+
+    <script>
+        // --- DATOS: edita aquí los servicios, sus nombres, descripciones y precios. ---
+        const services = [
+            { id: 'sw1', cat: 'Software', icon: 'terminal', name: 'Configuración Básica', desc: 'Instalación y optimización.', cop: 80000, usd: 20 },
+            { id: 'sw2', cat: 'Software', icon: 'cpu', name: 'Entorno Completo', desc: 'Formateo, SO, drivers.', cop: 250000, usd: 65 },
+            { id: 'wb1', cat: 'Web', icon: 'layout', name: 'Landing Page', desc: 'Optimizado conversiones.', cop: 500000, usd: 125 },
+            { id: 'wb2', cat: 'Web', icon: 'globe', name: 'Sitio Llave en Mano', desc: 'Dominio, Hosting, SSL.', cop: 1500000, usd: 380 },
+            { id: 'wb3', cat: 'Web', icon: 'layout-grid', name: 'Sitio Corporativo', desc: 'Multi-página, infraestructura.', cop: 1800000, usd: 450 },
+            { id: 'ds1', cat: 'Diseño', icon: 'palette', name: 'Diseño de pieza publicitaria', desc: 'Pieza publicitaria.', cop: 50000, usd: 12 },
+            { id: 'ds2', cat: 'Diseño', icon: 'brush', name: 'Kit de identidad visual', desc: 'Kit de marca completo.', cop: 350000, usd: 90 }
+        ];
+
+        // Etiquetas e iconos de categoría se separan de los datos editables de cada servicio.
+        const categories = {
+            Software: { title: 'Programas', icon: 'settings-2' },
+            Web: { title: 'Desarrollo Web', icon: 'globe-2' },
+            Diseño: { title: 'Diseño Digital', icon: 'shapes' }
+        };
+        const selected = {};
+        const currencyEl = document.getElementById('currency');
+        const moneyFormatters = {
+            COP: new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }),
+            USD: new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
+        };
+        let lastTotal = 0;
+        let hasSelectedFirstService = false;
+        let previousServiceIds = new Set();
+        let revealObserver;
+
+        function formatMoney(amount, currency) {
+            return currency === 'COP'
+                ? `$${moneyFormatters.COP.format(amount)}`
+                : `US$${moneyFormatters.USD.format(amount)}`;
+        }
+
+        function iniciarIconos() {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                try {
+                    window.lucide.createIcons();
+                    return;
+                } catch (error) {
+                    console.warn('Lucide no pudo crear los iconos; se usarán los SVG de respaldo.', error);
+                }
+            }
+
+            const fallbackSvg = '<svg data-icon-fallback viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 14.8 9.2 21 12l-6.2 2.8L12 21l-2.8-6.2L3 12l6.2-2.8L12 3Z"/><circle cx="12" cy="12" r="2"/></svg>';
+            document.querySelectorAll('[data-lucide]').forEach(icon => {
+                if (!icon.querySelector('[data-icon-fallback]')) icon.innerHTML = fallbackSvg;
+            });
+        }
+
+        function renderServices() {
+            const container = document.getElementById('services-container');
+            const focusedServiceId = document.activeElement?.dataset.serviceId;
+            const categoryNames = [...new Set(services.map(service => service.cat))];
+
+            container.innerHTML = categoryNames.map(category => {
+                const info = categories[category] || { title: category, icon: 'layers-3' };
+                const cards = services.filter(service => service.cat === category).map(service => {
+                    const price = formatMoney(service[currencyEl.value.toLowerCase()], currencyEl.value);
+                    const active = Boolean(selected[service.id]);
+                    const popular = service.id === 'wb2';
+                    return `
+                        <label class="service-card ${active ? 'is-selected' : ''} ${popular ? 'is-popular' : ''}" data-service-id="${service.id}">
+                            ${popular ? '<span class="popular-badge">Más popular</span>' : ''}
+                            <input type="checkbox" data-service-id="${service.id}" ${active ? 'checked' : ''} aria-label="Seleccionar ${service.name}">
+                            <span class="service-icon"><i data-lucide="${service.icon}" aria-hidden="true"></i></span>
+                            <h3>${service.name}</h3>
+                            <p>${service.desc}</p>
+                            <strong class="service-price">${price}</strong>
+                        </label>`;
+                }).join('');
+                return `
+                    <section class="service-category" aria-labelledby="category-${category}">
+                        <h2 class="category-heading" id="category-${category}">
+                            <span class="category-icon"><i data-lucide="${info.icon}" aria-hidden="true"></i></span>
+                            ${info.title}
+                        </h2>
+                        <div class="service-grid">${cards}</div>
+                    </section>`;
+            }).join('');
+
+            container.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                input.addEventListener('change', () => toggleService(input.dataset.serviceId, input.checked));
+            });
+            if (focusedServiceId) {
+                container.querySelector(`input[data-service-id="${focusedServiceId}"]`)?.focus();
+            }
+            observeServiceCards();
+            iniciarIconos();
+        }
+
+        // Revelado escalonado al entrar en pantalla y brillo que sigue el cursor en dispositivos con ratón.
+        function observeServiceCards() {
+            if (revealObserver) revealObserver.disconnect();
+            const cards = document.querySelectorAll('.service-card');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const canTilt = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            if (!reducedMotion && 'IntersectionObserver' in window) {
+                revealObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (!entry.isIntersecting) return;
+                        const card = entry.target;
+                        const cardIndex = [...cards].indexOf(card) % 4;
+                        card.animate(
+                            [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'translateY(0)' }],
+                            { duration: 480, delay: cardIndex * 65, easing: 'cubic-bezier(.2,.75,.25,1)', fill: 'both' }
+                        );
+                        observer.unobserve(card);
+                    });
+                }, { threshold: .12 });
+                cards.forEach(card => revealObserver.observe(card));
+            }
+
+            if (!reducedMotion && canTilt) {
+                cards.forEach(card => {
+                    card.addEventListener('pointermove', event => {
+                        const bounds = card.getBoundingClientRect();
+                        const x = event.clientX - bounds.left;
+                        const y = event.clientY - bounds.top;
+                        card.style.setProperty('--pointer-x', `${x}px`);
+                        card.style.setProperty('--pointer-y', `${y}px`);
+                        card.style.transform = `perspective(900px) rotateX(${(bounds.height / 2 - y) / 35}deg) rotateY(${(x - bounds.width / 2) / 35}deg) translateY(-2px)`;
+                    });
+                    card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+                });
+            }
+        }
+
+        // Confeti solo en el primer servicio y al cruzar el umbral por primera vez.
+        function celebrateSelection(total, currency, isFirstSelection, previousTotal) {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.confetti) return;
+            if (isFirstSelection) {
+                window.confetti({ particleCount: 48, spread: 56, origin: { x: .5, y: .78 }, colors: ['#70a7ff', '#62e2e8', '#b19aff'] });
+            }
+            const threshold = currency === 'COP' ? 1000000 : 250;
+            if (previousTotal < threshold && total >= threshold) {
+                window.confetti({ particleCount: 95, spread: 76, origin: { x: .5, y: .72 }, colors: ['#70a7ff', '#62e2e8', '#b19aff', '#64e6b0'] });
+            }
+        }
+
+        function toggleService(id, isSelected) {
+            const isFirstSelection = isSelected && !hasSelectedFirstService;
+            selected[id] = isSelected;
+            if (isSelected) hasSelectedFirstService = true;
+            const card = document.querySelector(`.service-card[data-service-id="${id}"]`);
+            if (card) card.classList.toggle('is-selected', isSelected);
+            const previousTotal = lastTotal;
+            render();
+            celebrateSelection(lastTotal, currencyEl.value, isFirstSelection, previousTotal);
+        }
+
+        function renderSummary(total, currency) {
+            const list = document.getElementById('summary-list');
+            const chosen = services.filter(service => selected[service.id]);
+            const currentIds = new Set(chosen.map(service => service.id));
+            const removedIds = [...previousServiceIds].filter(id => !currentIds.has(id));
+
+            const exitingItems = removedIds.flatMap(id => {
+                const service = services.find(item => item.id === id);
+                if (!service) return [];
+                const exiting = document.createElement('div');
+                exiting.className = 'summary-item is-leaving';
+                exiting.innerHTML = `<span class="summary-item__name"><span class="line-icon"><i data-lucide="${service.icon}"></i></span>${service.name}</span>`;
+                return [exiting];
+            });
+
+            list.innerHTML = chosen.length ? chosen.map(service => {
+                const amount = service[currency.toLowerCase()];
+                const entering = !previousServiceIds.has(service.id) ? 'is-entering' : '';
+                return `
+                    <div class="summary-item ${entering}" data-summary-id="${service.id}">
+                        <span class="summary-item__name">
+                            <span class="line-icon"><i data-lucide="${service.icon}" aria-hidden="true"></i></span>
+                            <span>${service.name}</span>
+                        </span>
+                        <span class="summary-item__price">${formatMoney(amount, currency)}</span>
+                    </div>`;
+            }).join('') : '<p class="summary-empty">Elige uno o más servicios para empezar.</p>';
+            exitingItems.forEach(exiting => {
+                list.appendChild(exiting);
+                window.setTimeout(() => exiting.remove(), 280);
+            });
+            previousServiceIds = currentIds;
+
+            const inclusions = new Set();
+            chosen.forEach(service => {
+                if (service.cat === 'Web') inclusions.add('Dominio, Hosting, SSL.');
+                if (service.cat === 'Software') inclusions.add('Soporte y configuración.');
+            });
+            document.getElementById('inclusions-section').innerHTML = inclusions.size
+                ? `<div class="inclusions"><h3>¿Qué incluye tu inversión?</h3><ul>${[...inclusions].map(item => `<li><i data-lucide="check" aria-hidden="true"></i><span>${item}</span></li>`).join('')}</ul></div>`
+                : '';
+
+            const target = { value: lastTotal };
+            const totalDisplay = document.getElementById('total-display');
+            const mobileTotal = document.getElementById('mobile-total');
+            const updateTotal = value => {
+                const formatted = formatMoney(Math.round(value), currency);
+                totalDisplay.textContent = formatted;
+                mobileTotal.textContent = formatted;
+            };
+            if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                window.gsap.to(target, { value: total, duration: .55, ease: 'power2.out', onUpdate: () => updateTotal(target.value) });
+            } else {
+                updateTotal(total);
+            }
+            totalDisplay.classList.remove('is-pulsing');
+            void totalDisplay.offsetWidth;
+            totalDisplay.classList.add('is-pulsing');
+            document.getElementById('encouragement').textContent = chosen.length ? '¡Buena elección! Puedes ajustar tu selección cuando quieras.' : '';
+            iniciarIconos();
+        }
+
+        function updateWhatsApp(total, currency) {
+            let message = 'Hola, quisiera más información sobre sus servicios.';
+            const chosen = services.filter(service => selected[service.id]);
+            if (total > 0) {
+                message = 'Hola, me interesa cotizar los siguientes servicios en Bitácora Digital:\n' +
+                    chosen.map(service => `- ${service.name}: ${formatMoney(service[currency.toLowerCase()], currency)}`).join('\n') +
+                    `\nTotal estimado: ${formatMoney(total, currency)} ${currency}`;
+            }
+            const url = `https://wa.me/573144321446?text=${encodeURIComponent(message)}`;
+            document.getElementById('whatsapp-btn').href = url;
+            document.getElementById('mobile-whatsapp-btn').href = url;
+        }
+
+        function render() {
+            const currency = currencyEl.value;
+            const total = services.reduce((sum, service) => selected[service.id]
+                ? sum + service[currency.toLowerCase()]
+                : sum, 0);
+
+            renderServices();
+            renderSummary(total, currency);
+            updateWhatsApp(total, currency);
+            iniciarIconos();
+            lastTotal = total;
+        }
+
+        // La línea de proceso se completa al avanzar por los tres pasos; GSAP se limita al movimiento vertical.
+        function initScrollAnimations() {
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reducedMotion || !window.gsap || !window.ScrollTrigger) return;
+            window.gsap.registerPlugin(window.ScrollTrigger);
+            window.gsap.from('.step', {
+                y: 18,
+                opacity: 0,
+                duration: .55,
+                stagger: .13,
+                ease: 'power2.out',
+                scrollTrigger: { trigger: '#steps', start: 'top 82%', once: true }
+            });
+            const verticalSteps = window.matchMedia('(max-width: 720px)').matches;
+            window.gsap.to('#steps-progress', {
+                [verticalSteps ? 'height' : 'width']: verticalSteps ? '100%' : '83.4%',
+                ease: 'none',
+                scrollTrigger: { trigger: '#steps', start: 'top 78%', end: 'bottom 60%', scrub: .6 }
+            });
+            window.gsap.from('.how-heading, .how-intro', {
+                y: 16,
+                opacity: 0,
+                duration: .5,
+                stagger: .1,
+                ease: 'power2.out',
+                scrollTrigger: { trigger: '.how-section', start: 'top 82%', once: true }
+            });
+            window.gsap.from('.hero h1 .word', {
+                y: 24,
+                opacity: 0,
+                duration: .7,
+                stagger: .09,
+                ease: 'power3.out',
+                delay: .12
+            });
+        }
+
+        document.getElementById('page-title').innerHTML = 'Tecnología que trabaja para ti.'.split(' ').map(word => `<span class="word">${word}&nbsp;</span>`).join('');
+        document.addEventListener('DOMContentLoaded', iniciarIconos, { once: true });
+        window.addEventListener('load', iniciarIconos, { once: true });
+        render();
+        initScrollAnimations();
+    </script>
+</body>
+</html>
