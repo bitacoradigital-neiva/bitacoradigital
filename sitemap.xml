@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://soportedigital.vercel.app/</loc>
+    <loc>https://bitacoradigital-lyart.vercel.app/</loc>
   </url>
   <url>
-    <loc>https://soportedigital.vercel.app/terminos.html</loc>
+    <loc>https://bitacoradigital-lyart.vercel.app/terminos.html</loc>
   </url>
   <url>
-    <loc>https://soportedigital.vercel.app/privacidad.html</loc>
+    <loc>https://bitacoradigital-lyart.vercel.app/privacidad.html</loc>
+  </url>
+  <url>
+    <loc>https://bitacoradigital-lyart.vercel.app/cotizador.html</loc>
   </url>
 </urlset>
