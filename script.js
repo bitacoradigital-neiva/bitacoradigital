@@ -2,10 +2,6 @@
 
 const WHATSAPP_NUMBER = "573144321446";
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const desktopMotion = window.matchMedia("(min-width: 821px) and (hover: hover) and (pointer: fine)").matches;
-const desktopParallax = window.matchMedia("(min-width: 901px) and (hover: hover) and (pointer: fine)");
-const desktopProcessLine = window.matchMedia("(min-width: 901px)");
-if (!reducedMotion) document.documentElement.classList.add("motion-ready");
 const menuToggle = document.querySelector(".menu-toggle");
 const navMenu = document.querySelector(".nav-menu");
 const contactForm = document.getElementById("contact-form");
@@ -17,6 +13,43 @@ const floatingWhatsApp = document.getElementById("float-whatsapp");
 
 if (window.lucide?.createIcons) window.lucide.createIcons();
 if (yearSpan) yearSpan.textContent = String(new Date().getFullYear());
+
+const revealElements = document.querySelectorAll("[data-aos], .hero-visual");
+if (!reducedMotion && "IntersectionObserver" in window && revealElements.length) {
+    const revealGroups = new Map();
+    revealElements.forEach((element) => {
+        const delay = Number(element.getAttribute("data-aos-delay"));
+        let index = 0;
+        if (element.hasAttribute("data-aos-delay") && Number.isFinite(delay)) {
+            index = Math.round(delay / 70);
+        } else {
+            const parent = element.parentElement;
+            index = revealGroups.get(parent) ?? 0;
+            revealGroups.set(parent, index + 1);
+        }
+        element.style.setProperty("--i", String(index));
+    });
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const element = entry.target;
+            element.classList.add("is-entering", "is-revealed");
+            const finishReveal = (event) => {
+                if (event.target !== element || event.propertyName !== "opacity") return;
+                element.classList.remove("is-entering");
+                element.removeEventListener("transitionend", finishReveal);
+            };
+            element.addEventListener("transitionend", finishReveal);
+            observer.unobserve(element);
+        });
+    }, { threshold: 0.12, rootMargin: "0px 0px -24px 0px" });
+    revealElements.forEach((element) => revealObserver.observe(element));
+    document.documentElement.classList.add("reveal-ready");
+}
+
+const serviceMarquee = document.querySelector(".service-marquee");
+if (!reducedMotion) serviceMarquee?.classList.add("is-animated");
 
 function setMenuOpen(isOpen, returnFocus = false) {
     if (!menuToggle || !navMenu) return;
@@ -98,75 +131,6 @@ floatingWhatsApp?.addEventListener("click", (event) => {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
 });
 
-if (window.AOS?.init) {
-    window.AOS.init({
-        once: true,
-        duration: reducedMotion ? 0 : 600,
-        easing: "ease-out-cubic",
-        offset: 55,
-        disable: reducedMotion
-    });
-    if (!reducedMotion) document.documentElement.classList.add("aos-enabled");
-} else {
-    document.querySelectorAll("[data-aos]").forEach((element) => element.removeAttribute("data-aos"));
-}
-
-if (!reducedMotion && desktopMotion && window.tsParticles?.load) {
-    window.tsParticles.load({
-        id: "tsparticles",
-        options: {
-            fullScreen: { enable: false },
-            background: { color: { value: "transparent" } },
-            particles: {
-                number: { value: 18, density: { enable: true, width: 900, height: 650 } },
-                color: { value: ["#1685FF", "#48D7FF"] },
-                opacity: { value: { min: 0.08, max: 0.2 } },
-                size: { value: { min: 1, max: 2 } },
-                links: { enable: true, distance: 150, color: "#48D7FF", opacity: 0.08, width: 1 },
-                move: { enable: true, speed: 0.2, direction: "none", outModes: { default: "out" } }
-            },
-            detectRetina: true,
-            interactivity: { events: { onHover: { enable: false }, onClick: { enable: false } } }
-        }
-    }).catch((error) => console.warn("No fue posible cargar el fondo de partículas.", error));
-}
-
-const typedTarget = document.getElementById("typed-service");
-if (typedTarget && window.Typed) {
-    if (reducedMotion) {
-        typedTarget.textContent = "Soporte técnico";
-    } else {
-        new window.Typed(typedTarget, {
-            strings: ["Soporte técnico", "Desarrollo web", "Diseño digital", "Instalación de programas"],
-            typeSpeed: 45,
-            backSpeed: 25,
-            backDelay: 1400,
-            loop: true,
-            smartBackspace: true
-        });
-    }
-} else if (typedTarget) {
-    typedTarget.textContent = "Soporte técnico";
-}
-
-const processGrid = document.querySelector(".process-grid");
-const processSteps = processGrid ? Array.from(processGrid.querySelectorAll(".process-step")) : [];
-if (!reducedMotion && processGrid && processSteps.length) {
-    processGrid.classList.add("is-scroll-animated");
-    if ("IntersectionObserver" in window) {
-        const processStepObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting || desktopProcessLine.matches) return;
-                entry.target.classList.add("is-reached");
-                observer.unobserve(entry.target);
-            });
-        }, { threshold: 0.55, rootMargin: "0px 0px -15% 0px" });
-        processSteps.forEach((step) => processStepObserver.observe(step));
-    } else if (!desktopProcessLine.matches) {
-        processSteps.forEach((step) => step.classList.add("is-reached"));
-    }
-}
-
 document.querySelectorAll(".faq-item").forEach((item) => {
     item.addEventListener("toggle", () => {
         if (!item.open) return;
@@ -201,27 +165,7 @@ function updateScrollEffects() {
     if (progressBar) {
         const scrollable = document.documentElement.scrollHeight - window.innerHeight;
         const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
-        progressBar.style.width = `${Math.min(progress, 100)}%`;
-    }
-    if (!reducedMotion) {
-        const hero = document.querySelector(".hero");
-        const heroImage = document.querySelector(".hero-art-img");
-        if (heroImage && !desktopParallax.matches) heroImage.style.transform = "";
-        else if (hero && heroImage && hero.getBoundingClientRect().bottom > 0) {
-            const parallaxOffset = Math.min(window.scrollY * 0.035, 26);
-            heroImage.style.transform = `translate3d(0, ${-parallaxOffset.toFixed(2)}px, 0)`;
-        }
-    }
-    if (!reducedMotion && processGrid && processSteps.length && desktopProcessLine.matches) {
-        const gridTop = processGrid.getBoundingClientRect().top;
-        const start = window.innerHeight * 0.82;
-        const end = window.innerHeight * 0.42;
-        const progress = Math.max(0, Math.min(1, (start - gridTop) / (start - end)));
-        processGrid.style.setProperty("--process-progress", progress.toFixed(3));
-        processSteps.forEach((step, index) => {
-            const milestone = processSteps.length > 1 ? index / (processSteps.length - 1) : 0;
-            if (progress >= milestone) step.classList.add("is-reached");
-        });
+        progressBar.style.transform = `scaleX(${Math.min(progress, 100) / 100})`;
     }
 }
 

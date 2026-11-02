@@ -1,12 +1,19 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#080B12">
-    <meta name="description" content="Soporte técnico, instalación de programas, desarrollo web y diseño digital en Neiva, Huila. Soluciones claras y cercanas con Bitácora Digital.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Soporte técnico, desarrollo web y diseño digital en Neiva, Huila. Soluciones claras y cercanas con Bitácora Digital.">
     <title>Bitácora Digital | Tecnología y diseño en Neiva, Huila</title>
     <link rel="canonical" href="https://bitacoradigital-lyart.vercel.app/">
+    
+    <!-- CONTROL DE RASTREO Y SITEMAP -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://bitacoradigital-lyart.vercel.app/sitemap.xml">
+    <link rel="author" href="https://bitacoradigital-lyart.vercel.app/robots.txt">
+
+    <!-- Open Graph & Twitter -->
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_CO">
     <meta property="og:title" content="Bitácora Digital | Tecnología y diseño en Neiva">
@@ -14,368 +21,1680 @@
     <meta property="og:url" content="https://bitacoradigital-lyart.vercel.app/">
     <meta property="og:image" content="https://bitacoradigital-lyart.vercel.app/img/hero.webp">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico?v=5" sizes="any">
-    <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16.png?v=5">
-    <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png?v=5">
-    <link rel="icon" type="image/png" sizes="48x48" href="./img/favicon-48.png?v=5">
-    <link rel="apple-touch-icon" sizes="180x180" href="./img/apple-touch-icon.png?v=5">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
-    <link rel="stylesheet" href="style.css">
+
+    <!-- FAVICON VECTORIAL SVG DE ALTA DEFINICIÓN (Reemplaza a favicon.ico) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='appleBlue' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%232997ff'/%3E%3Cstop offset='100%25' stop-color='%230071e3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%23000000' stroke='%23222530' stroke-width='2'/%3E%3Cpath d='M20 14h16a11 11 0 0 1 8.5 18A11.5 11.5 0 0 1 36 50H20V14zm8 7v9h8a4.5 4.5 0 0 0 0-9h-8zm0 13v9h8.5a4.5 4.5 0 0 0 0-9H28z' fill='url(%23appleBlue)'/%3E%3Ccircle cx='13' cy='24' r='2.5' fill='%232997ff'/%3E%3Ccircle cx='13' cy='34' r='2.5' fill='%230071e3'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/logo-bitacora-simbolo.png?v=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="img/logo-bitacora-simbolo.png?v=1">
+
+    <!-- Three.js & Lucide CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/tsparticles@3.3.0/tsparticles.bundle.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.1.0/typed.umd.js"></script>
-    <script defer src="script.js"></script>
+
+    <style>
+        @font-face {
+            font-family: "Plus Jakarta Sans";
+            src: url("./fonts/PlusJakartaSans-latin.woff2") format("woff2");
+            font-style: normal;
+            font-weight: 300 800;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "Bricolage Grotesque";
+            src: url("./fonts/BricolageGrotesque-latin.woff2") format("woff2");
+            font-style: normal;
+            font-weight: 600 800;
+            font-display: swap;
+        }
+
+        :root {
+            color-scheme: dark;
+            --bg-deep: #000000;
+            --bg-elevated: #0a0b0e;
+            --surface-bento: #111318;
+            --surface-hover: #161922;
+            
+            --ink: #f5f5f7;
+            --ink-secondary: #86868b;
+            --ink-muted: #515154;
+            
+            --blue: #2997ff;
+            --blue-subtle: rgba(41, 151, 255, 0.08);
+            --blue-glow: rgba(41, 151, 255, 0.25);
+            
+            --whatsapp: #25d366;
+            --whatsapp-ink: #041408;
+
+            --border-hairline: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.16);
+            --border-glow: rgba(41, 151, 255, 0.4);
+            
+            --font-display: "Bricolage Grotesque", -apple-system, sans-serif;
+            --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, monospace;
+            
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-bento: 22px;
+            --radius-pill: 9999px;
+            
+            --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+            --max-w: 1200px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html {
+            scroll-behavior: smooth;
+            background: var(--bg-deep);
+            scroll-padding-top: 80px;
+        }
+        
+        body {
+            background-color: var(--bg-deep);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* INTRO CINEMATOGRÁFICA "BIENVENIDOS" */
+        .intro-curtain {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 800ms var(--ease-apple), transform 800ms var(--ease-apple);
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .intro-curtain.hidden {
+            opacity: 0;
+            transform: scale(1.04);
+            pointer-events: none;
+        }
+
+        .intro-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .intro-badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--blue);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: introFade 800ms 200ms forwards var(--ease-apple);
+        }
+
+        .intro-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            color: #ffffff;
+            opacity: 0;
+            transform: translateY(18px);
+            animation: introFade 900ms 400ms forwards var(--ease-apple);
+        }
+
+        .intro-sub {
+            font-size: 1.15rem;
+            color: var(--ink-secondary);
+            max-width: 42ch;
+            opacity: 0;
+            transform: translateY(14px);
+            animation: introFade 900ms 650ms forwards var(--ease-apple);
+        }
+
+        .intro-progress-bar {
+            width: 140px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 2px;
+            margin-top: 14px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .intro-progress-fill {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 0%;
+            background: var(--blue);
+            animation: introLoad 2.1s ease-in-out forwards;
+        }
+
+        .intro-skip-hint {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--ink-muted);
+            margin-top: 12px;
+            opacity: 0.6;
+        }
+
+        @keyframes introFade { to { opacity: 1; transform: translateY(0); } }
+        @keyframes introLoad { 0% { width: 0%; } 50% { width: 65%; } 100% { width: 100%; } }
+
+        /* TIPOGRAFÍA & BASES */
+        h1, h2, h3, h4 {
+            font-family: var(--font-display);
+            letter-spacing: -0.035em;
+            color: var(--ink);
+            line-height: 1.08;
+        }
+
+        p { color: var(--ink-secondary); }
+        a, button { text-decoration: none; color: inherit; font: inherit; transition: all 180ms var(--ease-apple); }
+        button { cursor: pointer; border: none; background: none; }
+
+        .container {
+            width: min(var(--max-w), calc(100% - 2.5rem));
+            margin-inline: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HEADER FLOTANTE TIPO APPLE */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-emblem {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: #0f1118;
+            border: 1px solid var(--border-hairline);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 0 16px rgba(41, 151, 255, 0.2);
+        }
+
+        .brand-emblem img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .brand-text span { color: var(--blue); }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .nav-menu a { color: var(--ink-secondary); }
+        .nav-menu a:hover { color: #ffffff; }
+
+        .telemetry-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--ink-secondary);
+            background: #0d0f14;
+            border: 1px solid var(--border-hairline);
+            padding: 5px 12px;
+            border-radius: var(--radius-pill);
+        }
+
+        .pulse-light {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+        }
+
+        /* BOTONES */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: var(--radius-pill);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-primary { background: #ffffff; color: #000000; }
+        .btn-primary:hover { background: #e4e4e7; transform: scale(1.02); }
+        .btn-secondary { background: #141720; color: #ffffff; border: 1px solid var(--border-strong); }
+        .btn-secondary:hover { background: #1c202c; border-color: var(--border-glow); transform: scale(1.02); }
+        .btn-whatsapp { background: var(--whatsapp); color: var(--whatsapp-ink); font-weight: 700; }
+        .btn-whatsapp:hover { filter: brightness(1.08); transform: scale(1.02); }
+
+        /* HERO APPLE SPACE BLACK */
+        .hero {
+            padding: 130px 0 70px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .hero-kicker {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.75rem, 5vw, 4.4rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        .hero h1 span.blue-highlight { color: var(--blue); }
+
+        .hero-lead {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            color: var(--ink-secondary);
+            max-width: 48ch;
+        }
+
+        .hero-lead strong { color: #ffffff; font-weight: 600; }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .hero-telemetry-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-hairline);
+            margin-top: 12px;
+        }
+
+        .tele-cell .lbl {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--ink-muted);
+            margin-bottom: 2px;
+        }
+
+        .tele-cell .val {
+            font-size: 0.94rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        /* THREE.JS COMPUTADOR 3D SPACE BLACK REAL */
+        .stage-3d-viewport {
+            position: relative;
+            width: 100%;
+            height: 460px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, rgba(16, 20, 30, 0.5) 0%, transparent 70%);
+            border-radius: var(--radius-bento);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #three-laptop-canvas {
+            width: 100% !important;
+            height: 100% !important;
+            cursor: grab;
+            display: block;
+        }
+
+        #three-laptop-canvas:active { cursor: grabbing; }
+
+        /* CARRUSEL DE LETRAS CONTINUO CON ICONOS */
+        .marquee-section {
+            border-block: 1px solid var(--border-hairline);
+            background: rgba(10, 11, 14, 0.4);
+            padding: 16px 0;
+            overflow: hidden;
+            display: flex;
+            user-select: none;
+        }
+
+        .marquee-track {
+            display: flex;
+            gap: 40px;
+            width: max-content;
+            animation: marqueeRoll 34s linear infinite;
+        }
+
+        .marquee-track:hover { animation-play-state: paused; }
+
+        .marquee-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--font-mono);
+            font-size: 0.86rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-secondary);
+            white-space: nowrap;
+        }
+
+        .marquee-item i {
+            color: var(--blue);
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .marquee-divider {
+            color: var(--border-strong);
+            margin-left: 28px;
+            font-size: 0.65rem;
+        }
+
+        @keyframes marqueeRoll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* SECCIONES BENTO GRID CON TILT 3D E ICONOS */
+        .section {
+            padding: 90px 0;
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .section-header { margin-bottom: 40px; }
+        .section-header h2 { font-size: clamp(2rem, 3.5vw, 3rem); margin-bottom: 8px; }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 20px;
+            perspective: 1000px;
+        }
+
+        .bento-card {
+            background: var(--surface-bento);
+            border: 1px solid var(--border-hairline);
+            border-radius: var(--radius-bento);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 200ms var(--ease-apple), border-color 200ms var(--ease-apple), box-shadow 200ms var(--ease-apple);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .bento-card:hover {
+            border-color: var(--border-strong);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-glare {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        .bento-card-top { transform: translateZ(20px); }
+
+        /* ICONOS EN CASILLAS */
+        .card-icon-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(41, 151, 255, 0.08);
+            border: 1px solid rgba(41, 151, 255, 0.22);
+            display: grid;
+            place-items: center;
+            color: var(--blue);
+            margin-bottom: 16px;
+        }
+
+        .card-icon-badge i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .bento-badge { font-family: var(--font-mono); font-size: 0.72rem; color: var(--blue); margin-bottom: 10px; display: block; }
+        .bento-card h3 { font-size: 1.25rem; margin-bottom: 10px; }
+        .bento-card p { font-size: 0.93rem; line-height: 1.6; }
+
+        /* COTIZADOR PRO INTERACTIVO CON ICONOS EN FILAS */
+        .calc-container {
+            display: grid;
+            grid-template-columns: 1.4fr 0.85fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .calc-header-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .currency-segmented {
+            display: inline-flex;
+            background: #111318;
+            border: 1px solid var(--border-hairline);
+            border-radius: var(--radius-pill);
+            padding: 4px;
+        }
+
+        .currency-segmented button {
+            padding: 6px 16px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--ink-muted);
+            border-radius: var(--radius-pill);
+        }
+
+        .currency-segmented button.active {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .services-ledger {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-hairline);
+            border-radius: var(--radius-bento);
+            background: var(--surface-bento);
+            overflow: hidden;
+        }
+
+        .service-row {
+            display: grid;
+            grid-template-columns: auto auto 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-hairline);
+            cursor: pointer;
+            transition: background 140ms var(--ease-apple);
+            user-select: none;
+        }
+
+        .service-row:last-child { border-bottom: none; }
+        .service-row:hover { background: #161822; }
+        .service-row.selected { background: var(--blue-subtle); }
+
+        .service-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            display: grid;
+            place-items: center;
+            background: #0d0e14;
+        }
+
+        .service-row.selected .service-checkbox {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: #fff;
+        }
+
+        .service-row-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            background: #161822;
+            border: 1px solid var(--border-hairline);
+            display: grid;
+            place-items: center;
+            color: var(--blue);
+            flex-shrink: 0;
+        }
+
+        .service-row-icon i { width: 18px; height: 18px; }
+
+        .service-info h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 3px; }
+        .service-info p { font-size: 0.86rem; color: var(--ink-secondary); }
+
+        .service-price-block {
+            text-align: right;
+            font-family: var(--font-mono);
+        }
+
+        .service-price-block .p-val { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+        .service-price-block .p-eta { font-size: 0.72rem; color: var(--ink-muted); margin-top: 2px; }
+
+        /* RESUMEN DE PRESUPUESTO CON CONFIRMACIÓN DE TÉRMINOS */
+        .summary-card {
+            background: var(--surface-bento);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-bento);
+            padding: 26px;
+            position: sticky;
+            top: 86px;
+        }
+
+        .summary-card h3 {
+            font-size: 1.25rem;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-hairline);
+            margin-bottom: 18px;
+        }
+
+        .summary-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-hint {
+            color: var(--ink-muted);
+            font-size: 0.88rem;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .summary-item-line { display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .summary-item-line .name { color: var(--ink); }
+        .summary-item-line .cost { font-family: var(--font-mono); color: var(--ink-secondary); }
+
+        .summary-total-strip {
+            padding-top: 16px;
+            border-top: 1px solid var(--border-hairline);
+            margin-bottom: 18px;
+        }
+
+        .total-lead {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            margin-bottom: 4px;
+        }
+
+        .total-number {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            color: #ffffff;
+        }
+
+        /* CASILLA DE CONFIRMACIÓN DE TÉRMINOS Y CONDICIONES CON VERIFICACIÓN */
+        .summary-terms-agreement {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-hairline);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 18px;
+            transition: border-color 160ms var(--ease-apple);
+        }
+
+        .summary-terms-agreement.verified {
+            border-color: rgba(34, 197, 94, 0.35);
+            background: rgba(34, 197, 94, 0.03);
+        }
+
+        .terms-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .terms-checkbox-label input {
+            display: none;
+        }
+
+        .custom-check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid var(--border-strong);
+            background: #0d0f14;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 160ms var(--ease-apple);
+        }
+
+        .custom-check-box i {
+            width: 13px;
+            height: 13px;
+            color: #ffffff;
+            opacity: 0;
+            transform: scale(0.6);
+            transition: all 160ms var(--ease-apple);
+        }
+
+        .terms-checkbox-label input:checked + .custom-check-box {
+            background: var(--blue);
+            border-color: var(--blue);
+        }
+
+        .terms-checkbox-label input:checked + .custom-check-box i {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .terms-label-text {
+            font-size: 0.8rem;
+            line-height: 1.45;
+            color: var(--ink-secondary);
+        }
+
+        .terms-label-text a {
+            color: #ffffff;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .terms-label-text a:hover {
+            color: var(--blue);
+        }
+
+        .verification-badge-strip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: #22c55e;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+            opacity: 0;
+            transform: translateY(-2px);
+            transition: all 180ms var(--ease-apple);
+        }
+
+        .summary-terms-agreement.verified .verification-badge-strip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .verification-badge-strip i { width: 14px; height: 14px; }
+
+        /* FAQ APPLE MINIMAL */
+        .faq-accordion {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-hairline);
+            border-radius: var(--radius-bento);
+            background: var(--surface-bento);
+            overflow: hidden;
+        }
+
+        .faq-item { border-bottom: 1px solid var(--border-hairline); }
+        .faq-item:last-child { border-bottom: none; }
+
+        .faq-item summary {
+            padding: 20px 24px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: "+";
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--ink-muted);
+        }
+        .faq-item[open] summary::after { content: "−"; color: var(--blue); }
+        .faq-answer { padding: 0 24px 22px; font-size: 0.94rem; color: var(--ink-secondary); line-height: 1.6; }
+
+        /* FOOTER APPLE PRO */
+        .footer {
+            padding: 64px 0 36px;
+            border-top: 1px solid var(--border-hairline);
+            background: #000000;
+            font-size: 0.85rem;
+            color: var(--ink-muted);
+        }
+
+        .footer-inner {
+            display: grid;
+            grid-template-columns: 1.5fr repeat(3, 1fr);
+            gap: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-hairline);
+        }
+
+        .footer-brand p {
+            margin-top: 12px;
+            max-width: 32ch;
+            color: var(--ink-muted);
+            line-height: 1.5;
+        }
+
+        .footer-col h5 {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-col a {
+            color: var(--ink-secondary);
+            font-size: 0.88rem;
+        }
+
+        .footer-col a:hover { color: #ffffff; }
+
+        .footer-bottom {
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+        }
+
+        /* MODAL DE CRISTAL ESMERILADO (FROSTED GLASS SHEET) */
+        .legal-sheet-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100000;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 280ms var(--ease-apple);
+        }
+
+        .legal-sheet-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .legal-sheet {
+            background: #0c0e14;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-bento);
+            width: min(780px, 100%);
+            max-height: 84vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(41, 151, 255, 0.15);
+            transform: scale(0.96);
+            transition: transform 280ms var(--ease-apple);
+            overflow: hidden;
+        }
+
+        .legal-sheet-overlay.active .legal-sheet {
+            transform: scale(1);
+        }
+
+        .legal-sheet-header {
+            padding: 20px 26px;
+            border-bottom: 1px solid var(--border-hairline);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #11131a;
+        }
+
+        .legal-sheet-header h3 {
+            font-size: 1.15rem;
+        }
+
+        .btn-close-modal {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-hairline);
+            color: var(--ink);
+            display: grid;
+            place-items: center;
+        }
+
+        .btn-close-modal:hover {
+            background: rgba(255, 255, 255, 0.16);
+            transform: scale(1.05);
+        }
+
+        .legal-sheet-body {
+            padding: 26px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: var(--ink-secondary);
+        }
+
+        .legal-sheet-body h4 {
+            color: #ffffff;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .legal-sheet-body p { margin-bottom: 8px; }
+
+        @media (max-width: 900px) {
+            .hero, .calc-container { grid-template-columns: 1fr; }
+            .nav-menu { display: none; }
+            .hero-telemetry-row { grid-template-columns: 1fr 1fr; }
+            .summary-card { position: static; }
+            .stage-3d-viewport { height: 350px; }
+            .footer-inner { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .footer-inner { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-    <a class="skip-link" href="#contenido">Saltar al contenido</a>
-    <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-bar"></span></div>
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon-library" aria-hidden="true">
-        <symbol id="icon-whatsapp" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M20.52 3.48A11.87 11.87 0 0 0 12.06 0C5.5 0 .16 5.34.16 11.9c0 2.1.55 4.15 1.6 5.96L.06 24l6.3-1.65a11.9 11.9 0 0 0 5.7 1.45h.01c6.56 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42ZM12.07 21.8h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.23-.38a9.86 9.86 0 0 1-1.52-5.26c0-5.46 4.45-9.9 9.9-9.9a9.84 9.84 0 0 1 7 2.9 9.84 9.84 0 0 1 2.9 7c0 5.46-4.44 9.9-9.9 9.9Zm5.43-7.42c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.8-1.48-1.77-1.65-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.38-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.3 1.27.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/>
-        </symbol>
-    </svg>
 
-    <header class="navbar" id="navbar">
-        <div class="container navbar-container">
-            <a href="#inicio" class="logo" aria-label="Bitácora Digital, ir al inicio">
-                <img class="logo-symbol" src="img/logo-bitacora-simbolo.png?v=1" alt="" width="48" height="48">
-                <span class="logo-wordmark"><span>Bitácora</span> <span>Digital</span></span>
+    <!-- 1. INTRO "BIENVENIDOS" (ESTILO APPLE KEYNOTE) -->
+    <div class="intro-curtain" id="intro-curtain" title="Haz clic en cualquier lugar para entrar">
+        <div class="intro-content">
+            <span class="intro-badge">BITÁCORA DIGITAL // NEIVA</span>
+            <h1 class="intro-title">Bienvenidos</h1>
+            <p class="intro-sub">Tecnología, soporte técnico e ingeniería digital construidos con precisión.</p>
+            <div class="intro-progress-bar">
+                <div class="intro-progress-fill"></div>
+            </div>
+            <span class="intro-skip-hint">Toca o haz clic para entrar de inmediato</span>
+        </div>
+    </div>
+
+    <!-- Barra de Navegación Flotante -->
+    <header class="navbar">
+        <div class="container nav-inner">
+            <a href="#inicio" class="brand-link" aria-label="Bitácora Digital - Inicio">
+                <span class="brand-emblem">
+                    <img src="img/logo-bitacora-simbolo.png?v=1" alt="Bitácora Digital" width="22" height="22">
+                </span>
+                <span class="brand-text">Bitácora<span>Digital</span></span>
             </a>
-            <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
-                <span class="hamburger" aria-hidden="true"></span>
-            </button>
-            <nav class="nav-menu" id="nav-menu" aria-label="Navegación principal">
-                <ul>
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#servicios">Servicios</a></li>
-                    <li><a href="cotizador.html">Precios</a></li>
-                    <li><a href="#como-trabajo">Cómo trabajo</a></li>
-                    <li><a href="#preguntas">Preguntas</a></li>
-                </ul>
-                <a href="#contacto" class="btn-primary nav-cta">Hablemos</a>
-            </nav>
+
+            <ul class="nav-menu">
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#skills">Capacidades</a></li>
+                <li><a href="#cotizador">Precios</a></li>
+                <li><a href="#faq">Preguntas</a></li>
+            </ul>
+
+            <div class="telemetry-pill">
+                <span class="pulse-light"></span>
+                <span>Neiva & Remoto</span>
+            </div>
         </div>
     </header>
 
-    <main id="contenido">
-        <section id="inicio" class="hero">
-            <div class="hero-particles" id="tsparticles" aria-hidden="true"></div>
-            <div class="container hero-container">
-                <div class="hero-content">
-                    <p class="eyebrow"><span class="eyebrow-line"></span> BITÁCORA DIGITAL <span class="eyebrow-dot">·</span> NEIVA, HUILA</p>
-                    <h1>Tecnología y diseño<br><span>sin complicaciones.</span></h1>
-                    <p class="hero-subtitle"><span id="typed-service">Soporte técnico</span><span class="typed-cursor" aria-hidden="true">|</span></p>
-                    <p class="hero-copy">Resolvemos tus necesidades de software, construimos tu sitio web y diseñamos la imagen de tu marca.</p>
-                    <div class="hero-actions">
-                        <a href="#contacto" class="btn-primary">Cuéntame qué necesitas <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
-                        <a href="cotizador.html" class="btn-secondary">Explorar precios</a>
+    <main id="inicio">
+        <!-- Hero con Computador 3D Real (Three.js Space Black) -->
+        <section class="hero container">
+            <div class="hero-left">
+                <div class="hero-kicker">INGENIERÍA Y SOPORTE TÉCNICO // NEIVA, HUILA</div>
+                <h1>Tecnología y diseño. <span class="blue-highlight">Sin complicaciones.</span></h1>
+                <p class="hero-lead">
+                    Reparamos y optimizamos tus computadores, desarrollamos plataformas web comerciales de alta velocidad y diseñamos la imagen de tu negocio. <strong>Tarifas transparentes y acuerdos claros desde el primer mensaje.</strong>
+                </p>
+                <div class="hero-actions">
+                    <a href="#cotizador" class="btn btn-primary">
+                        <span>Configurar cotización</span>
+                        <i data-lucide="arrow-down-right" style="width:16px;height:16px;"></i>
+                    </a>
+                    <a href="https://wa.me/573144321446?text=Hola%2C%20Bit%C3%A1cora%20Digital.%20Me%20gustar%C3%ADa%20hacerles%20una%20consulta." target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                        <i data-lucide="message-circle" style="width:16px;height:16px;"></i>
+                        <span>Hablar por WhatsApp</span>
+                    </a>
+                </div>
+
+                <div class="hero-telemetry-row">
+                    <div class="tele-cell">
+                        <span class="lbl">ATENCIÓN PRESENCIAL</span>
+                        <span class="val">Neiva, Huila</span>
                     </div>
-                    <div class="hero-note"><span aria-hidden="true"></span> Atención personalizada en Neiva y por WhatsApp</div>
-                </div>
-                <div class="hero-visual">
-                    <div class="hero-image-glow" aria-hidden="true"></div>
-                    <img class="hero-art-img" src="img/hero.webp" alt="Ilustración de tecnología y soluciones digitales" width="1365" height="768" fetchpriority="high">
-                    <div class="hero-image-caption"><span class="caption-mark" aria-hidden="true"></span><span>Ideas, diseño y tecnología</span></div>
+                    <div class="tele-cell">
+                        <span class="lbl">DESARROLLO WEB</span>
+                        <span class="val">Toda Colombia</span>
+                    </div>
+                    <div class="tele-cell">
+                        <span class="lbl">DIAGNÓSTICO INICIAL</span>
+                        <span class="val">Sin costo</span>
+                    </div>
                 </div>
             </div>
-            <a class="hero-scroll" href="#problemas" aria-label="Continuar al contenido"><span></span></a>
-        </section>
 
-        <section id="problemas" class="section problems">
-            <div class="container">
-                <div class="section-heading" data-aos="fade-up">
-                    <p class="eyebrow">UN BUEN PUNTO DE PARTIDA</p>
-                    <h2>¿Qué necesitas resolver?</h2>
-                    <p>Cuéntame qué tienes en mente. Buscamos una solución práctica, sin complicarlo.</p>
-                </div>
-                <div class="problems-grid">
-                    <article class="problem-card" data-aos="fade-up">
-                        <span class="card-index">01</span><i data-lucide="gauge" aria-hidden="true"></i>
-                        <h3>Tu computador va lento o se traba</h3>
-                    </article>
-                    <article class="problem-card" data-aos="fade-up" data-aos-delay="70">
-                        <span class="card-index">02</span><i data-lucide="monitor-down" aria-hidden="true"></i>
-                        <h3>Necesitas Office, Windows o programas instalados</h3>
-                    </article>
-                    <article class="problem-card" data-aos="fade-up" data-aos-delay="140">
-                        <span class="card-index">03</span><i data-lucide="globe-2" aria-hidden="true"></i>
-                        <h3>Quieres una página web para tu negocio</h3>
-                    </article>
-                    <article class="problem-card" data-aos="fade-up" data-aos-delay="210">
-                        <span class="card-index">04</span><i data-lucide="panels-top-left" aria-hidden="true"></i>
-                        <h3>Necesitas piezas gráficas o publicidad</h3>
-                    </article>
-                </div>
+            <!-- ESCENARIO 3D THREE.JS: COMPUTADOR SPACE BLACK REAL -->
+            <div class="stage-3d-viewport" id="stage-viewport">
+                <canvas id="three-laptop-canvas"></canvas>
             </div>
         </section>
 
-        <section id="servicios" class="section services">
-            <div class="container">
-                <div class="section-heading section-heading-row" data-aos="fade-up">
-                    <div><p class="eyebrow">LO QUE PUEDO HACER POR TI</p><h2>Servicios digitales, sin vueltas.</h2></div>
-                    <p>Una atención cercana para resolver lo técnico y dar forma a tus ideas.</p>
-                </div>
-                <div class="services-grid">
-                    <article class="service-card" data-service="Programas y Aplicaciones" data-aos="fade-up">
-                        <div class="service-card-top"><span class="service-icon"><i data-lucide="settings-2" aria-hidden="true"></i></span><span class="service-number">01</span></div>
-                        <h3>Programas y soporte</h3>
-                        <p>Instalación de software, Office y configuración de periféricos.</p>
-                        <button class="text-link btn-consultar" type="button">Consultar servicio <i data-lucide="arrow-up-right" aria-hidden="true"></i></button>
-                    </article>
-                    <article class="service-card service-card-featured" data-service="Desarrollo Web" data-aos="fade-up" data-aos-delay="80">
-                        <div class="service-card-top"><span class="service-icon"><i data-lucide="code-2" aria-hidden="true"></i></span><span class="service-number">02</span></div>
-                        <h3>Desarrollo web</h3>
-                        <p>Creo páginas web sencillas y landing pages para que tu negocio tenga presencia en internet.</p>
-                        <button class="text-link btn-consultar" type="button">Consultar servicio <i data-lucide="arrow-up-right" aria-hidden="true"></i></button>
-                    </article>
-                    <article class="service-card" data-service="Diseño Digital y Publicidad" data-aos="fade-up" data-aos-delay="160">
-                        <div class="service-card-top"><span class="service-icon"><i data-lucide="pen-tool" aria-hidden="true"></i></span><span class="service-number">03</span></div>
-                        <h3>Diseño digital</h3>
-                        <p>Desarrollo publicitario, presentaciones y contenido visual.</p>
-                        <button class="text-link btn-consultar" type="button">Consultar servicio <i data-lucide="arrow-up-right" aria-hidden="true"></i></button>
-                    </article>
-                </div>
-                <div class="services-footer" data-aos="fade-up">
-                    <p>¿Quieres revisar opciones antes de escribir?</p>
-                    <a href="cotizador.html" class="btn-secondary">Ver precios y armar una cotización <i data-lucide="arrow-right" aria-hidden="true"></i></a>
-                </div>
+        <!-- Carrusel de Letras Continuo con Iconos de Servicios -->
+        <div class="marquee-section" aria-label="Especialidades técnicas" tabindex="0">
+            <div class="marquee-track">
+                <span class="marquee-item"><i data-lucide="wrench"></i> Mantenimiento y Formateo</span>
+                <span class="marquee-item"><i data-lucide="code-2"></i> Desarrollo Web Comercial</span>
+                <span class="marquee-item"><i data-lucide="shield-check"></i> Instalación Oficial de Windows y Office</span>
+                <span class="marquee-item"><i data-lucide="palette"></i> Diseño Publicitario & Branding</span>
+                <span class="marquee-item"><i data-lucide="map-pin"></i> Atención en Neiva, Huila</span>
+                <span class="marquee-item"><i data-lucide="globe"></i> Soporte Remoto para Toda Colombia</span>
+                <span class="marquee-item"><i data-lucide="wrench"></i> Mantenimiento y Formateo</span>
+                <span class="marquee-item"><i data-lucide="code-2"></i> Desarrollo Web Comercial</span>
+                <span class="marquee-item"><i data-lucide="shield-check"></i> Instalación Oficial de Windows y Office</span>
+                <span class="marquee-item"><i data-lucide="palette"></i> Diseño Publicitario & Branding</span>
+                <span class="marquee-item"><i data-lucide="map-pin"></i> Atención en Neiva, Huila</span>
+                <span class="marquee-item"><i data-lucide="globe"></i> Soporte Remoto para Toda Colombia</span>
             </div>
-        </section>
+        </div>
 
-        <section id="licencias" class="section licenses">
-            <div class="container">
-                <div class="section-heading" data-aos="fade-up">
-                    <p class="eyebrow">INSTALACIÓN RESPONSABLE</p>
-                    <h2>Licencias de Windows y Office</h2>
-                    <p>Te explico las opciones disponibles antes de instalar.</p>
-                </div>
-                <div class="license-grid">
-                    <article class="license-card" data-aos="fade-up">
-                        <span class="license-icon"><i data-lucide="badge-check" aria-hidden="true"></i></span>
-                        <h3>Ya tienes licencia</h3>
-                        <p>Solo la instalo y la activo con tu licencia original.</p>
-                    </article>
-                    <article class="license-card" data-aos="fade-up" data-aos-delay="80">
-                        <span class="license-icon"><i data-lucide="key-round" aria-hidden="true"></i></span>
-                        <h3>No tienes licencia</h3>
-                        <p>La cotizo aparte, la compro a tu nombre y te entrego el comprobante.</p>
-                    </article>
-                    <article class="license-card" data-aos="fade-up" data-aos-delay="160">
-                        <span class="license-icon"><i data-lucide="gift" aria-hidden="true"></i></span>
-                        <h3>Prefieres algo gratis</h3>
-                        <p>Te instalo alternativas como LibreOffice, sin costo de licencia.</p>
-                    </article>
-                </div>
-                <p class="license-policy" data-aos="fade-up">La cotización del servicio es sin costo. No se ofrecen ni se activan programas sin licencia.</p>
+        <!-- Bento Grid: Problemas y Soluciones con Iconos en Casillas -->
+        <section class="section container" id="servicios">
+            <div class="section-header">
+                <span class="hero-kicker">PUNTO DE PARTIDA</span>
+                <h2>¿Qué necesitas resolver hoy?</h2>
+                <p>Respuestas técnicas exactas, sin diagnósticos confusos ni tarifas ocultas.</p>
             </div>
-        </section>
 
-        <section id="como-trabajo" class="section process">
-            <div class="container">
-                <div class="section-heading" data-aos="fade-up">
-                    <p class="eyebrow">PASO A PASO</p>
-                    <h2>Así trabajamos.</h2>
-                    <p>Primero conversamos. Luego avanzamos con todo claro.</p>
-                </div>
-                <div class="process-grid">
-                    <div class="process-line" aria-hidden="true"><span></span></div>
-                    <article class="process-step" data-aos="fade-up"><span class="step-number">01</span><h3>Me cuentas</h3><p>Me cuentas lo que necesitas.</p></article>
-                    <article class="process-step" data-aos="fade-up" data-aos-delay="80"><span class="step-number">02</span><h3>Cotizamos</h3><p>Revisamos opciones y cotizamos.</p></article>
-                    <article class="process-step" data-aos="fade-up" data-aos-delay="160"><span class="step-number">03</span><h3>Lo realizo</h3><p>Realizo el trabajo acordado.</p></article>
-                    <article class="process-step" data-aos="fade-up" data-aos-delay="240"><span class="step-number">04</span><h3>Revisamos</h3><p>Revisamos y entregamos.</p></article>
-                </div>
-                <div class="process-mobile">
-                    <article class="process-mobile-card" data-aos="fade-up">
-                        <span class="process-mobile-number">01</span>
-                        <div><h3>Me cuentas</h3><p>Me cuentas lo que necesitas.</p></div>
-                    </article>
-                    <article class="process-mobile-card" data-aos="fade-up" data-aos-delay="80">
-                        <span class="process-mobile-number">02</span>
-                        <div><h3>Cotizamos</h3><p>Revisamos opciones y cotizamos.</p></div>
-                    </article>
-                    <article class="process-mobile-card" data-aos="fade-up" data-aos-delay="160">
-                        <span class="process-mobile-number">03</span>
-                        <div><h3>Lo realizo</h3><p>Realizo el trabajo acordado.</p></div>
-                    </article>
-                    <article class="process-mobile-card" data-aos="fade-up" data-aos-delay="240">
-                        <span class="process-mobile-number">04</span>
-                        <div><h3>Revisamos</h3><p>Revisamos y entregamos.</p></div>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section id="confianza" class="section confidence">
-            <div class="container confidence-layout">
-                <div class="confidence-intro" data-aos="fade-up">
-                    <p class="eyebrow">CUIDADO Y CLARIDAD</p>
-                    <h2>Tu equipo y tu idea, en buenas manos.</h2>
-                    <p>Trabajo contigo de forma directa, con acuerdos claros desde el inicio y atención al detalle.</p>
-                </div>
-                <div class="confidence-list">
-                    <article class="confidence-item" data-aos="fade-up"><span><i data-lucide="folder-lock" aria-hidden="true"></i></span><div><h3>Tu información primero</h3><p>Antes de formatear o instalar, hablamos de qué archivos quieres conservar.</p></div></article>
-                    <article class="confidence-item" data-aos="fade-up" data-aos-delay="80"><span><i data-lucide="receipt-text" aria-hidden="true"></i></span><div><h3>Precio acordado antes</h3><p>Te cotizo antes de empezar. Sin costos ocultos.</p></div></article>
-                    <article class="confidence-item" data-aos="fade-up" data-aos-delay="160"><span><i data-lucide="shield-check" aria-hidden="true"></i></span><div><h3>Trabajo revisado</h3><p>No doy nada por terminado hasta que lo revisamos contigo.</p></div></article>
-                </div>
-            </div>
-        </section>
-
-        <section id="ejemplo" class="section example">
-            <div class="container example-layout" data-aos="fade-up">
-                <div class="example-copy">
-                    <p class="eyebrow">UNA MUESTRA DEL ENFOQUE</p>
-                    <h2>Ejemplo de mi trabajo</h2>
-                    <p>Esta página es un ejemplo de lo que puedo hacer por tu negocio</p>
-                    <span class="example-label"><i data-lucide="info" aria-hidden="true"></i> Demostración; no es un proyecto de cliente.</span>
-                    <a href="#contacto" class="text-link">Hablemos de tu proyecto <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
-                </div>
-                <div class="example-preview" aria-hidden="true">
-                    <div class="preview-toolbar"><span></span><span></span><span></span><i></i></div>
-                    <div class="preview-content">
-                        <div class="preview-navbar">
-                            <span class="preview-brand"><img src="img/logo-bitacora-simbolo.png?v=1" alt=""><span>Bitácora Digital</span></span>
-                            <span class="preview-nav-links"><i></i><i></i><i></i></span>
+            <div class="bento-grid">
+                <div class="bento-card" data-tilt>
+                    <div class="card-glare"></div>
+                    <div class="bento-card-top">
+                        <div class="card-icon-badge">
+                            <i data-lucide="cpu"></i>
                         </div>
-                        <div class="preview-hero">
-                            <div class="preview-copy-block">
-                                <span class="preview-kicker">TECNOLOGÍA Y DISEÑO</span>
-                                <p class="preview-headline">Tecnología y diseño<span>sin complicaciones.</span></p>
-                                <span class="preview-copy-lines"><i></i><i></i></span>
-                                <span class="preview-button"></span>
-                            </div>
-                            <img class="preview-visual" src="img/hero.webp" alt="">
+                        <span class="bento-badge">01 // HARDWARE & SO</span>
+                        <h3>Tu computador va lento o se bloquea</h3>
+                        <p>Eliminación de malware, limpieza profunda de disipación y reinstalación limpia de sistema con controladores oficiales.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card" data-tilt>
+                    <div class="card-glare"></div>
+                    <div class="bento-card-top">
+                        <div class="card-icon-badge">
+                            <i data-lucide="shield-check"></i>
+                        </div>
+                        <span class="bento-badge">02 // PRODUCTIVIDAD</span>
+                        <h3>Windows y Office configurados</h3>
+                        <p>Activación oficial con tu licencia original, compra certificada a tu nombre o instalación de LibreOffice sin costo alguno.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card" data-tilt>
+                    <div class="card-glare"></div>
+                    <div class="bento-card-top">
+                        <div class="card-icon-badge">
+                            <i data-lucide="globe"></i>
+                        </div>
+                        <span class="bento-badge">03 // VENTAS ONLINE</span>
+                        <h3>Página web para tu negocio</h3>
+                        <p>Sitios y landing pages ultrarrápidas para captar clientes en celulares y enviarlos directamente a tu WhatsApp comercial.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card" data-tilt>
+                    <div class="card-glare"></div>
+                    <div class="bento-card-top">
+                        <div class="card-icon-badge">
+                            <i data-lucide="palette"></i>
+                        </div>
+                        <span class="bento-badge">04 // IDENTIDAD</span>
+                        <h3>Piezas gráficas y publicidad</h3>
+                        <p>Logotipos vectoriales matemáticos, manuales de marca y piezas visuales calibradas para pauta en redes sociales.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Matriz de Capacidades Técnicas (Skills) con Iconos -->
+        <section class="section container" id="skills">
+            <div class="section-header">
+                <span class="hero-kicker">CAPACIDADES DE INGENIERÍA</span>
+                <h2>Skills e Infraestructura</h2>
+                <p>Rigurosidad técnica aplicada en cada línea de código y componente de hardware.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="bento-card" data-tilt>
+                    <div class="card-glare"></div>
+                    <div class="bento-card-top">
+                        <div class="card-icon-badge">
+                            <i data-lucide="terminal"></i>
+                        </div>
+                        <span class="bento-badge">STACK WEB</span>
+                        <h3>HTML5, CSS & JS Nativo</h3>
+                        <p>Arquitectura frontend sin librerías pesadas innecesarias. Cargas en menos de 1.2 segundos y optimización SEO técnica.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card" data-tilt>
+                    <div class="card-glare"></div>
+                    <div class="bento-card-top">
+                        <div class="card-icon-badge">
+                            <i data-lucide="lock"></i>
+                        </div>
+                        <span class="bento-badge">SEGURIDAD</span>
+                        <h3>Respaldo Criptográfico</h3>
+                        <p>Aislamiento de particiones y verificación de integridad hash SHA-256 antes de cualquier cambio en discos o formateos.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card" data-tilt>
+                    <div class="card-glare"></div>
+                    <div class="bento-card-top">
+                        <div class="card-icon-badge">
+                            <i data-lucide="zap"></i>
+                        </div>
+                        <span class="bento-badge">HARDWARE</span>
+                        <h3>Compuestos Térmicos Top</h3>
+                        <p>Uso de compuestos cerámicos y metálicos de alta conductividad para eliminar el estrangulamiento térmico en laptops y PCs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cotizador Pro Interactivo con Términos y Verificación -->
+        <section class="section container" id="cotizador">
+            <div class="calc-header-hud">
+                <div>
+                    <span class="hero-kicker">PRESUPUESTO TRANSPARENTE</span>
+                    <h2>Configurador de Servicios en Vivo</h2>
+                    <p>Elige lo que necesitas y consulta la inversión estimada al instante.</p>
+                </div>
+                <div class="currency-segmented" role="group" aria-label="Seleccionar moneda">
+                    <button type="button" class="active" id="btn-cop" onclick="setCurrency('COP')">COP ($)</button>
+                    <button type="button" id="btn-usd" onclick="setCurrency('USD')">USD ($)</button>
+                </div>
+            </div>
+
+            <div class="calc-container">
+                <div class="services-ledger" id="services-target"></div>
+
+                <aside class="summary-card" aria-label="Resumen de presupuesto">
+                    <h3>Tu Presupuesto</h3>
+                    <div class="summary-items" id="summary-items">
+                        <span class="empty-hint">Marca una o más opciones para calcular.</span>
+                    </div>
+
+                    <div class="summary-total-strip">
+                        <div class="total-lead">Inversión Estimada</div>
+                        <div class="total-number" id="total-val">$0</div>
+                    </div>
+
+                    <!-- CASILLA DE CONFIRMACIÓN DE TÉRMINOS Y PRIVACIDAD CON VERIFICACIÓN -->
+                    <div class="summary-terms-agreement" id="terms-box">
+                        <label class="terms-checkbox-label" for="agree-terms">
+                            <input type="checkbox" id="agree-terms" checked onchange="toggleTermsVerification(this.checked)">
+                            <span class="custom-check-box">
+                                <i data-lucide="check"></i>
+                            </span>
+                            <span class="terms-label-text">
+                                He leído y acepto los <a href="#" onclick="event.preventDefault(); openLegalModal('terminos');">Términos y condiciones</a> y la <a href="#" onclick="event.preventDefault(); openLegalModal('privacidad');">Política de privacidad</a>.
+                            </span>
+                        </label>
+                        <div class="verification-badge-strip" id="verification-strip">
+                            <i data-lucide="badge-check"></i>
+                            <span>Verificación de acuerdos activa</span>
                         </div>
                     </div>
-                </div>
+
+                    <a href="#" id="btn-wa-quote" class="btn btn-whatsapp" style="width:100%;" target="_blank" rel="noopener noreferrer">
+                        <i data-lucide="message-square" style="width:18px;height:18px;"></i>
+                        <span>Cotizar por WhatsApp</span>
+                    </a>
+                    <p style="font-size:0.75rem; color:var(--ink-muted); text-align:center; margin-top:10px; font-family:var(--font-mono);">
+                        Sin compromiso. Confirmamos agenda de entrega en Neiva.
+                    </p>
+                </aside>
             </div>
         </section>
 
-        <section id="preguntas" class="section faq">
-            <div class="container faq-layout">
-                <div class="section-heading faq-heading" data-aos="fade-up">
-                    <p class="eyebrow">PREGUNTAS FRECUENTES</p>
-                    <h2>Antes de empezar.</h2>
-                    <p>Si tienes otra duda, escríbeme y la conversamos.</p>
-                    <a href="#contacto" class="text-link">Hacer una consulta <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
-                </div>
-                <div class="faq-list">
-                    <details class="faq-item" data-aos="fade-up">
-                        <summary>¿Cuánto cuesta?</summary>
-                        <p>Depende del servicio. Escríbeme y te cotizo sin compromiso.</p>
-                    </details>
-                    <details class="faq-item" data-aos="fade-up" data-aos-delay="60">
-                        <summary>¿Necesito tener licencia de Office o Windows?</summary>
-                        <p>Si ya tienes licencia original, solo la instalo y la activo. Si no, la licencia se cotiza aparte y se adquiere a tu nombre.</p>
-                    </details>
-                    <details class="faq-item" data-aos="fade-up" data-aos-delay="120">
-                        <summary>¿Cuánto demora el trabajo?</summary>
-                        <p>Depende del servicio. Antes de empezar te doy un tiempo estimado para que sepas cuándo recibirás tu trabajo o tu equipo.</p>
-                    </details>
-                    <details class="faq-item" data-aos="fade-up" data-aos-delay="180">
-                        <summary>¿Cómo se paga?</summary>
-                        <p>La forma de pago la acordamos al momento de cotizar. Antes de empezar te explico el valor total y cómo se hace el pago. Los medios de pago disponibles son efectivo, Nequi, Daviplata y transferencia bancaria. Si el servicio incluye una licencia, el valor de la licencia se paga por adelantado.</p>
-                    </details>
-                    <details class="faq-item" data-aos="fade-up" data-aos-delay="240">
-                        <summary>¿Dónde atiendes?</summary>
-                        <p>Atiendo en Neiva, Huila. Para la instalación de programas o sistemas operativos acordamos por WhatsApp cuándo me traes el equipo. Las páginas web y los diseños de publicidad para tu emprendimiento los acordamos y trabajamos por WhatsApp o por llamada, sin que tengas que desplazarte.</p>
-                    </details>
-                </div>
+        <!-- Preguntas Frecuentes -->
+        <section class="section container" id="faq" style="max-width:850px;">
+            <div class="section-header">
+                <span class="hero-kicker">RESOLVIENDO DUDAS</span>
+                <h2>Preguntas Frecuentes</h2>
             </div>
-        </section>
 
-        <section id="contacto" class="section contact">
-            <div class="container contact-layout">
-                <div class="contact-copy" data-aos="fade-up">
-                    <p class="eyebrow">HABLEMOS DE TU IDEA</p>
-                    <h2>Cuéntame qué necesitas.</h2>
-                    <p>Déjame los detalles y prepararé un mensaje para que lo envíes por WhatsApp. No se guarda información en este sitio.</p>
-                    <ul class="contact-points">
-                        <li><i data-lucide="map-pin" aria-hidden="true"></i><span>Atención en Neiva, Huila y toda Colombia</span></li>
-                        <li><i data-lucide="message-circle" aria-hidden="true"></i><span>Conversación directa por WhatsApp</span></li>
-                        <li><i data-lucide="badge-check" aria-hidden="true"></i><span>Cotización sin costo</span></li>
-                    </ul>
-                    <a class="contact-price-link" href="cotizador.html"><span>¿Quieres revisar precios primero?</span><strong>Abre el cotizador <i data-lucide="arrow-up-right" aria-hidden="true"></i></strong></a>
-                </div>
-                <form id="contact-form" class="contact-form" data-aos="fade-up" data-aos-delay="100">
-                    <div class="form-heading"><span class="form-step">TU SOLICITUD</span><h3>Empecemos por lo básico</h3></div>
-                    <div class="form-group">
-                        <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+            <div class="faq-accordion">
+                <details class="faq-item" open>
+                    <summary>¿Dónde atienden y cómo entrego mi equipo?</summary>
+                    <div class="faq-answer">
+                        Atendemos en Neiva, Huila. Al coordinar por WhatsApp acordamos el punto de recepción y entrega. Para proyectos web y diseño gráfico, trabajamos 100% de manera remota para todo el país.
                     </div>
-                    <div class="form-group">
-                        <label for="servicio">Servicio</label>
-                        <select id="servicio" name="servicio" required>
-                            <option value="">Seleccione un servicio</option>
-                            <option value="Formateo e Instalación de Sistemas Operativos">Formateo e Instalación de Sistemas Operativos</option>
-                            <option value="Programas y Aplicaciones">Programas y Aplicaciones</option>
-                            <option value="Instalación y Configuración de Office">Instalación y Configuración de Office</option>
-                            <option value="Desarrollo Web">Desarrollo Web</option>
-                            <option value="Diseño Digital y Publicidad">Diseño Digital y Publicidad</option>
-                            <option value="Otro servicio">Otro servicio</option>
-                        </select>
-                        <p class="office-note" aria-hidden="true">La cotización es sin costo. Si ya tienes licencia original de Windows u Office, solo la instalo y la activo. Si no la tienes, la licencia se cotiza aparte: la adquiero a tu nombre y te entrego el comprobante. También puedo instalarte alternativas gratuitas como LibreOffice.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Se pierden mis archivos si se formatea el computador?</summary>
+                    <div class="faq-answer">
+                        No. Antes de realizar cualquier formateo o cambio de disco, hacemos un inventario de tus carpetas prioritarias para respaldar tu información de manera segura.
                     </div>
-                    <div class="form-group">
-                        <label for="descripcion">Descripción <span>(opcional)</span></label>
-                        <textarea id="descripcion" name="descripcion" rows="4" placeholder="Cuéntame un poco más sobre lo que necesitas"></textarea>
+                </details>
+
+                <details class="faq-item">
+                    <summary>¿Cuáles son los medios de pago aceptados?</summary>
+                    <div class="faq-answer">
+                        Efectivo en Neiva, Nequi, Daviplata y transferencia Bancolombia. Para proyectos web y diseño trabajamos con un 50% de anticipo y el saldo contra entrega y revisión.
                     </div>
-                    <p class="form-note">Este formulario no almacena información en servidores.</p>
-                    <div class="consent-group">
-                        <input type="checkbox" id="aceptar-legal" name="aceptar-legal" required>
-                        <label for="aceptar-legal">He leído y acepto los <a href="terminos.html" target="_blank" rel="noopener noreferrer">Términos y condiciones</a> y la <a href="privacidad.html" target="_blank" rel="noopener noreferrer">Política de privacidad</a>.</label>
-                    </div>
-                    <button type="submit" class="btn-whatsapp">
-                        <svg width="20" height="20" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>
-                        <span>Enviar solicitud por WhatsApp</span>
-                    </button>
-                </form>
+                </details>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-main">
-                <div class="footer-brand-block">
-                    <a href="#inicio" class="logo" aria-label="Bitácora Digital, ir al inicio">
-                        <img class="logo-symbol" src="img/logo-bitacora-simbolo.png?v=1" alt="" width="42" height="42">
-                        <span class="logo-wordmark"><span>Bitácora</span> <span>Digital</span></span>
-                    </a>
-                    <p>Ideas, diseño y tecnología en Neiva, Huila.</p>
+    <!-- FOOTER PRO CON ENLACES A TÉRMINOS, PRIVACIDAD, SITEMAP Y ROBOTS -->
+    <footer class="footer container">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="brand-link">
+                    <span class="brand-emblem" style="width:28px;height:28px;">
+                        <img src="img/logo-bitacora-simbolo.png?v=1" alt="" width="18" height="18">
+                    </span>
+                    <span class="brand-text">Bitácora<span>Digital</span></span>
                 </div>
-                <nav class="footer-column" aria-label="Explorar">
-                    <h2>Explorar</h2>
-                    <a href="#servicios">Servicios</a>
-                    <a href="cotizador.html">Precios</a>
-                    <a href="#como-trabajo">Cómo trabajo</a>
-                    <a href="#preguntas">Preguntas frecuentes</a>
-                </nav>
-                <nav class="footer-column" aria-label="Información legal">
-                    <h2>Información</h2>
-                    <a href="terminos.html">Términos y condiciones</a>
-                    <a href="privacidad.html">Política de privacidad</a>
-                    <!-- PROVEEDOR PENDIENTE: quitar hidden cuando se publique la sección en terminos.html -->
-                    <a href="terminos.html#proveedor" hidden>Datos del proveedor</a>
-                </nav>
-                <div class="footer-column footer-contact">
-                    <h2>Contacto</h2>
-                    <a href="https://wa.me/573144321446" target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
-                    <span>Neiva, Huila, Colombia</span>
-                </div>
+                <p>Estudio de ingeniería digital, desarrollo web y soporte técnico en Neiva, Huila. Servicios transparentes y a la medida.</p>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; <span id="year"></span> Bitácora Digital. Todos los derechos reservados.</p>
-                <p class="footer-trademark"><small>Windows, Microsoft Office y WhatsApp son marcas de sus respectivos titulares. Bitácora Digital no está afiliado ni es distribuidor autorizado de Microsoft ni de Meta.</small></p>
+
+            <div class="footer-col">
+                <h5>Servicios</h5>
+                <ul>
+                    <li><a href="#cotizador">Optimización y Mantenimiento</a></li>
+                    <li><a href="#cotizador">Formateo e Instalación de SO</a></li>
+                    <li><a href="#cotizador">Páginas Web y Landing Pages</a></li>
+                    <li><a href="#cotizador">Diseño de Identidad y Marca</a></li>
+                </ul>
             </div>
+
+            <div class="footer-col">
+                <h5>Legal & Políticas</h5>
+                <ul>
+                    <li><a href="#" onclick="event.preventDefault(); openLegalModal('terminos');">Términos y condiciones</a></li>
+                    <li><a href="#" onclick="event.preventDefault(); openLegalModal('privacidad');">Política de privacidad</a></li>
+                    <li><a href="#servicios">Garantía del servicio</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h5>Indexación & Contacto</h5>
+                <ul>
+                    <li><a href="https://wa.me/573144321446" target="_blank" rel="noopener noreferrer">WhatsApp directo</a></li>
+                    <li><a href="sitemap.xml" target="_blank">Mapa del sitio (sitemap.xml)</a></li>
+                    <li><a href="robots.txt" target="_blank">Protocolo robots.txt</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; <span id="year"></span> Bitácora Digital · Neiva, Huila, Colombia.</span>
+            <span>Windows, Office y WhatsApp son marcas de sus respectivos titulares.</span>
         </div>
     </footer>
 
-    <a href="#" class="float-whatsapp" id="float-whatsapp" aria-label="Contactar por WhatsApp">
-        <svg width="28" height="28" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>
-    </a>
+    <!-- MODAL DE CRISTAL ESMERILADO (FROSTED GLASS SHEET) -->
+    <div class="legal-sheet-overlay" id="legal-sheet-overlay">
+        <div class="legal-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="legal-sheet-header">
+                <h3 id="modal-title">Documento Legal</h3>
+                <button type="button" class="btn-close-modal" onclick="closeLegalModal()" aria-label="Cerrar modal">
+                    <i data-lucide="x" style="width:18px;height:18px;"></i>
+                </button>
+            </div>
+            <div class="legal-sheet-body" id="modal-content">
+                <!-- Inyectado dinámicamente con texto completo -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT SENIOR -->
+    <script>
+        // --- 1. INTRO "BIENVENIDOS" (AUTO-DISMISS & CLICK) ---
+        const introCurtain = document.getElementById('intro-curtain');
+        function dismissIntro() {
+            if (introCurtain && !introCurtain.classList.contains('hidden')) {
+                introCurtain.classList.add('hidden');
+                setTimeout(() => introCurtain.remove(), 850);
+            }
+        }
+        introCurtain?.addEventListener('click', dismissIntro);
+        setTimeout(dismissIntro, 2200);
+
+        // --- 2. TILT 3D INTERACTIVO EN TARJETAS BENTO ---
+        document.querySelectorAll('[data-tilt]').forEach((card) => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const rx = ((y - cy) / cy) * -8;
+                const ry = ((x - cx) / cx) * 8;
+
+                card.style.transform = `perspective(1000px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateZ(6px)`;
+                card.style.setProperty('--gx', `${(x / rect.width) * 100}%`);
+                card.style.setProperty('--gy', `${(y / rect.height) * 100}%`);
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+            });
+        });
+
+        // --- 3. COMPUTADOR 3D SPACE BLACK REAL CON THREE.JS ---
+        function init3DLaptop() {
+            const container = document.getElementById('stage-viewport');
+            const canvas = document.getElementById('three-laptop-canvas');
+            if (!container || !canvas || typeof THREE === 'undefined') return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 50);
+            camera.position.set(0, 0.35, 3.7);
+
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambient);
+
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+            keyLight.position.set(3, 4, 3);
+            scene.add(keyLight);
+
+            const rimLight = new THREE.DirectionalLight(0x2997ff, 1.2);
+            rimLight.position.set(-3, -1, -2);
+            scene.add(rimLight);
+
+            const laptopGroup = new THREE.Group();
+            scene.add(laptopGroup);
+
+            const titaniumMaterial = new THREE.MeshStandardMaterial({
+                color: 0x111318,
+                metalness: 0.88,
+                roughness: 0.2
+            });
+
+            const keyboardMat = new THREE.MeshStandardMaterial({
+                color: 0x07080a,
+                metalness: 0.6,
+                roughness: 0.5
+            });
+
+            const baseGeo = new THREE.BoxGeometry(2.3, 0.05, 1.5);
+            const baseMesh = new THREE.Mesh(baseGeo, titaniumMaterial);
+            baseMesh.position.y = -0.35;
+            laptopGroup.add(baseMesh);
+
+            const kbGeo = new THREE.BoxGeometry(2.0, 0.012, 0.82);
+            const kbMesh = new THREE.Mesh(kbGeo, keyboardMat);
+            kbMesh.position.set(0, -0.32, -0.16);
+            laptopGroup.add(kbMesh);
+
+            const padGeo = new THREE.BoxGeometry(0.72, 0.012, 0.46);
+            const padMesh = new THREE.Mesh(padGeo, titaniumMaterial);
+            padMesh.position.set(0, -0.32, 0.42);
+            laptopGroup.add(padMesh);
+
+            const lidGroup = new THREE.Group();
+            lidGroup.position.set(0, -0.32, -0.75);
+
+            const lidGeo = new THREE.BoxGeometry(2.3, 1.46, 0.035);
+            const lidMesh = new THREE.Mesh(lidGeo, titaniumMaterial);
+            lidMesh.position.set(0, 0.73, 0);
+            lidGroup.add(lidMesh);
+
+            const screenCanvas = document.createElement('canvas');
+            screenCanvas.width = 1024;
+            screenCanvas.height = 640;
+            const ctx = screenCanvas.getContext('2d');
+
+            ctx.fillStyle = '#06070a';
+            ctx.fillRect(0, 0, 1024, 640);
+
+            const grad = ctx.createRadialGradient(512, 320, 20, 512, 320, 500);
+            grad.addColorStop(0, '#0a2245');
+            grad.addColorStop(1, '#05070a');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 1024, 640);
+
+            ctx.fillStyle = '#2997ff';
+            ctx.font = 'bold 44px "Bricolage Grotesque", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Bitácora Digital', 512, 300);
+
+            ctx.fillStyle = '#86868b';
+            ctx.font = '20px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText('Tecnología y diseño · Neiva, Huila', 512, 345);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.roundRect ? ctx.roundRect(312, 570, 400, 50, 16) : ctx.fillRect(312, 570, 400, 50);
+            ctx.fill();
+
+            const screenTexture = new THREE.CanvasTexture(screenCanvas);
+            const screenMat = new THREE.MeshStandardMaterial({
+                map: screenTexture,
+                roughness: 0.15,
+                emissive: 0x071120,
+                emissiveIntensity: 0.35
+            });
+
+            const screenGeo = new THREE.PlaneGeometry(2.2, 1.36);
+            const screenMesh = new THREE.Mesh(screenGeo, screenMat);
+            screenMesh.position.set(0, 0.73, 0.02);
+            lidGroup.add(screenMesh);
+
+            lidGroup.rotation.x = THREE.MathUtils.degToRad(-16);
+            laptopGroup.add(lidGroup);
+
+            laptopGroup.rotation.x = 0.22;
+            laptopGroup.rotation.y = -0.38;
+
+            let mouseX = 0, mouseY = 0;
+            let targetRotY = -0.38, targetRotX = 0.22;
+
+            window.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                    mouseX = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+                    mouseY = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+                    targetRotY = -0.38 + mouseX * 0.45;
+                    targetRotX = 0.22 + mouseY * 0.22;
+                }
+            });
+
+            function render() {
+                laptopGroup.rotation.y += (targetRotY - laptopGroup.rotation.y) * 0.06;
+                laptopGroup.rotation.x += (targetRotX - laptopGroup.rotation.x) * 0.06;
+                renderer.render(scene, camera);
+                requestAnimationFrame(render);
+            }
+            render();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // --- 4. COTIZADOR DE SERVICIOS EN VIVO (CON ICONOS EN FILAS) ---
+        const servicesList = [
+            { id: "sw1", icon: "wrench", name: "Configuración Básica y Optimización", desc: "Instalación de software, limpieza y afinamiento del sistema", cop: 80000, usd: 20, eta: "24h" },
+            { id: "sw2", icon: "hard-drive", name: "Entorno Completo (Formateo y Drivers)", desc: "Instalación limpia, controladores oficiales y respaldo preventivo", cop: 250000, usd: 65, eta: "24-48h" },
+            { id: "wb1", icon: "smartphone", name: "Landing Page Comercial", desc: "Página de aterrizaje optimizada para celulares y WhatsApp", cop: 500000, usd: 125, eta: "3-5d" },
+            { id: "wb2", icon: "globe", name: "Sitio Web Llave en Mano", desc: "Incluye Dominio .com, Hosting veloz y certificado SSL por 1 año", cop: 1500000, usd: 380, eta: "7-10d" },
+            { id: "wb3", icon: "layers", name: "Sitio Web Corporativo", desc: "Estructura multi-página, catálogo, blog e infraestructura", cop: 1800000, usd: 450, eta: "10-15d" },
+            { id: "ds1", icon: "image", name: "Diseño de Pieza Publicitaria", desc: "Pieza gráfica en alta definición para pauta o redes sociales", cop: 50000, usd: 12, eta: "24h" },
+            { id: "ds2", icon: "sparkles", name: "Kit de Identidad Visual", desc: "Manual de marca, logotipo vectorial, tipografías y colores", cop: 350000, usd: 90, eta: "4-6d" }
+        ];
+
+        let activeCurrency = "COP";
+        const selectedServices = new Set(["sw2"]);
+
+        const formatters = {
+            COP: new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }),
+            USD: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
+        };
+
+        function setCurrency(curr) {
+            activeCurrency = curr;
+            document.getElementById("btn-cop")?.classList.toggle("active", curr === "COP");
+            document.getElementById("btn-usd")?.classList.toggle("active", curr === "USD");
+            renderServices();
+            updateSummary();
+        }
+
+        function toggleService(id) {
+            selectedServices.has(id) ? selectedServices.delete(id) : selectedServices.add(id);
+            renderServices();
+            updateSummary();
+        }
+
+        function renderServices() {
+            const container = document.getElementById("services-target");
+            if (!container) return;
+
+            container.innerHTML = servicesList.map(s => {
+                const isSelected = selectedServices.has(s.id);
+                const price = formatters[activeCurrency].format(s[activeCurrency.toLowerCase()]);
+
+                return `
+                    <div class="service-row ${isSelected ? 'selected' : ''}" onclick="toggleService('${s.id}')">
+                        <div class="service-checkbox">
+                            ${isSelected ? '<i data-lucide="check" style="width:13px;height:13px;"></i>' : ''}
+                        </div>
+                        <div class="service-row-icon">
+                            <i data-lucide="${s.icon}"></i>
+                        </div>
+                        <div class="service-info">
+                            <h4>${s.name}</h4>
+                            <p>${s.desc}</p>
+                        </div>
+                        <div class="service-price-block">
+                            <div class="p-val">${price}</div>
+                            <div class="p-eta">Entrega: ${s.eta}</div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        // --- 5. VERIFICACIÓN DE TÉRMINOS EN LA CASILLA DE PRESUPUESTO ---
+        function toggleTermsVerification(isChecked) {
+            const box = document.getElementById('terms-box');
+            const waBtn = document.getElementById('btn-wa-quote');
+            if (isChecked) {
+                box.classList.add('verified');
+                waBtn.style.opacity = '1';
+                waBtn.style.pointerEvents = 'auto';
+            } else {
+                box.classList.remove('verified');
+                waBtn.style.opacity = '0.5';
+                waBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        function updateSummary() {
+            const listEl = document.getElementById("summary-items");
+            const totalEl = document.getElementById("total-val");
+            const btnWa = document.getElementById("btn-wa-quote");
+
+            const active = servicesList.filter(s => selectedServices.has(s.id));
+
+            if (active.length === 0) {
+                if (listEl) listEl.innerHTML = '<span class="empty-hint">Marca una o más opciones para calcular.</span>';
+                if (totalEl) totalEl.textContent = formatters[activeCurrency].format(0);
+                if (btnWa) btnWa.href = `https://wa.me/573144321446?text=${encodeURIComponent("Hola, Bitácora Digital. Me gustaría consultar por sus servicios.")}`;
+                return;
+            }
+
+            let total = 0;
+            if (listEl) {
+                listEl.innerHTML = active.map(s => {
+                    const cost = s[activeCurrency.toLowerCase()];
+                    total += cost;
+                    return `
+                        <div class="summary-item-line">
+                            <span class="name">${s.name}</span>
+                            <span class="cost">${formatters[activeCurrency].format(cost)}</span>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            if (totalEl) totalEl.textContent = formatters[activeCurrency].format(total);
+
+            const message = `Hola, Bitácora Digital. He armado la siguiente cotización en su sitio web:\n\n` +
+                active.map(s => `• ${s.name}: ${formatters[activeCurrency].format(s[activeCurrency.toLowerCase()])}`).join("\n") +
+                `\n\nTotal estimado: ${formatters[activeCurrency].format(total)} ${activeCurrency}\n` +
+                `¿Me confirman disponibilidad técnica? Gracias.`;
+
+            if (btnWa) btnWa.href = `https://wa.me/573144321446?text=${encodeURIComponent(message)}`;
+        }
+
+        // --- 6. MODAL LEGAL COMPLETO (TÉRMINOS Y PRIVACIDAD) ---
+        const legalTexts = {
+            terminos: `
+                <h4>1. Quién presta el servicio</h4>
+                <p>Bitácora Digital presta servicios tecnológicos en Neiva, Huila, Colombia. Canal oficial de atención WhatsApp: +57 314 4321446.</p>
+                <h4>2. Servicios ofrecidos</h4>
+                <p>Mantenimiento de computadores, instalación limpia de sistemas operativos, paquetes de ofimática, desarrollo web comercial y diseño publicitario. El alcance exacto se pacta previamente en cada cotización.</p>
+                <h4>3. Cotización y pagos</h4>
+                <p>La cotización es sin costo. Medios de pago aceptados: efectivo en Neiva, Nequi, Daviplata y transferencia bancaria. Si el servicio requiere licencias originales de software, su costo se cancela por adelantado.</p>
+                <h4>4. Licencias originales</h4>
+                <p>Solo instalamos software con licencia original provista por el cliente o adquirida a su nombre. También ofrecemos alternativas libres de código abierto como LibreOffice sin costo de licencia.</p>
+                <h4>5. Respaldo preventivo</h4>
+                <p>Antes de cualquier formateo o cambio de almacenamiento, te asistimos para identificar y respaldar tus archivos críticos.</p>
+                <h4>6. Retracto (Ley 1480 de 2011 y Ley 2439 de 2024)</h4>
+                <p>En ventas a distancia, el retracto aplica dentro de los 5 días hábiles siguientes, salvo servicios cuya ejecución ya haya iniciado con tu acuerdo previo o desarrollos web personalizados.</p>
+            `,
+            privacidad: `
+                <h4>1. Marco Legal (Ley 1581 de 2012)</h4>
+                <p>Tus datos personales se tratan bajo los principios de legalidad, finalidad y libertad estipulados en la legislación colombiana de Habeas Data.</p>
+                <h4>2. Datos tratados</h4>
+                <p>Recibimos tu nombre, número de contacto y detalles de tu equipo o proyecto remitidos por WhatsApp. No almacenamos datos en bases de datos externas de terceros.</p>
+                <h4>3. Finalidad</h4>
+                <p>Atender tu solicitud técnica, enviar la propuesta económica y coordinar la entrega de tus equipos o proyectos web.</p>
+                <h4>4. Derechos del titular</h4>
+                <p>Puedes solicitar la rectificación, actualización o eliminación de tus datos en cualquier momento escribiendo a nuestra línea oficial de WhatsApp.</p>
+            `
+        };
+
+        const modalOverlay = document.getElementById('legal-sheet-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+
+        function openLegalModal(docType) {
+            if (docType === 'terminos') {
+                modalTitle.textContent = "Términos y Condiciones del Servicio";
+                modalContent.innerHTML = legalTexts.terminos;
+            } else if (docType === 'privacidad') {
+                modalTitle.textContent = "Política de Privacidad y Tratamiento de Datos";
+                modalContent.innerHTML = legalTexts.privacidad;
+            }
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function closeLegalModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        modalOverlay?.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeLegalModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLegalModal();
+        });
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const yearEl = document.getElementById("year");
+            if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+            init3DLaptop();
+            renderServices();
+            updateSummary();
+            toggleTermsVerification(true); // Estado verificado inicial por defecto
+            if (window.lucide) window.lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
