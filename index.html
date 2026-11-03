@@ -592,21 +592,27 @@
         .service-row:last-child { border-bottom: none; }
         .service-row:hover { background: #161822; }
         .service-row.selected { background: var(--blue-subtle); }
+        .service-row:focus-within { outline: 2px solid var(--blue); outline-offset: -2px; }
 
         .service-checkbox {
             width: 20px;
             height: 20px;
             border: 1px solid var(--border-strong);
             border-radius: 6px;
-            display: grid;
-            place-items: center;
             background: #0d0e14;
+            appearance: none;
+            cursor: pointer;
+            margin: 0;
         }
 
-        .service-row.selected .service-checkbox {
+        .service-checkbox:checked {
             background: var(--blue);
             border-color: var(--blue);
-            color: #fff;
+        }
+
+        .service-checkbox:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px;
         }
 
         .service-row-icon {
@@ -623,16 +629,16 @@
 
         .service-row-icon i { width: 18px; height: 18px; }
 
-        .service-info h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 3px; }
-        .service-info p { font-size: 0.86rem; color: var(--ink-secondary); }
+        .service-info .service-name { display: block; font-size: 1.05rem; font-weight: 600; margin-bottom: 3px; }
+        .service-info .service-description { display: block; font-size: 0.86rem; color: var(--ink-secondary); }
 
         .service-price-block {
             text-align: right;
             font-family: var(--font-mono);
         }
 
-        .service-price-block .p-val { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
-        .service-price-block .p-eta { font-size: 0.72rem; color: var(--ink-muted); margin-top: 2px; }
+        .service-price-block .p-val { display: block; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+        .service-price-block .p-eta { display: block; font-size: 0.72rem; color: var(--ink-muted); margin-top: 2px; }
 
         /* RESUMEN DE PRESUPUESTO CON CONFIRMACIÓN DE TÉRMINOS */
         .summary-card {
@@ -692,19 +698,13 @@
             color: #ffffff;
         }
 
-        /* CASILLA DE CONFIRMACIÓN DE TÉRMINOS Y CONDICIONES CON VERIFICACIÓN */
+        /* Casilla de aceptación de términos y condiciones */
         .summary-terms-agreement {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border-hairline);
             border-radius: var(--radius-md);
             padding: 14px;
             margin-bottom: 18px;
-            transition: border-color 160ms var(--ease-apple);
-        }
-
-        .summary-terms-agreement.verified {
-            border-color: rgba(34, 197, 94, 0.35);
-            background: rgba(34, 197, 94, 0.03);
         }
 
         .terms-checkbox-label {
@@ -716,39 +716,25 @@
         }
 
         .terms-checkbox-label input {
-            display: none;
-        }
-
-        .custom-check-box {
             width: 18px;
             height: 18px;
-            border-radius: 5px;
-            border: 1.5px solid var(--border-strong);
+            appearance: none;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
             background: #0d0f14;
-            display: grid;
-            place-items: center;
             flex-shrink: 0;
             margin-top: 2px;
-            transition: all 160ms var(--ease-apple);
+            cursor: pointer;
         }
 
-        .custom-check-box i {
-            width: 13px;
-            height: 13px;
-            color: #ffffff;
-            opacity: 0;
-            transform: scale(0.6);
-            transition: all 160ms var(--ease-apple);
-        }
-
-        .terms-checkbox-label input:checked + .custom-check-box {
+        .terms-checkbox-label input:checked {
             background: var(--blue);
             border-color: var(--blue);
         }
 
-        .terms-checkbox-label input:checked + .custom-check-box i {
-            opacity: 1;
-            transform: scale(1);
+        .terms-checkbox-label input:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px;
         }
 
         .terms-label-text {
@@ -766,28 +752,6 @@
         .terms-label-text a:hover {
             color: var(--blue);
         }
-
-        .verification-badge-strip {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: #22c55e;
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px dashed rgba(255, 255, 255, 0.08);
-            opacity: 0;
-            transform: translateY(-2px);
-            transition: all 180ms var(--ease-apple);
-        }
-
-        .summary-terms-agreement.verified .verification-badge-strip {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .verification-badge-strip i { width: 14px; height: 14px; }
 
         /* FAQ APPLE MINIMAL */
         .faq-accordion {
@@ -1216,21 +1180,13 @@
                         <div class="total-number" id="total-val">$0</div>
                     </div>
 
-                    <!-- CASILLA DE CONFIRMACIÓN DE TÉRMINOS Y PRIVACIDAD CON VERIFICACIÓN -->
-                    <div class="summary-terms-agreement" id="terms-box">
+                    <div class="summary-terms-agreement">
                         <label class="terms-checkbox-label" for="agree-terms">
-                            <input type="checkbox" id="agree-terms" checked onchange="toggleTermsVerification(this.checked)">
-                            <span class="custom-check-box">
-                                <i data-lucide="check"></i>
-                            </span>
+                            <input type="checkbox" id="agree-terms" onchange="toggleQuoteConsent(this.checked)">
                             <span class="terms-label-text">
                                 He leído y acepto los <a href="#" onclick="event.preventDefault(); openLegalModal('terminos');">Términos y condiciones</a> y la <a href="#" onclick="event.preventDefault(); openLegalModal('privacidad');">Política de privacidad</a>.
                             </span>
                         </label>
-                        <div class="verification-badge-strip" id="verification-strip">
-                            <i data-lucide="badge-check"></i>
-                            <span>Verificación de acuerdos activa</span>
-                        </div>
                     </div>
 
                     <a href="#" id="btn-wa-quote" class="btn btn-whatsapp" style="width:100%;" target="_blank" rel="noopener noreferrer">
@@ -1522,7 +1478,7 @@
         ];
 
         let activeCurrency = "COP";
-        const selectedServices = new Set(["sw2"]);
+        const selectedServices = new Set();
 
         const formatters = {
             COP: new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }),
@@ -1552,41 +1508,34 @@
                 const price = formatters[activeCurrency].format(s[activeCurrency.toLowerCase()]);
 
                 return `
-                    <div class="service-row ${isSelected ? 'selected' : ''}" onclick="toggleService('${s.id}')">
-                        <div class="service-checkbox">
-                            ${isSelected ? '<i data-lucide="check" style="width:13px;height:13px;"></i>' : ''}
-                        </div>
-                        <div class="service-row-icon">
+                    <label class="service-row ${isSelected ? 'selected' : ''}">
+                        <input class="service-checkbox" type="checkbox" id="service-${s.id}" aria-label="Seleccionar ${s.name}" ${isSelected ? 'checked' : ''} onchange="toggleService('${s.id}')">
+                        <span class="service-row-icon">
                             <i data-lucide="${s.icon}"></i>
-                        </div>
-                        <div class="service-info">
-                            <h4>${s.name}</h4>
-                            <p>${s.desc}</p>
-                        </div>
-                        <div class="service-price-block">
-                            <div class="p-val">${price}</div>
-                            <div class="p-eta">Entrega: ${s.eta}</div>
-                        </div>
-                    </div>
+                        </span>
+                        <span class="service-info">
+                            <span class="service-name">${s.name}</span>
+                            <span class="service-description">${s.desc}</span>
+                        </span>
+                        <span class="service-price-block">
+                            <span class="p-val">${price}</span>
+                            <span class="p-eta">Entrega: ${s.eta}</span>
+                        </span>
+                    </label>
                 `;
             }).join("");
 
             if (window.lucide) window.lucide.createIcons();
         }
 
-        // --- 5. VERIFICACIÓN DE TÉRMINOS EN LA CASILLA DE PRESUPUESTO ---
-        function toggleTermsVerification(isChecked) {
-            const box = document.getElementById('terms-box');
+        function toggleQuoteConsent(isChecked) {
             const waBtn = document.getElementById('btn-wa-quote');
-            if (isChecked) {
-                box.classList.add('verified');
-                waBtn.style.opacity = '1';
-                waBtn.style.pointerEvents = 'auto';
-            } else {
-                box.classList.remove('verified');
-                waBtn.style.opacity = '0.5';
-                waBtn.style.pointerEvents = 'none';
-            }
+            if (!waBtn) return;
+
+            waBtn.style.opacity = isChecked ? '1' : '0.5';
+            waBtn.style.pointerEvents = isChecked ? 'auto' : 'none';
+            waBtn.setAttribute('aria-disabled', String(!isChecked));
+            waBtn.tabIndex = isChecked ? 0 : -1;
         }
 
         function updateSummary() {
@@ -1692,7 +1641,7 @@
             init3DLaptop();
             renderServices();
             updateSummary();
-            toggleTermsVerification(true); // Estado verificado inicial por defecto
+            toggleQuoteConsent(document.getElementById("agree-terms")?.checked ?? false);
             if (window.lucide) window.lucide.createIcons();
         });
     </script>
