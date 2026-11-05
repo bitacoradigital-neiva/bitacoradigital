@@ -1039,7 +1039,7 @@
             const screenDpr = Math.min(window.devicePixelRatio || 1, 2);
             const phoneSet = window.innerWidth * screenDpr <= 1100;
             // Medido en una laptop de gama de entrada: el canvas a 0,8 reduce cerca de 40 % los cuadros lentos
-            const dpr = phoneSet ? Math.min(screenDpr, 1.5) : (screenDpr >= 1.5 ? 1.25 : 0.8);
+            const dpr = phoneSet ? Math.min(screenDpr, 1.25) : (screenDpr >= 1.5 ? 1.25 : 0.8);
             // Cuadros del tamaño justo para la pantalla: 800, 1200 o 1600 px (menos peso y se preparan más rápido)
             const need = window.innerWidth * dpr;
             const set = phoneSet || need <= 900 ? "sm" : need <= 1300 ? "md" : "lg";
@@ -1096,7 +1096,7 @@
                     .then((b) => { if (b) { blobs[i] = b; if (Math.abs(i - current) <= AHEAD) pump(); } })
                     .catch(() => {});
             }
-            // Versión liviana (480 px) de los 101 cuadros, siempre lista en memoria (~50 MB en computador):
+            // Versión liviana (480 px) de los 101 cuadros, siempre lista en memoria (~50 MB):
             // en un scroll rápido la laptop nunca se atrasa; al detenerse se dibuja el cuadro nítido
             const thumbs = new Array(N);
             async function loadThumbs() {
@@ -1114,7 +1114,7 @@
             }
             async function loadAll() {
                 await fetchFrame(0);
-                if (set !== "sm" && canBitmap) loadThumbs();
+                if (canBitmap) loadThumbs();
                 for (const step of [8, 4, 2, 1]) {
                     const batch = [];
                     for (let i = 0; i < N; i += step) if (!blobs[i]) batch.push(fetchFrame(i));
@@ -1127,12 +1127,36 @@
                 return null;
             }
 
-            function render() {
+            // Solo escribe un estilo si cambió (evita que el navegador recalcule estilos en cada cuadro)
+            const put = (el, prop, val) => { const c = el._put || (el._put = {}); if (c[prop] !== val) { el.style[prop] = val; c[prop] = val; } };
+            // Con el dedo (pantallas táctiles) la escena sigue al scroll con un suavizado corto:
+            // los pequeños tirones del dedo no se ven y la tapa se mueve como un video
+            const touch = window.matchMedia("(pointer: coarse)").matches;
+            const FOLLOW_MS = 70;
+            let shownP = -1, lastT = 0, lastFi = 0, settleTimer = 0, settling = false;
+
+            function render(now = performance.now()) {
                 ticking = false;
-                const p = clamp01((window.scrollY - top0) / dist);
-                // f va de 0 a 70 (medidas de la tapa); el cuadro se elige entre los 101 disponibles
+                const target = clamp01((window.scrollY - top0) / dist);
+                let p = target;
+                if (touch && shownP >= 0) {
+                    const dt = Math.min(64, Math.max(1, now - lastT));
+                    p = shownP + (target - shownP) * (1 - Math.exp(-dt / FOLLOW_MS));
+                    if (Math.abs(target - p) * dist < 0.4) p = target;
+                }
+                shownP = p; lastT = now;
+                // f va de 0 a 70 (medidas de la tapa); fi es la posición continua entre los 101 cuadros
                 const f = clamp01((p - 0.04) / 0.84) * (GEO_N - 1);
-                const index = Math.round(f * (N - 1) / (GEO_N - 1));
+                const fi = f * (N - 1) / (GEO_N - 1);
+                // 8 pasos intermedios entre un cuadro y el siguiente; al moverse rápido no se notan y se omiten
+                // Al detenerse, la mezcla se retira y queda el cuadro exacto, nítido
+                const blend = Math.abs(fi - lastFi) < 0.9 && !settling;
+                settling = false;
+                lastFi = fi;
+                const i0 = blend ? Math.floor(fi) : Math.round(fi), i1 = Math.min(N - 1, i0 + 1);
+                const mix = blend ? Math.round((fi - i0) * 8) / 8 : 0;
+                if (mix > 0) { clearTimeout(settleTimer); settleTimer = setTimeout(() => { settling = true; schedule(); }, 140); }
+                const index = mix >= 0.5 ? i1 : i0;
                 if (index !== current) { direction = index > current ? 1 : -1; current = index; keepWindow(index); }
 
                 const phone = vw < vh;
@@ -1146,23 +1170,30 @@
                 const dx = (vw - dw) / 2;
                 const dy = (vh - dh) * lerp(phone ? 0.86 : 0.78, 0.5, ease(clamp01(f / 30)) * 0.55 + z * 0.45);
 
+                // Se dibuja el cuadro actual y encima el siguiente, mezclado según la posición exacta:
+                // entre dos cuadros hay pasos intermedios y el movimiento no da saltitos.
                 // Cuadro nítido si ya está listo; si no, el liviano del mismo momento; si tampoco, el más cercano
-                const sharp = bitmaps.get(index);
-                const img = sharp || thumbs[index] || nearest(index);
-                const key = index + (sharp ? "s" : "t") + "|" + dw.toFixed(1) + "|" + dy.toFixed(1);
+                const a = bitmaps.get(i0) || thumbs[i0];
+                const b = mix > 0 ? bitmaps.get(i1) || thumbs[i1] : null;
+                const sharp = bitmaps.has(i0) && (mix === 0 || bitmaps.has(i1));
+                const img = a || nearest(index);
+                const key = i0 + "|" + mix + (sharp ? "s" : "t") + "|" + dw.toFixed(1) + "|" + dy.toFixed(1);
                 if (key !== lastKey && img) {
-                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, vw, vh); ctx.drawImage(img, dx, dy, dw, dh); lastKey = key;
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, vw, vh);
+                    ctx.drawImage(img, dx, dy, dw, dh);
+                    if (a && b) { ctx.globalAlpha = mix; ctx.drawImage(b, dx, dy, dw, dh); ctx.globalAlpha = 1; }
+                    lastKey = key;
                 }
 
                 // Texto de entrada: se despide mientras la tapa sube
                 const t = ease(clamp01((p - 0.05) / 0.12));
-                copy.style.opacity = String(1 - t);
-                copy.style.transform = `translate3d(0, ${(-40 * t).toFixed(1)}px, 0)`;
-                copy.style.visibility = t > 0.98 ? "hidden" : "visible";
+                put(copy, "opacity", (1 - t).toFixed(3));
+                put(copy, "transform", `translate3d(0, ${(-40 * t).toFixed(1)}px, 0)`);
+                put(copy, "visibility", t > 0.98 ? "hidden" : "visible");
 
                 // Logo: se enciende con la tapa abierta y crece con la pantalla
                 const on = ease(clamp01((f - 24) / 7)) * (1 - ease(clamp01((f - 49) / 9)));
-                logo.style.opacity = on.toFixed(3);
+                put(logo, "opacity", on.toFixed(3));
                 if (on > 0) {
                     const size = LOGO_SIZE * at(LID_W, f) * dw;
                     const cx = dx + dw / 2, cy = dy + at(LID_Y, f) * dh;
@@ -1176,7 +1207,7 @@
                 chips.forEach((chip, k) => {
                     const [ax, ay, delay] = CHIP_AT[k];
                     const c = ease(clamp01((f - 27 - delay) / 6)) * (1 - ease(clamp01((f - 43) / 5)));
-                    chip.style.opacity = c.toFixed(3);
+                    put(chip, "opacity", c.toFixed(3));
                     if (c <= 0) return;
                     const [cw, ch] = chipSize[k] || [160, 60];
                     const m = 16;
@@ -1190,8 +1221,9 @@
                     }
                     x = Math.min(Math.max(x, m), vw - cw - m);
                     y = Math.min(Math.max(y, 76), vh - ch - m);
-                    chip.style.transform = `translate3d(${x.toFixed(1)}px, ${(y + (1 - c) * 14).toFixed(1)}px, 0) scale(${(0.94 + 0.06 * c).toFixed(3)})`;
+                    put(chip, "transform", `translate3d(${x.toFixed(1)}px, ${(y + (1 - c) * 14).toFixed(1)}px, 0) scale(${(0.94 + 0.06 * c).toFixed(3)})`);
                 });
+                if (p !== target) schedule(); // sigue acercándose suavemente a la posición del dedo
             }
             function schedule() { if (!active || ticking) return; ticking = true; requestAnimationFrame(render); }
 
