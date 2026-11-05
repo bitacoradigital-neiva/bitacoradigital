@@ -1,0 +1,4 @@
+Videos originales (copia de respaldo). La página no los carga: usa los cuadros de img/laptop e img/monitor y video/robot.mp4, hechos a partir de estos.
+- laptop-abriendose-4k.mp4: Pixabay 170358 (fondo verde, 4K). Fuente de la laptop que se abre al inicio.
+- monitor-iconos.mp4: Pixabay 376781 (fondo verde). Fuente del monitor de "Así trabajamos".
+- robot.mp4: Pixabay 145864. Fuente del robot del cierre.
