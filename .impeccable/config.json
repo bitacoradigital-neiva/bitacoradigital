@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-11T20:12:37.540Z",
+        "reason": "Claude: false positive, .sec has padding clamp(96px,12vw,168px) and .svc-head padding-bottom clamp(32px,4vw,48px); detector misses clamp() values"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-11T21:06:27.947Z",
+        "reason": "Claude: only large display headlines (Unbounded) use ~1.02 line-height; body text keeps 1.47"
+      }
+    ]
+  }
+}

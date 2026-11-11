@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f5f5f7">
-    <meta name="description" content="Soporte técnico, desarrollo web y diseño digital en Neiva, Huila. Soluciones claras y cercanas con Bitácora Digital.">
+    <meta name="description" content="Soporte técnico, desarrollo web y videos publicitarios en Neiva, Huila. Soluciones claras y cercanas con Bitácora Digital.">
     <title>Bitácora Digital | Tecnología y diseño en Neiva, Huila</title>
     <link rel="canonical" href="https://bitacoradigital-lyart.vercel.app/">
     
@@ -17,7 +17,7 @@
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_CO">
     <meta property="og:title" content="Bitácora Digital | Tecnología y diseño en Neiva">
-    <meta property="og:description" content="Soporte técnico, desarrollo web y diseño digital para tus ideas y tu negocio.">
+    <meta property="og:description" content="Soporte técnico, desarrollo web y videos publicitarios para tu negocio.">
     <meta property="og:url" content="https://bitacoradigital-lyart.vercel.app/">
     <meta property="og:image" content="https://bitacoradigital-lyart.vercel.app/img/hero.webp">
     <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,23 @@
     <link rel="icon" type="image/png" sizes="32x32" href="img/logo-bitacora-simbolo.png?v=1">
     <link rel="apple-touch-icon" sizes="180x180" href="img/logo-bitacora-simbolo.png?v=1">
 
-    <script>document.documentElement.classList.add("js");</script>
+    <script>
+        // Potencia del equipo: "low" (gama baja o datos limitados), "mid" o "high". La página se ajusta sola.
+        (function () {
+            var d = document.documentElement, n = navigator, c = n.connection || {}, m = n.deviceMemory || 8, k = n.hardwareConcurrency || 8, t = "high";
+            if (c.saveData || /(^|-)2g$|^3g$/.test(c.effectiveType || "") || m <= 2 || k <= 2) t = "low";
+            else if (m <= 4 || k <= 4) t = "mid";
+            // Si en una visita anterior el equipo se quedó corto, se recuerda por 7 días
+            try { var saved = +localStorage.getItem("bd-low") || 0; if (Date.now() - saved < 6048e5) t = "low"; } catch (e) {}
+            d.classList.add("js", "tier-" + t);
+            d.dataset.tier = t;
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&display=swap">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" integrity="sha384-B2WBjDzEjJpYvhmi2UyEn7rektqkf5suS6sNoyyrf0EBAwBHdkiXxIlU0V5Ru2ed" crossorigin="anonymous"></script>
@@ -298,6 +314,13 @@
         .hero.is-live .chip { position: absolute; left: 0; top: 0; opacity: 0; white-space: nowrap; -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255, 255, 255, 0.86); will-change: transform, opacity; }
         @media (max-width: 699px) { .hero.is-live { height: 220vh; height: 220lvh; } .hero.is-live .chip { padding: 9px 14px; } .hero.is-live .chip strong { font-size: 16px; } }
 
+        /* Luz azul bajo la laptop (estilo presentación de producto); se apaga al entrar a la pantalla */
+        .hero-glow { display: none; }
+        .hero.is-live .hero-glow { display: block; position: absolute; z-index: 0; left: 50%; bottom: 4%; width: min(90vw, 1200px); height: 46vh; translate: -50% 0; background: radial-gradient(ellipse 50% 45% at 50% 70%, rgba(41, 151, 255, 0.30), rgba(41, 151, 255, 0.08) 45%, transparent 70%); pointer-events: none; }
+        .hero.is-live .hero-canvas { z-index: 1; }
+        .hero .t-hero { font-size: clamp(2.5rem, 1rem + 5.4vw, 6rem); letter-spacing: -0.035em; }
+        .hero.is-live .chip { background: rgba(22, 22, 24, 0.88); border-color: rgba(255, 255, 255, 0.12); }
+
         /* Desplazamiento suave (Lenis): el navegador no debe suavizar por su cuenta encima */
         html.lenis, html.lenis body { height: auto; }
         .lenis.lenis-smooth { scroll-behavior: auto !important; }
@@ -310,11 +333,11 @@
         .sec-head { max-width: 820px; margin: 0 auto clamp(48px, 6vw, 80px); text-align: center; }
         .sec-head .t-lead { margin: 18px auto 0; max-width: 40ch; }
 
-        /* Servicios: filas numeradas con entregables (estilo Linear / Vercel) */
+        /* Servicios: tarjetas que se apilan al hacer scroll */
         .svc-head { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(24px, 5vw, 80px); align-items: end; margin-bottom: clamp(48px, 6vw, 88px); padding-bottom: clamp(32px, 4vw, 48px); border-bottom: 1px solid var(--dark-line); }
-        .svc-eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px; color: var(--accent-on-dark); font-size: var(--t-small); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
-        .svc-eyebrow::before { content: ""; width: 24px; height: 1px; background: currentColor; }
         .svc-head .t-h2 { text-wrap: balance; }
+        .svc-head.head-light { border-bottom-color: var(--line); }
+        .svc-head .segmented { margin-top: 0; }
         .svc-head-side { display: grid; gap: 24px; justify-items: start; }
         .svc-head-side .t-lead { max-width: 34ch; }
 
@@ -346,21 +369,24 @@
         }
         .svc:nth-child(even) .svc-body { order: 2; }
         .svc-body { display: flex; flex-direction: column; min-width: 0; }
-        .svc-kicker { display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px, 2.4vw, 32px); color: var(--dark-ink-2); font-size: var(--t-small); font-weight: 500; letter-spacing: 0.02em; }
-        .svc-num { display: inline-grid; place-items: center; min-width: 40px; height: 28px; padding: 0 10px; border-radius: var(--r-pill); border: 1px solid var(--dark-line); color: var(--dark-ink); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: var(--t-xs); font-variant-numeric: tabular-nums; }
+        .svc-kicker { margin-bottom: clamp(14px, 1.8vw, 22px); color: var(--accent-on-dark); font-size: var(--t-small); font-weight: 600; letter-spacing: -0.005em; }
         .svc-title { font-size: clamp(1.75rem, 1.2rem + 1.8vw, 2.75rem); line-height: 1.06; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
         .svc-desc { margin-top: 14px; color: var(--dark-ink-2); font-size: var(--t-body); max-width: 44ch; text-wrap: pretty; }
         .svc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
         .svc-chips li { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.09); color: #d2d2d7; font-size: var(--t-xs); font-weight: 500; line-height: 1.2; }
-        .svc-chips li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-on-dark); box-shadow: 0 0 8px rgba(41, 151, 255, 0.8); }
+        .svc-chips li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-on-dark); }
         .svc-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: clamp(28px, 3vw, 40px); padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
         .svc-meta { display: grid; gap: 2px; }
-        .svc-meta span { color: var(--dark-ink-2); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; }
         .svc-meta strong { color: var(--dark-ink); font-size: var(--t-body); font-weight: 600; font-variant-numeric: tabular-nums; }
+        .svc-meta span { color: var(--dark-ink-2); font-size: var(--t-small); }
         .svc-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 18px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.08); color: var(--dark-ink); font-size: var(--t-small); font-weight: 500; transition: background-color 200ms var(--ease), transform 160ms var(--ease-out); }
         .svc-link:active { transform: scale(0.97); }
         .svc-link .icon { width: 0.9em; height: 0.9em; transition: transform 200ms var(--ease-out); }
-        .svc-media { position: relative; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 4 / 3; background: var(--dark-surface-2); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.06); }
+        /* Profundidad 3D: los videos y las tarjetas se inclinan hacia el mouse y entran girando al hacer scroll */
+        @property --rx { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+        @property --ry { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+        @property --rxs { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+        .svc-media { position: relative; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 4 / 3; background: var(--dark-surface-2); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.06); transform: perspective(1100px) rotateX(calc(var(--rxs) + var(--rx))) rotateY(var(--ry)); transition: --rx 700ms var(--ease-out), --ry 700ms var(--ease-out); }
         .svc-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.35)); pointer-events: none; }
         .svc-media video { width: 100%; height: 100%; object-fit: cover; }
         /* La primera fila (web) es la principal: más alta y con el botón en azul */
@@ -368,6 +394,12 @@
         .svc-feature::before { opacity: 1; }
         .svc-feature .svc-media { aspect-ratio: 16 / 11; }
         .svc-feature .svc-link { background: var(--accent); color: #fff; }
+
+        /* Apilado: cada tarjeta se queda arriba y la siguiente sube encima.
+           El script lo activa solo si las tarjetas caben en la pantalla (así nunca se tapa un botón) */
+        .svc::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; background: #000; opacity: var(--shade, 0); pointer-events: none; }
+        .svc-list.is-stacked { gap: 24px; }
+        .svc-list.is-stacked .svc { position: sticky; top: calc(var(--nav-top) + var(--nav-h) + 16px + var(--k) * 10px); transform-origin: 50% 0; will-change: transform; }
 
         @media (max-width: 899px) {
             .svc-head { grid-template-columns: 1fr; align-items: start; }
@@ -378,43 +410,81 @@
         @media (max-width: 599px) {
             .svc { padding: 16px 16px 24px; border-radius: 22px; }
             .svc-body { padding-inline: 4px; }
-            .svc-kicker { margin-bottom: 16px; }
-            .svc-foot { flex-direction: column; align-items: stretch; }
-            .svc-link { justify-content: center; }
+            .svc-kicker { margin-bottom: 10px; }
+            /* Tarjeta compacta en celular: así cabe completa en pantalla y se puede apilar */
+            .svc { gap: 18px; }
+            .svc-media, .svc-feature .svc-media { aspect-ratio: 16 / 9; }
+            .svc-desc { margin-top: 10px; }
+            .svc-chips { flex-wrap: nowrap; overflow-x: auto; margin: 18px -20px 0; padding-inline: 20px; scrollbar-width: none; }
+            .svc-chips::-webkit-scrollbar { display: none; }
+            .svc-chips li { flex: none; }
+            .svc-foot { margin-top: 20px; padding-top: 16px; }
+            .svc-link { padding: 0 16px; }
         }
 
-        /* Proceso: lado fijo con barra de progreso + pasos */
-        .process-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
-        .process-side { position: sticky; top: calc(var(--nav-top) + var(--nav-h) + 48px); }
-        .process-side .t-lead { margin-top: 18px; max-width: 30ch; }
-        .process-visual { position: relative; margin-top: 28px; width: min(100%, calc((100vh - 400px) * 1.6)); aspect-ratio: 880 / 548; }
-        .process-visual img, .process-visual canvas {
-            position: absolute; inset: 0; width: 100%; height: 100%;
-            -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-            mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+        /* Compromisos: una cinta que corre de lado.
+           Computador: la sección se queda quieta y la cinta avanza con el scroll. Celular: se desliza con el dedo.
+           Sin script (o en modo liviano) queda como cuadrícula. */
+        .promises { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .promise {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+            padding: clamp(24px, 2.6vw, 34px);
+            border-radius: var(--r-lg);
+            background: linear-gradient(180deg, #121214, #0c0c0d);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            transform: perspective(900px) translateY(var(--lift, 0px)) rotateX(var(--rx)) rotateY(var(--ry));
+            transition: border-color 400ms var(--ease), --rx 700ms var(--ease-out), --ry 700ms var(--ease-out);
         }
-        .process-visual canvas { display: none; }
-        .process-visual img, .process-visual canvas { filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.14)); }
-        .process-visual.is-live img { visibility: hidden; }
-        .process-visual.is-live canvas { display: block; }
-        .process-progress { display: grid; gap: 10px; margin-top: 28px; padding: 16px 18px; border-radius: 20px; }
-        .process-label { display: flex; justify-content: space-between; font-size: var(--t-small); font-weight: 600; color: var(--ink); }
-        .process-label span:last-child { color: var(--ink-2); font-weight: 500; }
-        .process-track { height: 4px; border-radius: 4px; background: rgba(0, 0, 0, 0.1); overflow: hidden; }
-        .process-bar { height: 100%; border-radius: 4px; background: var(--accent); transform: scaleX(0.25); transform-origin: left; }
-        .process-steps { display: grid; }
-        .step { min-height: 62vh; display: grid; align-content: center; gap: 14px; padding-block: 24px; transition: opacity 400ms var(--ease); }
-        .step-num { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
-        .step .t-lead { max-width: 34ch; }
-        .has-progress .step { opacity: 0.32; }
-        .has-progress .step.is-active { opacity: 1; }
+        /* Ícono suelto, grande y de trazo fino, sin cajita: se lee como dibujo de la tarjeta */
+        .promise-icon { display: block; color: var(--accent-on-dark); }
+        .promise-icon .icon { width: 44px; height: 44px; stroke-width: 1.25; }
+        .promise-title { margin-top: auto; padding-top: 48px; font-size: clamp(1.375rem, 1.15rem + 0.8vw, 1.875rem); line-height: 1.1; letter-spacing: -0.028em; font-weight: 700; text-wrap: balance; }
+        .promise p { margin-top: 10px; color: var(--dark-ink-2); font-size: var(--t-body); text-wrap: pretty; }
+
+        /* Modo cinta en computador (lo activa el script si la sección cabe en la pantalla) */
+        .sec.promises-pinned { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-block: clamp(56px, 8vh, 96px); overflow: hidden; }
+        .promises-pinned .wrap { width: 100%; }
+        .promises-pinned .svc-head { margin-bottom: clamp(32px, 4vw, 48px); }
+        .promises-pinned .promise-track { overflow: visible; }
+        .promises-pinned .promises { display: flex; width: max-content; gap: 20px; will-change: transform; }
+        .promises-pinned .promise { width: clamp(300px, 27vw, 380px); min-height: 340px; }
+        .promises-pinned .promise:nth-child(odd) { --lift: 24px; }
+
         @media (max-width: 899px) {
-            .process-grid { display: block; }
-            .process-side { display: contents; }
-            .process-progress { position: sticky; top: calc(var(--nav-top) + var(--nav-h) + 10px); z-index: 5; margin-top: 28px; }
-            .process-visual { width: min(100%, 560px); margin: 24px auto 0; }
-            .step { min-height: 0; padding-block: 56px; }
+            .promise-track { margin-inline: calc(var(--margin) * -1); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+            .promise-track::-webkit-scrollbar { display: none; }
+            .promises { display: flex; width: max-content; gap: 12px; padding-inline: var(--margin); }
+            .promise { width: min(78vw, 340px); min-height: 280px; scroll-snap-align: center; border-radius: 22px; padding: 22px; }
+            .promise-title { padding-top: 36px; }
         }
+
+        /* Títulos que entran palabra por palabra (el script los parte; si falla, se ven normales) */
+        .split .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+        .split .w > span { display: inline-block; transform: translate3d(0, 105%, 0); transition: transform 1000ms var(--ease-out); transition-delay: calc(var(--wi) * 55ms); }
+        .split.is-in .w > span { transform: none; }
+        .reveal-on .split[data-reveal]:not(.is-in) { opacity: 1; transform: none; }
+
+        /* Proceso: una ruta que se dibuja con el scroll; cada paso se enciende al llegar */
+        .route { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+        .route-head { position: sticky; top: calc(var(--nav-top) + var(--nav-h) + 48px); display: grid; gap: 18px; }
+        .route-head .t-lead { max-width: 30ch; }
+        .route-track { position: relative; padding-left: 64px; }
+        .route-rail { position: absolute; left: 15px; top: 12px; bottom: 12px; width: 2px; border-radius: 2px; background: var(--line); overflow: hidden; }
+        .route-fill { position: absolute; inset: 0; background: var(--accent-on-dark); transform-origin: 50% 0; transform: scaleY(var(--route, 1)); }
+        .waypoint { position: relative; display: grid; gap: 12px; padding-block: clamp(36px, 8vh, 88px); transition: opacity 500ms var(--ease); }
+        .waypoint::before { content: ""; position: absolute; left: -57px; top: calc(clamp(36px, 8vh, 88px) + 4px); width: 18px; height: 18px; border-radius: 50%; background: #000; border: 2px solid rgba(245, 245, 247, 0.3); transition: background-color 400ms var(--ease), border-color 400ms var(--ease), scale 400ms var(--ease-out); }
+        .waypoint-n { font-size: var(--t-small); font-weight: 600; color: var(--accent-on-dark); }
+        .waypoint-title { font-size: clamp(1.5rem, 1rem + 1.6vw, 2.25rem); line-height: 1.1; }
+        .waypoint p { max-width: 38ch; color: var(--ink-2); font-size: var(--t-lead); line-height: 1.38; }
+        .has-route .waypoint { opacity: 0.55; }
+        .has-route .waypoint.is-on { opacity: 1; }
+        .waypoint.is-on::before, .route-track:not(.has-route) .waypoint::before { background: var(--accent-on-dark); border-color: var(--accent-on-dark); scale: 1.1; }
+        @media (max-width: 899px) { .route { grid-template-columns: 1fr; } .route-head { position: static; } .route-track { padding-left: 48px; } .waypoint::before { left: -41px; } }
 
         /* Cotizador estilo tienda */
         .segmented { display: inline-grid; grid-auto-flow: column; gap: 2px; padding: 3px; border-radius: var(--r-pill); background: rgba(0, 0, 0, 0.06); margin-top: 28px; }
@@ -473,7 +543,7 @@
         .terms .check { width: 22px; height: 22px; border-radius: 6px; flex: none; margin-top: 1px; }
         .link-inline { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
         .summary .btn { width: 100%; min-height: 52px; }
-        .summary .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
+        .summary .btn[aria-disabled="true"] { background: #2a2a2c; color: #c7c7cc; cursor: not-allowed; } /* gris legible mientras no se aceptan los términos */
         .summary-note { margin-top: 12px; font-size: var(--t-xs); color: var(--ink-2); text-align: center; }
         @media (max-width: 999px) {
             .ledger, .summary { grid-column: 1 / -1; }
@@ -521,9 +591,28 @@
         .fact dt { font-size: var(--t-small); color: var(--dark-ink-2); }
         .fact dd { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; }
         @media (max-width: 799px) { .facts { grid-template-columns: 1fr; } }
+        .coverage-globe { position: absolute; z-index: 0; top: 50%; right: max(-14vw, -220px); width: min(70vw, 980px); aspect-ratio: 1; transform: translateY(-50%); opacity: 0; transition: opacity 1400ms var(--ease); pointer-events: none; }
+        .coverage-globe canvas { width: 100%; height: 100%; }
+        .coverage-globe.is-live { opacity: 1; }
+        .coverage-media { transition: opacity 1400ms var(--ease); }
+        .coverage:has(.coverage-globe.is-live) .coverage-media { opacity: 0; }
+        .globe-label { position: absolute; left: 0; top: 0; margin: -38px 0 0 14px; padding: 5px 11px; border-radius: var(--r-pill); background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.18); color: var(--dark-ink); font-size: var(--t-xs); font-weight: 600; white-space: nowrap; will-change: transform; }
+        /* Con el globo, el texto va en una columna a la izquierda y los datos en lista */
+        .coverage:has(.coverage-globe.is-live) .coverage-inner > * { max-width: 520px; }
+        .coverage:has(.coverage-globe.is-live) .facts { grid-template-columns: 1fr; max-width: 420px; }
+        .coverage:has(.coverage-globe.is-live) .fact { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(22, 22, 24, 0.88); }
+        @media (max-width: 899px) {
+            .coverage-globe { top: 0; right: -30vw; width: 135vw; transform: none; }
+            .coverage:has(.coverage-globe.is-live) { padding-top: 92vw; }
+            .coverage:has(.coverage-globe.is-live) .coverage-inner > *, .coverage:has(.coverage-globe.is-live) .facts { max-width: none; }
+        }
 
         /* Preguntas */
-        .faq { max-width: 820px; margin-inline: auto; }
+        .faq-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+        .faq-side { position: sticky; top: calc(var(--nav-top) + var(--nav-h) + 48px); display: grid; gap: 18px; justify-items: start; }
+        .faq-side .t-lead { max-width: 28ch; }
+        .faq { min-width: 0; }
+        @media (max-width: 899px) { .faq-grid { grid-template-columns: 1fr; } .faq-side { position: static; } }
         .faq-item { border-bottom: 1px solid var(--line); }
         .faq-item:first-child { border-top: 1px solid var(--line); }
         .faq-item summary {
@@ -547,9 +636,18 @@
         .faq-answer { padding-bottom: 22px; max-width: 60ch; color: var(--ink-2); }
 
         /* Cierre */
-        .closing .hero-actions { margin-top: 32px; }
-        .closing { padding-top: clamp(48px, 6vw, 88px); }
-        .closing-media { width: min(100%, 620px); margin: 0 auto clamp(4px, 1vw, 12px); aspect-ratio: 16 / 9; }
+        .closing .wrap { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: clamp(24px, 4vw, 64px); }
+        .closing-copy { order: -1; }
+        .closing .t-h2 { font-size: clamp(3.25rem, 1.8rem + 6.5vw, 8rem); line-height: 0.95; letter-spacing: -0.045em; }
+        .closing-lead { margin-top: 22px; max-width: 30ch; }
+        .closing .hero-actions { margin-top: 32px; justify-content: flex-start; }
+        .closing { padding-top: clamp(64px, 8vw, 120px); }
+        .closing-media { width: 100%; aspect-ratio: 16 / 9; transform: perspective(1200px) rotateY(-14deg) rotateX(4deg) scale(1.08); }
+        @media (max-width: 899px) {
+            .closing .wrap { grid-template-columns: 1fr; }
+            .closing-copy { order: 0; }
+            .closing-media { transform: none; max-width: 520px; }
+        }
         .closing-media video {
             width: 100%; height: 100%; object-fit: cover;
             -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 52%, #000 62%, transparent 100%);
@@ -601,6 +699,15 @@
         .legal-body h3 { font-size: var(--t-body); font-weight: 600; margin-top: 10px; }
         .legal-body p { color: var(--ink-2); }
 
+        /* ===== MODO LIVIANO (celulares y PC de gama baja) =====
+           Sin desenfoque de vidrio ni sombras grandes: es lo que más le cuesta a una tarjeta de video modesta */
+        .tier-low .glass { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255, 255, 255, 0.95); }
+        .tier-low .glass-dark { background: rgba(30, 30, 32, 0.96); }
+        .tier-low .svc::before { display: none; }
+        .tier-low .svc-media, .tier-low .promise { transform: translateY(var(--lift, 0px)); transition: none; }
+        .tier-low .svc-media { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06); }
+        .tier-low .reveal-on [data-reveal] { transition-duration: 500ms; transition-delay: 0ms; }
+
         /* ===== HOVER (solo con mouse: en celular no quedan pegados) ===== */
         @media (hover: hover) and (pointer: fine) {
             .nav-links a:hover { color: var(--ink); background: rgba(0, 0, 0, 0.05); }
@@ -611,7 +718,7 @@
             .btn-glass:hover { background: rgba(255, 255, 255, 0.82); }
             .link-more:hover { text-decoration: underline; text-underline-offset: 3px; }
             .link-more:hover .icon { transform: translateX(3px); }
-            .svc:hover { border-color: rgba(255, 255, 255, 0.16); }
+            .svc:hover, .promise:hover { border-color: rgba(255, 255, 255, 0.16); }
             .svc-feature:hover { border-color: rgba(41, 151, 255, 0.4); }
             .svc:hover::before { opacity: 1; }
             .svc-link:hover { background: rgba(255, 255, 255, 0.14); }
@@ -633,6 +740,115 @@
             .hero-copy > * { animation: rise 900ms var(--ease) both; animation-delay: calc(var(--i, 0) * 90ms + 80ms); }
         }
         @keyframes rise { from { opacity: 0; transform: translateY(20px); } }
+
+        /* ======================================================================
+           REDISEÑO: NAVEGACIÓN DIGITAL
+           Todo en oscuro, letra de títulos ancha y técnica (Unbounded) y el azul del logo como luz.
+           ====================================================================== */
+        :root {
+            color-scheme: dark;
+            --bg: #000000;
+            --surface: #111113;
+            --ink: #f5f5f7;
+            --ink-2: #a1a1a6;
+            --line: rgba(255, 255, 255, 0.12);
+            --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter Tight", "Inter", "Segoe UI", sans-serif;
+        }
+        html, body { background: #000; color: var(--ink); }
+        ::selection { background: rgba(41, 151, 255, 0.35); }
+        .t-hero, .t-h2, .svc-title, .promise-title, .waypoint-title, .summary-total-value, .closing .t-h2, .intro-count { font-family: var(--font-display); font-weight: 600; }
+        .t-hero { letter-spacing: -0.04em; }
+        .t-h2 { font-size: clamp(2rem, 1.1rem + 3.2vw, 3.75rem); line-height: 1.04; letter-spacing: -0.04em; }
+        .svc-title { font-size: clamp(1.5rem, 1rem + 1.6vw, 2.375rem); letter-spacing: -0.035em; line-height: 1.08; }
+        .promise-title { letter-spacing: -0.03em; }
+        .sec, .sec-white, .sec-dark { background: #000; color: var(--ink); }
+        .sec-white { background: #050506; }
+        .t-lead, .muted { color: var(--ink-2); }
+
+        /* Vidrio oscuro en todas partes */
+        .glass { background: rgba(22, 22, 24, 0.62); border-color: rgba(255, 255, 255, 0.12); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 32px -14px rgba(0, 0, 0, 0.8); color: var(--ink); }
+        .glass::before { background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 50%); }
+        .glass.is-flat { background: rgba(22, 22, 24, 0.9); }
+        .tier-low .glass { background: rgba(22, 22, 24, 0.97); }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .glass { background: rgba(22, 22, 24, 0.96); } }
+        .btn-glass { color: var(--ink); }
+        .nav-links a { color: var(--ink-2); }
+        .legal-close { background: rgba(255, 255, 255, 0.08); }
+
+        /* Cotizador en oscuro */
+        .segmented { background: rgba(255, 255, 255, 0.08); }
+        .segmented button[aria-pressed="true"] { background: #2a2a2c; color: var(--ink); box-shadow: none; }
+        .service-row { background: #0e0e10; box-shadow: inset 0 0 0 1px var(--line); }
+        .service-row.is-selected { background: #0b1a2e; box-shadow: inset 0 0 0 2px var(--accent-on-dark); }
+        .check { background: transparent; box-shadow: inset 0 0 0 1.5px #5a5a5e; }
+        .check:checked { background-color: var(--accent); }
+        .summary { background: #0e0e10; box-shadow: inset 0 0 0 1px var(--line); }
+        .link-inline { color: var(--accent-on-dark); }
+        .link-more { color: var(--accent-on-dark); }
+
+        /* Cierre: título enorme con la brújula detrás */
+        .closing { position: relative; overflow: hidden; }
+        .closing .wrap { grid-template-columns: 1fr; position: relative; }
+        .closing-compass { position: absolute; z-index: 0; right: -14%; top: 50%; width: min(80vw, 760px); aspect-ratio: 1; translate: 0 -50%; opacity: 0.55; pointer-events: none; }
+        .closing-copy { position: relative; z-index: 1; }
+        .footer a, .footer button { color: var(--ink-2); }
+
+        /* Entrada: el logo se dibuja y cuenta hasta 100 (una vez por visita) */
+        .intro { display: none; }
+        .js .intro { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; align-content: center; gap: 22px; background: #000; color: var(--ink); clip-path: inset(0 0 0 0); transition: clip-path 900ms var(--ease-out), visibility 0s linear 900ms; animation: intro-failsafe 0s linear 5s forwards; }
+        .js.intro-seen .intro { display: none; }
+        .intro.is-done { clip-path: inset(0 0 100% 0); visibility: hidden; }
+        @keyframes intro-failsafe { to { visibility: hidden; } }
+        .intro-mark { width: 104px; height: 104px; }
+        .intro-mark path, .intro-mark circle { fill: none; stroke: var(--accent-on-dark); stroke-width: 1.2; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p, 0)); }
+        .intro-mark .fill { fill: var(--accent-on-dark); fill-opacity: calc(var(--p, 0) * var(--p, 0) * var(--p, 0)); }
+        .intro-count { font-size: clamp(3rem, 2rem + 4vw, 5rem); line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+        .intro-coords { font-size: var(--t-small); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+
+        /* Cursor propio (solo con mouse) */
+        .cursor { position: fixed; left: 0; top: 0; z-index: 150; width: 34px; height: 34px; margin: -17px 0 0 -17px; border: 1.5px solid rgba(245, 245, 247, 0.75); border-radius: 50%; pointer-events: none; opacity: 0; transition: width 280ms var(--ease-out), height 280ms var(--ease-out), margin 280ms var(--ease-out), background-color 280ms var(--ease), border-color 280ms var(--ease), opacity 280ms var(--ease); will-change: transform; }
+        .cursor.is-on { opacity: 1; }
+        .cursor.is-hover { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgba(41, 151, 255, 0.16); border-color: var(--accent-on-dark); }
+        @media (hover: none), (pointer: coarse) { .cursor { display: none; } }
+        .tier-low .cursor { display: none; }
+
+        /* ======================================================================
+           ESTILO APPLE: títulos grandes y centrados, mucho aire, botones píldora y enlaces "›"
+           ====================================================================== */
+        .t-hero, .t-h2, .svc-title, .promise-title, .waypoint-title, .summary-total-value, .closing .t-h2 { font-family: var(--font-display); font-weight: 700; }
+        .t-h2 { font-size: clamp(2.25rem, 1.3rem + 3.6vw, 4.5rem); line-height: 1.05; letter-spacing: -0.03em; }
+        .svc-title { letter-spacing: -0.025em; }
+        .svc-head { grid-template-columns: 1fr; justify-items: center; text-align: center; border-bottom: 0; padding-bottom: 0; gap: 18px; }
+        .svc-head-side { justify-items: center; }
+        .svc-head-side .t-lead { max-width: 42ch; margin-inline: auto; }
+        .closing .wrap { text-align: center; }
+        .closing-lead { margin-inline: auto; }
+        .closing .hero-actions { justify-content: center; }
+        .closing .t-h2 { font-size: clamp(3rem, 1.6rem + 6vw, 7rem); letter-spacing: -0.04em; }
+
+        /* Íconos de servicio junto a la categoría */
+        .svc-kicker { display: inline-flex; align-items: center; gap: 10px; }
+        .svc-icon { width: 28px; height: 28px; stroke-width: 1.6; color: var(--accent-on-dark); }
+        .row-icon { width: 20px; height: 20px; margin-right: 10px; vertical-align: -4px; stroke-width: 1.8; color: var(--accent-on-dark); }
+
+        /* Botones estilo Apple */
+        .btn { min-height: 46px; padding: 0 24px; font-size: 1.0625rem; font-weight: 500; letter-spacing: -0.01em; transition: background-color 200ms var(--ease), transform 160ms var(--ease-out), border-color 200ms var(--ease); }
+        .btn-primary { background: #0071e3; color: #fff; }
+        .btn-glass { background: transparent; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+        .btn-glass::before { display: none; }
+        .svc-link { min-height: 44px; padding: 0; background: none; color: var(--accent-on-dark); font-size: 1.0625rem; font-weight: 500; }
+        .svc-link .icon { width: 0.85em; height: 0.85em; stroke-width: 2.4; }
+        .svc-feature .svc-link { padding: 0 22px; background: #0071e3; color: #fff; }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-primary:hover, .svc-feature .svc-link:hover { background: #0077ed; }
+            .btn-glass:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.5); }
+            .svc-link:hover { background: none; text-decoration: underline; text-underline-offset: 4px; }
+            .service-row:not(.is-selected):hover { background: #151518; }
+            .nav-links a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.08); }
+            .btn-glass:hover { background: rgba(40, 40, 44, 0.8); }
+        }
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto; }
             .faq-item::details-content { transition: none; }
@@ -642,7 +858,6 @@
 </head>
 <body>
     <a class="skip-link" href="#servicios">Saltar al contenido</a>
-
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <!-- Logo oficial de WhatsApp (glifo de Simple Icons, CC0) -->
         <symbol id="i-whatsapp" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol>
@@ -650,6 +865,18 @@
         <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16"/><path d="M4 16h16"/></symbol>
         <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
         <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+        <!-- Íconos de servicios (Lucide, licencia ISC) -->
+        <symbol id="i-svc-web" viewBox="0 0 24 24"><path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8"/><path d="M10 19v-3.96 3.15"/><path d="M7 19h5"/><rect width="6" height="10" x="16" y="12" rx="2"/></symbol>
+        <symbol id="i-svc-pc" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></symbol>
+        <symbol id="i-svc-win" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4M2 8h20M6 4v4"/></symbol>
+        <symbol id="i-svc-video" viewBox="0 0 24 24"><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z"/><path d="m6.2 5.3 3.1 3.9M12.4 3.4l3.1 4M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+        <symbol id="i-svc-remote" viewBox="0 0 24 24"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></symbol>
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+        <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1.2"/></symbol>
+        <symbol id="i-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z"/><path d="m9 13 2 2 4-4"/></symbol>
+        <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.7 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+        <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+        <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></symbol>
     </svg>
 
     <!-- Barra flotante de vidrio -->
@@ -680,12 +907,12 @@
 
     <main>
         <!-- Primer pantallazo: la laptop se abre con el scroll -->
-        <section class="hero" id="inicio" data-theme="light" aria-labelledby="hero-title">
+        <section class="hero" id="inicio" data-theme="dark" aria-labelledby="hero-title">
             <div class="hero-stage">
                 <div class="hero-copy">
-                    <p class="hero-kicker" style="--i:0">Bitácora Digital · Neiva, Huila</p>
+                    <p class="hero-kicker" style="--i:0">Bitácora Digital, desde Neiva</p>
                     <h1 class="t-hero" id="hero-title" style="--i:1"><span class="line">Tecnología y diseño.</span> <span class="line muted">Sin complicaciones.</span></h1>
-                    <p class="t-lead" style="--i:2">Reparamos y optimizamos tus computadores, creamos páginas web para tu negocio y diseñamos su imagen.</p>
+                    <p class="t-lead" style="--i:2">Reparamos y optimizamos tus computadores, creamos páginas web para tu negocio y producimos sus videos publicitarios.</p>
                     <div class="hero-actions" style="--i:3">
                         <a href="#cotizador" class="btn btn-primary">Configurar cotización</a>
                         <a href="https://wa.me/573144321446?text=Hola%2C%20Bit%C3%A1cora%20Digital.%20Me%20gustar%C3%ADa%20hacerles%20una%20consulta." target="_blank" rel="noopener noreferrer" class="btn btn-glass glass">
@@ -698,6 +925,7 @@
                     <img class="hero-poster" src="img/laptop/lg/044.webp" width="1600" height="900" loading="lazy" decoding="async" alt="Laptop abierta con el logo de Bitácora Digital encendido en la pantalla">
                     <img class="hero-logo" src="img/logo-256.webp" width="256" height="256" alt="" loading="lazy" decoding="async">
                 </figure>
+                <div class="hero-glow" aria-hidden="true"></div>
                 <canvas class="hero-canvas" aria-hidden="true"></canvas>
                 <img class="hero-logo-live" src="img/logo-glow.webp" width="300" height="300" alt="" aria-hidden="true" decoding="async">
                 <ul class="chips" aria-label="Datos rápidos">
@@ -713,97 +941,96 @@
             <div class="wrap">
                 <div class="svc-head">
                     <div>
-                        <p class="svc-eyebrow" data-reveal>Servicios</p>
                         <h2 class="t-h2" id="servicios-titulo" data-reveal>¿Qué necesitas resolver hoy?</h2>
                     </div>
                     <div class="svc-head-side" data-reveal>
                         <p class="t-lead">Respuestas técnicas exactas, sin diagnósticos confusos ni tarifas ocultas.</p>
-                        <a href="#cotizador" class="btn btn-primary">Configurar cotización</a>
+                        <a href="#cotizador" class="btn btn-primary" data-magnetic>Configurar cotización</a>
                     </div>
                 </div>
                 <div class="svc-list">
-                    <article class="svc svc-feature" data-reveal>
+                    <article class="svc svc-feature" style="--k:0">
                         <div class="svc-body">
-                            <p class="svc-kicker"><span class="svc-num">01</span><span>Desarrollo web</span></p>
+                            <p class="svc-kicker"><svg class="icon svc-icon" aria-hidden="true"><use href="#i-svc-web"/></svg>Desarrollo web</p>
                             <h3 class="svc-title">Página web para tu negocio</h3>
                             <p class="svc-desc">Sitios y landing pages rápidas para captar clientes desde el celular y llevarlos directo a tu WhatsApp.</p>
                             <ul class="svc-chips" aria-label="Incluye"><li>Landing page</li><li>Sitio corporativo</li><li>Dominio + hosting + SSL</li><li>Botón de WhatsApp</li></ul>
                             <div class="svc-foot">
-                                <p class="svc-meta"><span>Desde</span><strong>$500.000 · 3–5 días</strong></p>
+                                <p class="svc-meta"><strong>Desde $500.000</strong><span>Entrega en 3 a 5 días</span></p>
                                 <a href="#cotizador" class="svc-link">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
                             </div>
                         </div>
                         <div class="svc-media">
-                            <video muted loop playsinline preload="none" poster="img/codigo-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1" data-autoplay>
-                                <source src="video/codigo.mp4" type="video/mp4">
+                            <video muted loop playsinline preload="none" poster="img/pagina-web-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1" data-autoplay>
+                                <source src="video/pagina-web-motion.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
-                    <article class="svc" data-reveal>
+                    <article class="svc" style="--k:1">
                         <div class="svc-body">
-                            <p class="svc-kicker"><span class="svc-num">02</span><span>Soporte técnico</span></p>
+                            <p class="svc-kicker"><svg class="icon svc-icon" aria-hidden="true"><use href="#i-svc-pc"/></svg>Soporte técnico</p>
                             <h3 class="svc-title">Tu computador va lento o se bloquea</h3>
                             <p class="svc-desc">Eliminación de malware, limpieza profunda y reinstalación limpia del sistema con controladores oficiales.</p>
                             <ul class="svc-chips" aria-label="Incluye"><li>Diagnóstico gratis</li><li>Eliminación de malware</li><li>Formateo y drivers</li><li>Respaldo de archivos</li></ul>
                             <div class="svc-foot">
-                                <p class="svc-meta"><span>Desde</span><strong>$80.000 · 24 h</strong></p>
+                                <p class="svc-meta"><strong>Desde $60.000</strong><span>Listo en 24 horas</span></p>
                                 <a href="#cotizador" class="svc-link">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
                             </div>
                         </div>
                         <div class="svc-media">
-                            <video muted loop playsinline preload="none" poster="img/placa-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
-                                <source src="video/placa.mp4" type="video/mp4">
+                            <video muted loop playsinline preload="none" poster="img/computador-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1" data-autoplay>
+                                <source src="video/computador-motion.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
-                    <article class="svc" data-reveal>
+                    <article class="svc" style="--k:2">
                         <div class="svc-body">
-                            <p class="svc-kicker"><span class="svc-num">03</span><span>Software</span></p>
+                            <p class="svc-kicker"><svg class="icon svc-icon" aria-hidden="true"><use href="#i-svc-win"/></svg>Software</p>
                             <h3 class="svc-title">Windows y Office</h3>
                             <p class="svc-desc">Con tu licencia original, una comprada a tu nombre o LibreOffice sin costo.</p>
                             <ul class="svc-chips" aria-label="Incluye"><li>Licencia original</li><li>Activación legal</li><li>LibreOffice gratis</li><li>Programas esenciales</li></ul>
                             <div class="svc-foot">
-                                <p class="svc-meta"><span>Entrega</span><strong>Desde 24 h</strong></p>
+                                <p class="svc-meta"><strong>Listo desde 24 horas</strong><span>Con tu licencia o LibreOffice gratis</span></p>
                                 <a href="https://wa.me/573144321446?text=Hola%2C%20Bit%C3%A1cora%20Digital.%20Necesito%20instalar%20Windows%20u%20Office." class="svc-link" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
                             </div>
                         </div>
                         <div class="svc-media">
-                            <video muted loop playsinline preload="none" poster="img/teclado-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
-                                <source src="video/teclado.mp4" type="video/mp4">
+                            <video muted loop playsinline preload="none" poster="img/windows-office-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1" data-autoplay>
+                                <source src="video/windows-office-motion.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
-                    <article class="svc" data-reveal>
+                    <article class="svc" style="--k:3">
                         <div class="svc-body">
-                            <p class="svc-kicker"><span class="svc-num">04</span><span>Diseño gráfico</span></p>
-                            <h3 class="svc-title">Logos y publicidad</h3>
-                            <p class="svc-desc">Logotipos vectoriales, manuales de marca y piezas para pauta en redes sociales.</p>
-                            <ul class="svc-chips" aria-label="Incluye"><li>Logotipo vectorial</li><li>Manual de marca</li><li>Piezas para redes</li><li>Pauta publicitaria</li></ul>
+                            <p class="svc-kicker"><svg class="icon svc-icon" aria-hidden="true"><use href="#i-svc-video"/></svg>Producción audiovisual</p>
+                            <h3 class="svc-title">Videos publicitarios</h3>
+                            <p class="svc-desc">Videos cortos que muestran tu negocio y venden en Instagram, TikTok, Facebook y WhatsApp.</p>
+                            <ul class="svc-chips" aria-label="Incluye"><li>Reels y TikTok</li><li>Guion y edición</li><li>Música y textos animados</li><li>Formato vertical y horizontal</li></ul>
                             <div class="svc-foot">
-                                <p class="svc-meta"><span>Desde</span><strong>$50.000 · 24 h</strong></p>
+                                <p class="svc-meta"><strong>Desde $180.000</strong><span>Entrega en 3 a 4 días</span></p>
                                 <a href="#cotizador" class="svc-link">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
                             </div>
                         </div>
                         <div class="svc-media">
-                            <video muted loop playsinline preload="none" poster="img/diseno-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
-                                <source src="video/diseno.mp4" type="video/mp4">
+                            <video muted loop playsinline preload="none" poster="img/videos-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1" data-autoplay>
+                                <source src="video/videos-motion.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
-                    <article class="svc" data-reveal>
+                    <article class="svc" style="--k:4">
                         <div class="svc-body">
-                            <p class="svc-kicker"><span class="svc-num">05</span><span>A distancia</span></p>
+                            <p class="svc-kicker"><svg class="icon svc-icon" aria-hidden="true"><use href="#i-svc-remote"/></svg>A distancia</p>
                             <h3 class="svc-title">Soporte remoto</h3>
-                            <p class="svc-desc">Páginas web, diseño y soporte para cualquier ciudad de Colombia.</p>
+                            <p class="svc-desc">Páginas web, videos y soporte para cualquier ciudad de Colombia.</p>
                             <ul class="svc-chips" aria-label="Incluye"><li>Toda Colombia</li><li>Conexión segura</li><li>Sin desplazamientos</li><li>Atención por WhatsApp</li></ul>
                             <div class="svc-foot">
-                                <p class="svc-meta"><span>Cobertura</span><strong>Neiva y remoto</strong></p>
+                                <p class="svc-meta"><strong>Neiva y toda Colombia</strong><span>Conexión remota segura</span></p>
                                 <a href="https://wa.me/573144321446?text=Hola%2C%20Bit%C3%A1cora%20Digital.%20Me%20interesa%20el%20soporte%20remoto." class="svc-link" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
                             </div>
                         </div>
                         <div class="svc-media">
-                            <video muted loop playsinline preload="none" poster="img/remoto-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
-                                <source src="video/remoto.mp4" type="video/mp4">
+                            <video muted loop playsinline preload="none" poster="img/soporte-remoto-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1" data-autoplay>
+                                <source src="video/soporte-remoto-motion.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
@@ -811,55 +1038,84 @@
             </div>
         </section>
 
-        <!-- Proceso -->
-        <section class="sec" id="proceso" data-theme="light" aria-labelledby="proceso-titulo">
-            <div class="wrap process-grid">
-                <div class="process-side">
+        <!-- Proceso: la ruta se dibuja con el scroll -->
+        <section class="sec" id="proceso" data-theme="dark" aria-labelledby="proceso-titulo">
+            <div class="wrap route">
+                <div class="route-head">
                     <h2 class="t-h2" id="proceso-titulo" data-reveal>Así trabajamos.</h2>
                     <p class="t-lead" data-reveal>Cuatro pasos, sin sorpresas. Sabes el precio antes de empezar.</p>
-                    <figure class="process-visual" aria-hidden="true">
-                        <img src="img/monitor/90.webp" width="880" height="548" alt="" loading="lazy" decoding="async">
-                        <canvas></canvas>
-                    </figure>
-                    <div class="process-progress glass" aria-hidden="true">
-                        <div class="process-label"><span id="process-step-name">Escríbenos</span><span id="process-count">1 de 4</span></div>
-                        <div class="process-track"><div class="process-bar" id="process-bar"></div></div>
+                </div>
+                <div class="route-track" id="route-track">
+                    <div class="route-rail" aria-hidden="true"><div class="route-fill"></div></div>
+                    <ol>
+                        <li class="waypoint"><span class="waypoint-n">Paso 1</span><h3 class="waypoint-title">Escríbenos por WhatsApp</h3><p>Cuéntanos qué necesitas. Tarifas transparentes y acuerdos claros desde el primer mensaje.</p></li>
+                        <li class="waypoint"><span class="waypoint-n">Paso 2</span><h3 class="waypoint-title">Diagnóstico sin costo</h3><p>Revisamos tu equipo o tu proyecto y te confirmamos el precio antes de empezar.</p></li>
+                        <li class="waypoint"><span class="waypoint-n">Paso 3</span><h3 class="waypoint-title">Tus archivos, primero</h3><p>Antes de formatear respaldamos tus carpetas importantes. En webs y videos: 50% de anticipo y el saldo contra entrega.</p></li>
+                        <li class="waypoint"><span class="waypoint-n">Paso 4</span><h3 class="waypoint-title">Entrega</h3><p>Equipos desde 24 horas. Una landing page, de 3 a 5 días. Un video, de 3 a 4 días.</p></li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- Compromisos -->
+        <section class="sec sec-dark" id="compromisos" data-theme="dark" aria-labelledby="compromisos-titulo">
+            <div class="wrap">
+                <div class="svc-head">
+                    <div>
+                        <h2 class="t-h2" id="compromisos-titulo" data-reveal>Así cuido tu equipo, tu dinero y tu tiempo.</h2>
+                    </div>
+                    <div class="svc-head-side" data-reveal>
+                        <p class="t-lead">Reglas claras desde el primer mensaje. Si algo no se cumple, me lo dices y lo corrijo.</p>
                     </div>
                 </div>
-                <ol class="process-steps" id="process-steps">
-                    <li class="step is-active" data-name="Escríbenos">
-                        <span class="step-num">1</span>
-                        <h3 class="t-h3">Escríbenos por WhatsApp</h3>
-                        <p class="t-lead">Cuéntanos qué necesitas. Tarifas transparentes y acuerdos claros desde el primer mensaje.</p>
+                <div class="promise-track">
+                <ul class="promises">
+                    <li class="promise">
+                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></span>
+                        <h3 class="promise-title">Diagnóstico sin costo</h3>
+                        <p>Revisamos tu equipo o escuchamos tu idea antes de cobrarte un solo peso.</p>
                     </li>
-                    <li class="step" data-name="Diagnóstico">
-                        <span class="step-num">2</span>
-                        <h3 class="t-h3">Diagnóstico sin costo</h3>
-                        <p class="t-lead">Revisamos tu equipo o tu proyecto y te confirmamos el precio antes de empezar.</p>
+                    <li class="promise">
+                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-tag"/></svg></span>
+                        <h3 class="promise-title">Precio claro antes de empezar</h3>
+                        <p>Te confirmamos el valor antes de tocar nada. Sin cobros sorpresa al final.</p>
                     </li>
-                    <li class="step" data-name="Respaldo">
-                        <span class="step-num">3</span>
-                        <h3 class="t-h3">Tus archivos, primero</h3>
-                        <p class="t-lead">Antes de formatear respaldamos tus carpetas importantes. En webs y diseño: 50% de anticipo y el saldo contra entrega.</p>
+                    <li class="promise">
+                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg></span>
+                        <h3 class="promise-title">Tus archivos, primero</h3>
+                        <p>Antes de formatear respaldamos tus carpetas importantes para que no pierdas nada.</p>
                     </li>
-                    <li class="step" data-name="Entrega">
-                        <span class="step-num">4</span>
-                        <h3 class="t-h3">Entrega</h3>
-                        <p class="t-lead">Equipos desde 24 horas. Una landing page, de 3 a 5 días. Coordinamos la entrega en Neiva.</p>
+                    <li class="promise">
+                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+                        <h3 class="promise-title">Solo software legal</h3>
+                        <p>Licencias originales a tu nombre o LibreOffice sin costo. Nada pirata.</p>
                     </li>
-                </ol>
+                    <li class="promise">
+                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-wallet"/></svg></span>
+                        <h3 class="promise-title">Pagas la mitad al empezar</h3>
+                        <p>En webs y videos: 50% de anticipo y el resto cuando recibes y revisas el trabajo.</p>
+                    </li>
+                    <li class="promise">
+                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span>
+                        <h3 class="promise-title">Atención directa por WhatsApp</h3>
+                        <p>Hablas con quien hace el trabajo, sin intermediarios ni respuestas automáticas.</p>
+                    </li>
+                </ul>
+                </div>
             </div>
         </section>
 
         <!-- Cotizador -->
-        <section class="sec sec-white" id="cotizador" data-theme="light" aria-labelledby="cotizador-titulo">
+        <section class="sec sec-white" id="cotizador" data-theme="dark" aria-labelledby="cotizador-titulo">
             <div class="wrap">
-                <div class="sec-head">
+                <div class="svc-head head-light">
                     <h2 class="t-h2" id="cotizador-titulo" data-reveal>Arma tu cotización.</h2>
-                    <p class="t-lead" data-reveal>Elige lo que necesitas y mira la inversión estimada al instante.</p>
-                    <div class="segmented" role="group" aria-label="Moneda" data-reveal>
-                        <button type="button" data-currency="COP" aria-pressed="true">COP $</button>
-                        <button type="button" data-currency="USD" aria-pressed="false">USD $</button>
+                    <div class="svc-head-side" data-reveal>
+                        <p class="t-lead">Elige lo que necesitas y mira la inversión estimada al instante.</p>
+                        <div class="segmented" role="group" aria-label="Moneda">
+                            <button type="button" data-currency="COP" aria-pressed="true">COP $</button>
+                            <button type="button" data-currency="USD" aria-pressed="false">USD $</button>
+                        </div>
                     </div>
                 </div>
                 <div class="quote">
@@ -890,9 +1146,10 @@
             <div class="coverage-media" aria-hidden="true">
                 <img src="img/hero.webp" srcset="img/hero-800.webp 800w, img/hero.webp 1365w" sizes="100vw" width="1365" height="768" alt="" loading="lazy" decoding="async">
             </div>
+            <div class="coverage-globe" aria-hidden="true"><canvas></canvas><span class="globe-label">Neiva</span></div>
             <div class="coverage-inner">
                 <h2 class="t-h2" id="cobertura-titulo" data-reveal>Desde Neiva para toda Colombia.</h2>
-                <p class="t-lead" data-reveal>Tu computador lo recibimos en Neiva. Las páginas web, el diseño y el soporte remoto llegan a cualquier ciudad del país.</p>
+                <p class="t-lead" data-reveal>Tu computador lo recibimos en Neiva. Las páginas web, los videos y el soporte remoto llegan a cualquier ciudad del país.</p>
                 <dl class="facts">
                     <div class="fact glass glass-dark" data-reveal><dt>Presencial</dt><dd>Neiva, Huila</dd></div>
                     <div class="fact glass glass-dark" data-reveal><dt>Remoto</dt><dd>Toda Colombia</dd></div>
@@ -902,14 +1159,17 @@
         </section>
 
         <!-- Preguntas -->
-        <section class="sec" id="faq" data-theme="light" aria-labelledby="faq-titulo">
-            <div class="sec-head">
+        <section class="sec" id="faq" data-theme="dark" aria-labelledby="faq-titulo">
+            <div class="wrap faq-grid">
+            <div class="faq-side">
                 <h2 class="t-h2" id="faq-titulo" data-reveal>Preguntas frecuentes.</h2>
+                <p class="t-lead" data-reveal>¿No encuentras tu respuesta? Pregúntanos directo.</p>
+                <a href="https://wa.me/573144321446?text=Hola%2C%20Bit%C3%A1cora%20Digital.%20Tengo%20una%20pregunta." target="_blank" rel="noopener noreferrer" class="link-more" data-reveal>Preguntar por WhatsApp <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
             </div>
             <div class="faq" data-reveal>
                 <details class="faq-item" name="faq">
                     <summary>¿Dónde atienden y cómo entrego mi equipo? <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-                    <p class="faq-answer">Atendemos en Neiva, Huila. Al coordinar por WhatsApp acordamos el punto de recepción y entrega. Para proyectos web y diseño gráfico trabajamos 100% en remoto para todo el país.</p>
+                    <p class="faq-answer">Atendemos en Neiva, Huila. Al coordinar por WhatsApp acordamos el punto de recepción y entrega. Los proyectos web trabajamos 100% en remoto para todo el país. Los videos se graban en Neiva o los editamos con el material que nos envíes.</p>
                 </details>
                 <details class="faq-item" name="faq">
                     <summary>¿Se pierden mis archivos si se formatea el computador? <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
@@ -917,7 +1177,7 @@
                 </details>
                 <details class="faq-item" name="faq">
                     <summary>¿Cuánto se demora el servicio? <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-                    <p class="faq-answer">La configuración básica y las piezas publicitarias se entregan en 24 horas; un formateo completo, entre 24 y 48 horas. Una landing page toma de 3 a 5 días y un sitio web completo, de 7 a 15 días.</p>
+                    <p class="faq-answer">La configuración básica se entrega en 24 horas y un video para redes, de 3 a 4 días; un formateo completo, entre 24 y 48 horas. Una landing page toma de 3 a 5 días y un sitio web completo, de 7 a 15 días.</p>
                 </details>
                 <details class="faq-item" name="faq">
                     <summary>¿Instalan Windows y Office originales? <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
@@ -925,43 +1185,42 @@
                 </details>
                 <details class="faq-item" name="faq">
                     <summary>¿Cuáles son los medios de pago aceptados? <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-                    <p class="faq-answer">Efectivo en Neiva, Nequi, Daviplata y transferencia Bancolombia. Para proyectos web y diseño trabajamos con un 50% de anticipo y el saldo contra entrega y revisión.</p>
+                    <p class="faq-answer">Efectivo en Neiva, Nequi, Daviplata y transferencia Bancolombia. Para proyectos web y videos trabajamos con un 50% de anticipo y el saldo contra entrega y revisión.</p>
                 </details>
                 <details class="faq-item" name="faq">
                     <summary>¿Atienden fuera de Neiva? <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-                    <p class="faq-answer">Sí. Las páginas web, el diseño gráfico y el soporte remoto se hacen para cualquier ciudad de Colombia. El mantenimiento físico de equipos es en Neiva.</p>
+                    <p class="faq-answer">Sí. Las páginas web, la edición de videos y el soporte remoto se hacen para cualquier ciudad de Colombia. El mantenimiento físico de equipos es en Neiva.</p>
                 </details>
+            </div>
             </div>
         </section>
 
         <!-- Cierre -->
-        <section class="sec sec-white closing center" data-theme="light" aria-labelledby="cierre-titulo">
+        <section class="sec sec-white closing" data-theme="dark" aria-labelledby="cierre-titulo">
             <div class="wrap">
-                <div class="closing-media" aria-hidden="true">
-                    <video muted loop playsinline preload="none" poster="img/robot-poster.webp" width="960" height="540" tabindex="-1" data-autoplay>
-                        <source src="video/robot.mp4" type="video/mp4">
-                    </video>
-                </div>
+
+                <div class="closing-copy">
                 <h2 class="t-h2" id="cierre-titulo" data-reveal>¿Hablamos?</h2>
-                <p class="t-lead" data-reveal style="margin: 18px auto 0; max-width: 36ch;">Cuéntanos qué necesitas. El diagnóstico inicial es sin costo.</p>
+                <p class="t-lead closing-lead" data-reveal>Cuéntanos qué necesitas. El diagnóstico inicial es sin costo.</p>
                 <div class="hero-actions" data-reveal>
-                    <a href="#cotizador" class="btn btn-primary">Configurar cotización</a>
+                    <a href="#cotizador" class="btn btn-primary" data-magnetic>Configurar cotización</a>
                     <a href="https://wa.me/573144321446" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
                         <svg class="icon" aria-hidden="true"><use href="#i-whatsapp"/></svg>
                         <span>Escribir por WhatsApp</span>
                     </a>
                 </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <footer class="footer" data-theme="light">
+    <footer class="footer" data-theme="dark">
         <div class="footer-inner">
             <p>Los precios del cotizador son estimados; el valor final se confirma después del diagnóstico. Windows, Office y WhatsApp son marcas de sus respectivos titulares.</p>
             <div class="footer-cols" style="margin-top:16px">
                 <div>
                     <p class="footer-brand"><img src="img/logo-64.webp" alt="" width="20" height="20"> Bitácora Digital</p>
-                    <p>Soporte técnico, desarrollo web y diseño en Neiva, Huila.</p>
+                    <p>Soporte técnico, desarrollo web y videos publicitarios en Neiva, Huila.</p>
                 </div>
                 <div>
                     <h2>Servicios</h2>
@@ -969,7 +1228,7 @@
                         <li><a href="#cotizador">Mantenimiento</a></li>
                         <li><a href="#cotizador">Formateo e instalación</a></li>
                         <li><a href="#cotizador">Páginas web</a></li>
-                        <li><a href="#cotizador">Identidad y marca</a></li>
+                        <li><a href="#cotizador">Videos publicitarios</a></li>
                     </ul>
                 </div>
                 <div>
@@ -1019,6 +1278,9 @@
         const WHATSAPP = "573144321446";
         const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const saveData = !!(navigator.connection && navigator.connection.saveData);
+        const TIER = document.documentElement.dataset.tier || "high";
+        let lowEnd = TIER === "low";
+        const lowHooks = []; // lo que se apaga si el equipo pasa al modo liviano durante la visita
         let heroEnd = 0;
         let lenis = null; // desplazamiento suave (se activa cuando carga la librería)
         let heroDark = false; // la pantalla negra ya llena el primer pantallazo
@@ -1026,6 +1288,23 @@
 
         // --- Aparición escalonada al hacer scroll (el contenido se ve igual si esto falla) ---
         if (!reduceMotion && "IntersectionObserver" in window) {
+            // Títulos de sección: cada palabra sube desde una ranura, una detrás de otra
+            document.querySelectorAll(".t-h2[data-reveal]").forEach((h) => {
+                if (h.children.length) return;
+                const words = h.textContent.trim().split(/\s+/);
+                h.textContent = "";
+                words.forEach((word, i) => {
+                    const slot = document.createElement("span");
+                    const inner = document.createElement("span");
+                    slot.className = "w";
+                    inner.textContent = word;
+                    inner.style.setProperty("--wi", String(i));
+                    slot.appendChild(inner);
+                    h.appendChild(slot);
+                    if (i < words.length - 1) h.appendChild(document.createTextNode(" "));
+                });
+                h.classList.add("split");
+            });
             const items = document.querySelectorAll("[data-reveal]");
             const counters = new Map();
             items.forEach((el) => {
@@ -1054,8 +1333,10 @@
         let themeMap = [], navBottom = 64, heroBottom = 0;
         function measureThemes() {
             const y0 = window.scrollY;
-            themeMap = [...document.querySelectorAll("main > section[data-theme], footer[data-theme]")].map((el) => {
-                const r = el.getBoundingClientRect();
+            themeMap = [...document.querySelectorAll("main section[data-theme], footer[data-theme]")].map((el) => {
+                // Una sección fijada por GSAP vive dentro de un "pin-spacer": se mide el contenedor completo
+                const box = el.parentElement.classList.contains("pin-spacer") ? el.parentElement : el;
+                const r = box.getBoundingClientRect();
                 return [r.top + y0, r.bottom + y0, el.dataset.theme, el.id === "inicio"];
             });
             const hero = themeMap.find((t) => t[3]);
@@ -1131,14 +1412,16 @@
             const screenDpr = Math.min(window.devicePixelRatio || 1, 2);
             const phoneSet = window.innerWidth * screenDpr <= 1100;
             // Medido en una laptop de gama de entrada: el canvas a 0,8 reduce cerca de 40 % los cuadros lentos
-            const dpr = phoneSet ? Math.min(screenDpr, 1.25) : (screenDpr >= 1.5 ? 1.25 : 0.8);
+            const dpr = lowEnd ? (phoneSet ? 1 : 0.75) : phoneSet ? Math.min(screenDpr, 1.25) : (screenDpr >= 1.5 ? 1.25 : 0.8);
             // Cuadros del tamaño justo para la pantalla: 800, 1200 o 1600 px (menos peso y se preparan más rápido)
             const need = window.innerWidth * dpr;
-            const set = phoneSet || need <= 900 ? "sm" : need <= 1300 ? "md" : "lg";
+            // En gama baja nunca pasa de 800 px y en celulares chicos usa los de 480 px
+            const set = lowEnd ? (need <= 520 ? "xs" : "sm") : phoneSet || need <= 900 ? "sm" : need <= 1300 ? "md" : "lg";
             const canBitmap = "createImageBitmap" in window;
             const blobs = new Array(N), bitmaps = new Map(), decoding = new Set();
             // Se preparan primero el cuadro actual y luego los que vienen en la dirección del scroll
-            const AHEAD = 12, BEHIND = 5, KEEP = 16, MAX_INFLIGHT = 3;
+            // Cuántos cuadros se guardan listos en memoria: menos en equipos con poca RAM
+            const AHEAD = lowEnd ? 6 : 12, BEHIND = lowEnd ? 3 : 5, KEEP = lowEnd ? 7 : TIER === "mid" ? 11 : 16, MAX_INFLIGHT = lowEnd ? 2 : 3;
             let inflight = 0;
             let current = 0, direction = 1, vw = 0, vh = 0, top0 = 0, dist = 1, lastKey = "", ticking = false, active = true;
             let chipSize = [];
@@ -1206,7 +1489,8 @@
             }
             async function loadAll() {
                 await fetchFrame(0);
-                if (canBitmap) loadThumbs();
+                // La copia liviana completa (~50 MB en memoria) solo en equipos que la aguantan
+                if (canBitmap && !lowEnd) loadThumbs();
                 for (const step of [8, 4, 2, 1]) {
                     const batch = [];
                     for (let i = 0; i < N; i += step) if (!blobs[i]) batch.push(fetchFrame(i));
@@ -1224,6 +1508,18 @@
             // Con el dedo (pantallas táctiles) la escena sigue al scroll con un suavizado corto:
             // los pequeños tirones del dedo no se ven y la tapa se mueve como un video
             const touch = window.matchMedia("(pointer: coarse)").matches;
+            // Computador ancho: la laptop arranca pequeña a la derecha (el texto queda a la izquierda)
+            const asymMQ = { matches: false }; // estilo presentación: laptop centrada
+            const floor = scene.querySelector(".hero-glow");
+            // Parallax 3D con el mouse: la laptop y el piso se corren un poco hacia el puntero
+            let mxT = 0, myT = 0, mxC = 0, myC = 0;
+            if (!touch && !lowEnd && window.matchMedia("(pointer: fine)").matches) {
+                window.addEventListener("pointermove", (e) => {
+                    if (window.scrollY > top0 + dist) return;
+                    mxT = e.clientX / window.innerWidth - 0.5; myT = e.clientY / window.innerHeight - 0.5;
+                    schedule();
+                }, { passive: true });
+            }
             const FOLLOW_MS = 70;
             let shownP = -1, lastT = 0, lastFi = 0, settleTimer = 0, settling = false;
 
@@ -1242,7 +1538,7 @@
                 const fi = f * (N - 1) / (GEO_N - 1);
                 // 8 pasos intermedios entre un cuadro y el siguiente; al moverse rápido no se notan y se omiten
                 // Al detenerse, la mezcla se retira y queda el cuadro exacto, nítido
-                const blend = Math.abs(fi - lastFi) < 0.9 && !settling;
+                const blend = !lowEnd && Math.abs(fi - lastFi) < 0.9 && !settling; // en gama baja, un solo cuadro por dibujo
                 settling = false;
                 lastFi = fi;
                 const i0 = blend ? Math.floor(fi) : Math.round(fi), i1 = Math.min(N - 1, i0 + 1);
@@ -1256,11 +1552,18 @@
                 const fitPhone = phone ? Math.max(fit, (0.94 * vw) / (SRC_W * 0.725)) : fit * 0.94;
                 const cover = Math.max(vw / SRC_W, vh / SRC_H) * 1.02;
                 const z = ease(clamp01((f - 44) / (GEO_N - 1 - 44)));
-                const scale = lerp(fitPhone, Math.max(cover, fitPhone), z);
+                const asym = asymMQ.matches ? 1 - ease(clamp01(f / 34)) : 0; // 1 al inicio, 0 con la tapa abierta
+                const scale = lerp(fitPhone * (1 - 0.4 * asym), Math.max(cover, fitPhone), z);
+                mxC += (mxT - mxC) * 0.1; myC += (myT - myC) * 0.1;
+                const settled = Math.abs(mxT - mxC) < 0.002 && Math.abs(myT - myC) < 0.002;
+                const par = 1 - z; // el parallax se apaga al entrar a la pantalla
                 heroDark = z > 0.55;
                 const dw = SRC_W * scale, dh = SRC_H * scale;
-                const dx = (vw - dw) / 2;
-                const dy = (vh - dh) * lerp(phone ? 0.86 : 0.78, 0.5, ease(clamp01(f / 30)) * 0.55 + z * 0.45);
+                const dx = (vw - dw) / 2 + asym * vw * 0.19 + mxC * 18 * par;
+                const dy = (vh - dh) * lerp(phone ? 0.86 : lerp(0.78, 0.62, asym), 0.5, ease(clamp01(f / 30)) * 0.55 + z * 0.45) + myC * 10 * par;
+                if (floor) {
+                    put(floor, "opacity", (1 - ease(clamp01((f - 40) / 14))).toFixed(3));
+                }
 
                 // Se dibuja el cuadro actual y encima el siguiente, mezclado según la posición exacta:
                 // entre dos cuadros hay pasos intermedios y el movimiento no da saltitos.
@@ -1269,7 +1572,7 @@
                 const b = mix > 0 ? bitmaps.get(i1) || thumbs[i1] : null;
                 const sharp = bitmaps.has(i0) && (mix === 0 || bitmaps.has(i1));
                 const img = a || nearest(index);
-                const key = i0 + "|" + mix + (sharp ? "s" : "t") + "|" + dw.toFixed(1) + "|" + dy.toFixed(1);
+                const key = i0 + "|" + mix + (sharp ? "s" : "t") + "|" + dw.toFixed(1) + "|" + dx.toFixed(1) + "|" + dy.toFixed(1);
                 if (key !== lastKey && img) {
                     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, vw, vh);
                     ctx.drawImage(img, dx, dy, dw, dh);
@@ -1315,7 +1618,7 @@
                     y = Math.min(Math.max(y, 76), vh - ch - m);
                     put(chip, "transform", `translate3d(${x.toFixed(1)}px, ${(y + (1 - c) * 14).toFixed(1)}px, 0) scale(${(0.94 + 0.06 * c).toFixed(3)})`);
                 });
-                if (p !== target) schedule(); // sigue acercándose suavemente a la posición del dedo
+                if (p !== target || !settled) schedule(); // sigue acercándose suavemente al dedo o al mouse
             }
             function schedule() { if (!active || ticking) return; ticking = true; requestAnimationFrame(render); }
 
@@ -1328,111 +1631,86 @@
             loadAll(); // es el primer pantallazo: los cuadros empiezan a llegar de inmediato
         })();
 
-        // --- Monitor de "Así trabajamos": la escena se arma con los pasos ---
-        // Mismo método que la laptop: cuadros en canvas, descompresión fuera del hilo principal, solo los cercanos en memoria.
-        const monitorSeq = (function () {
-            const fig = document.querySelector(".process-visual");
-            const canvas = fig && fig.querySelector("canvas");
-            const ctx = canvas && canvas.getContext && canvas.getContext("2d");
-            if (reduceMotion || saveData || !ctx || !("IntersectionObserver" in window)) return null;
-            const N = 90, FIRST = 2, WINDOW = 5, canBitmap = "createImageBitmap" in window;
-            const blobs = new Array(N), bitmaps = new Map(), decoding = new Set();
-            let current = N - 1, drawn = -1, started = false, cw = 0, ch = 0, ticking = false;
-
-            function size() {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                const w = Math.round(fig.clientWidth * dpr), h = Math.round(fig.clientHeight * dpr);
-                if (w && h && (w !== cw || h !== ch)) { cw = canvas.width = w; ch = canvas.height = h; drawn = -1; schedule(); }
-            }
-            function decode(i) {
-                if (i < FIRST || i >= N || !blobs[i] || bitmaps.has(i) || decoding.has(i)) return;
-                decoding.add(i);
-                const done = (bmp) => {
-                    decoding.delete(i);
-                    if (!bmp) return;
-                    if (Math.abs(i - current) > WINDOW * 2) { if (bmp.close) bmp.close(); return; }
-                    bitmaps.set(i, bmp);
-                    if (Math.abs(i - current) <= 2) { drawn = -1; schedule(); }
-                };
-                if (canBitmap) createImageBitmap(blobs[i]).then(done, () => done(null));
-                else { const img = new Image(); img.src = URL.createObjectURL(blobs[i]); img.decode().then(() => done(img), () => done(null)); }
-            }
-            function keep(c) {
-                for (let d = 0; d <= WINDOW; d++) { decode(c + d); decode(c - d); }
-                for (const [k, bmp] of bitmaps) if (Math.abs(k - c) > WINDOW * 2) { if (bmp.close) bmp.close(); bitmaps.delete(k); }
-            }
-            function fetchFrame(i) {
-                return fetch(`img/monitor/${String(i + 1).padStart(2, "0")}.webp`) // taste-skill-ignore: nombres 01.webp…
-                    .then((r) => (r.ok ? r.blob() : null))
-                    .then((b) => { if (b) { blobs[i] = b; if (Math.abs(i - current) <= WINDOW) decode(i); } })
-                    .catch(() => {});
-            }
-            async function load() {
-                if (started) return;
-                started = true;
-                await fetchFrame(current);
-                for (const step of [8, 4, 2, 1]) {
-                    const batch = [];
-                    for (let i = FIRST; i < N; i += step) if (!blobs[i]) batch.push(fetchFrame(i));
-                    await Promise.all(batch);
-                }
-                keep(current);
-            }
-            function nearest(i) {
-                for (let d = 0; d < N; d++) { if (bitmaps.has(i - d)) return i - d; if (bitmaps.has(i + d)) return i + d; }
-                return -1;
-            }
-            function draw() {
-                ticking = false;
-                const k = nearest(current);
-                if (k < 0 || (k === drawn && cw)) return;
-                ctx.clearRect(0, 0, cw, ch);
-                ctx.drawImage(bitmaps.get(k), 0, 0, cw, ch);
-                drawn = k;
-                fig.classList.add("is-live");
-            }
-            function schedule() { if (!ticking) { ticking = true; requestAnimationFrame(draw); } }
-
-            new IntersectionObserver(([e]) => { if (e.isIntersecting) { size(); load(); } }, { rootMargin: "100% 0px" }).observe(fig);
-            if ("ResizeObserver" in window) new ResizeObserver(size).observe(fig);
-            return {
-                set(p) {
-                    const i = FIRST + Math.round(Math.min(1, Math.max(0, p)) * (N - 1 - FIRST));
-                    if (i !== current) { current = i; keep(i); schedule(); }
-                }
-            };
-        })();
-
         // --- Videos: cada uno se reproduce solo mientras está en pantalla ---
-        if (!reduceMotion && !saveData && "IntersectionObserver" in window) {
+        // En gama baja se queda la imagen de portada: ahorra datos, batería y procesador
+        if (!reduceMotion && !lowEnd && "IntersectionObserver" in window) {
             document.querySelectorAll("video[data-autoplay]").forEach((video) => {
-                new IntersectionObserver(([entry]) => {
+                const io = new IntersectionObserver(([entry]) => {
                     if (entry.isIntersecting) { video.preload = "auto"; const p = video.play(); if (p) p.catch(() => {}); }
                     else video.pause();
-                }, { threshold: 0.15 }).observe(video);
+                }, { threshold: 0.15 });
+                io.observe(video);
+                lowHooks.push(() => { io.disconnect(); video.pause(); });
             });
         }
 
-        // --- Servicios: el brillo de cada fila sigue al mouse ---
-        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-            document.querySelectorAll(".svc").forEach((card) => {
+        // --- Si el equipo se queda corto mientras se hace scroll, pasa al modo liviano y se recuerda ---
+        // Se miden los cuadros por segundo solo mientras hay scroll: si dos tandas seguidas van por debajo de ~25 cuadros por segundo, se aligera
+        if (!lowEnd && !reduceMotion) {
+            let last = 0, total = 0, slow = 0, badRuns = 0, until = 0, sampling = false, armed = false;
+            window.addEventListener("load", () => setTimeout(() => { armed = true; }, 2500), { once: true });
+            const goLow = () => {
+                lowEnd = true;
+                document.documentElement.classList.add("tier-low");
+                document.documentElement.dataset.tier = "low";
+                try { localStorage.setItem("bd-low", String(Date.now())); } catch (e) {}
+                lowHooks.forEach((fn) => fn());
+            };
+            const tick = (t) => {
+                if (last) { const dt = t - last; if (dt < 250) { total++; if (dt > 40) slow++; } }
+                last = t;
+                if (total >= 90) { badRuns = slow / total > 0.35 ? badRuns + 1 : 0; total = slow = 0; if (badRuns >= 2) { goLow(); return; } }
+                if (performance.now() < until && !lowEnd) requestAnimationFrame(tick); else { sampling = false; last = 0; }
+            };
+            window.addEventListener("scroll", () => {
+                if (!armed || lowEnd || document.hidden) return;
+                until = performance.now() + 300;
+                if (!sampling) { sampling = true; last = 0; requestAnimationFrame(tick); }
+            }, { passive: true });
+        }
+
+        // --- Profundidad 3D con el mouse: brillo que sigue al puntero y videos/tarjetas que se inclinan hacia él ---
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches && !reduceMotion) {
+            document.querySelectorAll(".svc, .promise").forEach((card) => {
+                const tilt = card.querySelector(".svc-media") || card;
+                const max = card.classList.contains("promise") ? 7 : 9;
                 card.addEventListener("pointermove", (e) => {
                     const r = card.getBoundingClientRect();
                     card.style.setProperty("--mx", `${e.clientX - r.left}px`);
                     card.style.setProperty("--my", `${e.clientY - r.top}px`);
+                    if (lowEnd) return;
+                    const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+                    tilt.style.setProperty("--ry", `${(px * max).toFixed(2)}deg`);
+                    tilt.style.setProperty("--rx", `${(-py * max * 0.8).toFixed(2)}deg`);
                 });
+                card.addEventListener("pointerleave", () => { tilt.style.setProperty("--rx", "0deg"); tilt.style.setProperty("--ry", "0deg"); });
             });
         }
 
+        // --- Globo 3D de cobertura (Three.js): se descarga solo al acercarse y nunca en modo liviano ---
+        (function () {
+            const host = document.querySelector(".coverage-globe");
+            if (!host || reduceMotion || lowEnd || !("IntersectionObserver" in window)) return;
+            let ctl = null;
+            const io = new IntersectionObserver(([e]) => {
+                if (!e.isIntersecting) return;
+                io.disconnect();
+                import("./js/globe.js").then((m) => { if (!lowEnd) ctl = m.start(host, { quality: TIER === "high" ? "high" : "mid", texture: TIER === "high" ? "img/tierra-noche.webp" : "img/tierra-noche-2k.webp" }); }).catch(() => {});
+            }, { rootMargin: "80% 0px" });
+            io.observe(host);
+            lowHooks.push(() => { if (ctl) ctl.stop(); });
+        })();
+
         // --- Cotizador ---
         const servicesList = [
-            { id: "sw1", name: "Configuración básica y optimización", desc: "Instalación de software, limpieza y afinamiento del sistema", cop: 80000, usd: 20, eta: "24 h" },
-            { id: "sw2", name: "Entorno completo (formateo y drivers)", desc: "Instalación limpia, controladores oficiales y respaldo preventivo", cop: 250000, usd: 65, eta: "24–48 h" },
+            { id: "sw1", name: "Configuración básica y optimización", desc: "Instalación de software, limpieza y afinamiento del sistema", cop: 60000, usd: 15, eta: "24 h" },
+            { id: "sw2", name: "Entorno completo (formateo y drivers)", desc: "Instalación limpia, controladores oficiales y respaldo preventivo", cop: 140000, usd: 35, eta: "24–48 h" },
             { id: "wb1", name: "Landing page comercial", desc: "Página de aterrizaje optimizada para celulares y WhatsApp", cop: 500000, usd: 125, eta: "3–5 días" },
-            { id: "wb2", name: "Sitio web llave en mano", desc: "Incluye dominio .com, hosting veloz y certificado SSL por 1 año", cop: 1500000, usd: 380, eta: "7–10 días" },
+            { id: "wb2", name: "Sitio web llave en mano", desc: "Incluye dominio .com, hosting veloz y certificado SSL por 1 año", cop: 1200000, usd: 300, eta: "7–10 días" },
             { id: "wb3", name: "Sitio web corporativo", desc: "Estructura de varias páginas, catálogo, blog e infraestructura", cop: 1800000, usd: 450, eta: "10–15 días" },
-            { id: "ds1", name: "Pieza publicitaria", desc: "Pieza gráfica en alta definición para pauta o redes sociales", cop: 50000, usd: 12, eta: "24 h" },
-            { id: "ds2", name: "Kit de identidad visual", desc: "Manual de marca, logotipo vectorial, tipografías y colores", cop: 350000, usd: 90, eta: "4–6 días" }
+            { id: "vd1", name: "Video para redes sociales", desc: "Reel o TikTok de hasta 30 segundos con edición, música y textos animados", cop: 180000, usd: 45, eta: "3–4 días" },
+            { id: "vd2", name: "Video publicitario completo", desc: "Hasta 60 segundos con guion, grabación en Neiva, edición y música", cop: 450000, usd: 115, eta: "5–7 días" },
+            { id: "vd3", name: "Paquete de 4 videos para redes", desc: "Cuatro reels al mes para mantener activas tus redes", cop: 600000, usd: 150, eta: "Mensual" }
         ];
         const formatters = {
             COP: new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }),
@@ -1454,7 +1732,7 @@
             <label class="service-row" data-id="${s.id}">
                 <input class="check" type="checkbox" value="${s.id}" aria-describedby="desc-${s.id}">
                 <span class="service-info">
-                    <span class="service-name">${s.name}</span>
+                    <span class="service-name"><svg class="icon row-icon" aria-hidden="true"><use href="#${s.id.startsWith("wb") ? "i-svc-web" : s.id.startsWith("vd") ? "i-svc-video" : "i-svc-pc"}"/></svg>${s.name}</span>
                     <span class="service-desc" id="desc-${s.id}">${s.desc}</span>
                 </span>
                 <span class="service-price"><span class="p-val"></span><span class="service-eta">Entrega: ${s.eta}</span></span>
@@ -1526,7 +1804,7 @@
         const legalTexts = {
             terminos: { title: "Términos y condiciones", html: `
                 <h3>1. Quién presta el servicio</h3><p>Bitácora Digital presta servicios tecnológicos en Neiva, Huila, Colombia. Canal oficial de atención WhatsApp: +57 314 4321446.</p>
-                <h3>2. Servicios ofrecidos</h3><p>Mantenimiento de computadores, instalación limpia de sistemas operativos, paquetes de ofimática, desarrollo web comercial y diseño publicitario. El alcance exacto se pacta previamente en cada cotización.</p>
+                <h3>2. Servicios ofrecidos</h3><p>Mantenimiento de computadores, instalación limpia de sistemas operativos, paquetes de ofimática, desarrollo web comercial y videos publicitarios. El alcance exacto se pacta previamente en cada cotización.</p>
                 <h3>3. Cotización y pagos</h3><p>La cotización es sin costo. Medios de pago aceptados: efectivo en Neiva, Nequi, Daviplata y transferencia bancaria. Si el servicio requiere licencias originales de software, su costo se cancela por adelantado.</p>
                 <h3>4. Licencias originales</h3><p>Solo instalamos software con licencia original provista por el cliente o adquirida a su nombre. También ofrecemos alternativas libres de código abierto como LibreOffice sin costo de licencia.</p>
                 <h3>5. Respaldo preventivo</h3><p>Antes de cualquier formateo o cambio de almacenamiento, te asistimos para identificar y respaldar tus archivos críticos.</p>
@@ -1556,59 +1834,99 @@
             gsap.registerPlugin(ScrollTrigger);
             ScrollTrigger.config({ ignoreMobileResize: true });
 
-            // Proceso: la barra avanza y el paso activo se ilumina (también con "reducir movimiento": es información)
-            const steps = [...document.querySelectorAll(".step")];
-            const bar = document.getElementById("process-bar");
-            const count = document.getElementById("process-count");
-            const stepName = document.getElementById("process-step-name");
-            document.getElementById("process-steps").classList.add("has-progress");
+            // Proceso: la ruta se dibuja y cada paso se enciende al llegar (también con "reducir movimiento": es información)
+            const track = document.getElementById("route-track");
+            const waypoints = [...track.querySelectorAll(".waypoint")];
+            track.classList.add("has-route");
+            track.style.setProperty("--route", "0");
             ScrollTrigger.create({
-                trigger: "#process-steps",
-                start: "top 55%",
-                end: "bottom 55%",
-                onUpdate: (self) => {
-                    const n = steps.length;
-                    const idx = Math.min(n - 1, Math.floor(self.progress * n));
-                    bar.style.transform = `scaleX(${(0.25 + 0.75 * self.progress).toFixed(3)})`;
-                    steps.forEach((s, i) => s.classList.toggle("is-active", i === idx));
-                    count.textContent = `${idx + 1} de ${n}`;
-                    stepName.textContent = steps[idx].dataset.name;
-                }
+                trigger: track, start: "top 60%", end: "bottom 60%",
+                onUpdate: (self) => track.style.setProperty("--route", self.progress.toFixed(3))
             });
+            waypoints.forEach((w) => ScrollTrigger.create({ trigger: w, start: "top 62%", onToggle: (self) => w.classList.toggle("is-on", self.isActive || self.progress > 0), onLeaveBack: () => w.classList.remove("is-on"), onEnter: () => w.classList.add("is-on") }));
 
             const mm = gsap.matchMedia();
             mm.add("(prefers-reduced-motion: no-preference)", () => {
+                if (lowEnd) return; // en gama baja los videos y la foto quedan quietos
                 const smooth = 0.8;
+                const tweens = [];
                 // Video de cada tarjeta: se expande desde un recorte redondeado cuando su tarjeta entra
                 gsap.utils.toArray(".svc-media").forEach((m) => {
                     const st = { trigger: m.closest(".svc"), start: "top 92%", end: "center 55%", scrub: smooth };
-                    gsap.fromTo(m, { clipPath: "inset(10% 10% 10% 10% round 28px)" },
-                        { clipPath: "inset(0% 0% 0% 0% round 18px)", ease: "none", scrollTrigger: st });
-                    gsap.fromTo(m.querySelector("video"), { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: Object.assign({}, st) });
+                    tweens.push(gsap.fromTo(m, { clipPath: "inset(10% 10% 10% 10% round 28px)" },
+                        { clipPath: "inset(0% 0% 0% 0% round 18px)", ease: "none", scrollTrigger: st }));
+                    tweens.push(gsap.fromTo(m.querySelector("video"), { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: Object.assign({}, st) }));
+                    tweens.push(gsap.fromTo(m, { "--rxs": "18deg" }, { "--rxs": "0deg", ease: "none", scrollTrigger: Object.assign({}, st) }));
                 });
                 // Cobertura: la foto se mueve más lento que la página
-                gsap.fromTo(".coverage-media", { yPercent: -8, scale: 1.08 }, { yPercent: 8, scale: 1, ease: "none",
-                      scrollTrigger: { trigger: ".coverage", start: "top bottom", end: "bottom top", scrub: smooth } });
+                tweens.push(gsap.fromTo(".coverage-media", { yPercent: -8, scale: 1.08 }, { yPercent: 8, scale: 1, ease: "none",
+                      scrollTrigger: { trigger: ".coverage", start: "top bottom", end: "bottom top", scrub: smooth } }));
+                lowHooks.push(() => tweens.forEach((tw) => { tw.scrollTrigger && tw.scrollTrigger.kill(); tw.progress(1).kill(); }));
             });
-            // Monitor: en computador avanza con los pasos; en celular, mientras pasa por la pantalla
-            if (monitorSeq) {
-                const state = { p: 1 };
-                const monitorTween = (vars) => gsap.fromTo(state, { p: 0 }, { p: 1, ease: "none", onUpdate: () => monitorSeq.set(state.p),
-                    scrollTrigger: Object.assign({ scrub: 0.6 }, vars) });
-                mm.add("(min-width: 900px)", () => monitorTween({ trigger: "#process-steps", start: "top 80%", end: "bottom 60%" }));
-                mm.add("(max-width: 899px)", () => monitorTween({ trigger: ".process-visual", start: "top 90%", end: "bottom 30%" }));
+            // Servicios: cada tarjeta se queda arriba y la siguiente sube encima; la de atrás se achica y oscurece.
+            // Solo si todas caben en la pantalla, para que ningún botón quede tapado (en celulares bajitos queda como lista)
+            const svcList = document.querySelector(".svc-list");
+            const cards = [...svcList.querySelectorAll(".svc")];
+            const STEP = 10;
+            let stacked = false;
+            const stackTop = () => nav.getBoundingClientRect().bottom + 16;
+            const resetCard = (c) => { c.style.transform = ""; c.style.removeProperty("--shade"); };
+            function fitStack() {
+                const before = stacked;
+                const tallest = Math.max(...cards.map((c) => c.offsetHeight));
+                stacked = !reduceMotion && tallest + stackTop() + (cards.length - 1) * STEP + 16 <= window.innerHeight;
+                svcList.classList.toggle("is-stacked", stacked);
+                if (!stacked) cards.forEach(resetCard);
+                return before !== stacked;
             }
+            fitStack();
+            cards.slice(0, -1).forEach((card, i) => {
+                ScrollTrigger.create({
+                    trigger: cards[i + 1],
+                    start: "top bottom",
+                    end: () => `top ${stackTop() + (i + 1) * STEP}px`,
+                    onUpdate: (self) => {
+                        if (!stacked || lowEnd) return;
+                        const p = self.progress;
+                        card.style.transform = `scale(${(1 - 0.06 * p).toFixed(4)})`;
+                        card.style.setProperty("--shade", (0.55 * p).toFixed(3));
+                    }
+                });
+            });
+            lowHooks.push(() => cards.forEach(resetCard));
+            let fitTimer = 0;
+            window.addEventListener("resize", () => { clearTimeout(fitTimer); fitTimer = setTimeout(() => { if (fitStack()) ScrollTrigger.refresh(); }, 150); });
+
+            // Compromisos en computador: la sección se queda quieta y la cinta corre de lado con el scroll
+            const promSec = document.getElementById("compromisos");
+            const strip = promSec.querySelector(".promises");
+            mm.add("(min-width: 900px) and (prefers-reduced-motion: no-preference)", () => {
+                if (lowEnd) return;
+                promSec.classList.add("promises-pinned");
+                // Si no cabe en la pantalla (monitor bajito) se queda la cuadrícula
+                if (promSec.offsetHeight > window.innerHeight) { promSec.classList.remove("promises-pinned"); return; }
+                const travel = () => Math.max(0, strip.scrollWidth - strip.parentElement.clientWidth);
+                const tween = gsap.to(strip, {
+                    x: () => -travel(), ease: "none",
+                    scrollTrigger: { trigger: promSec, start: "top top", end: () => "+=" + travel(), pin: true, scrub: 0.6, invalidateOnRefresh: true, anticipatePin: 1 }
+                });
+                lowHooks.push(() => { tween.scrollTrigger && tween.scrollTrigger.kill(true); tween.kill(); gsap.set(strip, { clearProps: "transform" }); promSec.classList.remove("promises-pinned"); });
+                return () => { promSec.classList.remove("promises-pinned"); gsap.set(strip, { clearProps: "transform" }); };
+            });
+            ScrollTrigger.sort();
 
             // Desplazamiento suave con la rueda del mouse (en pantallas táctiles el navegador ya lo hace solo)
-            if (window.Lenis && !reduceMotion) {
+            if (window.Lenis && !reduceMotion && !lowEnd) {
                 lenis = new Lenis({ lerp: 0.16 });
                 lenis.on("scroll", ScrollTrigger.update);
-                gsap.ticker.add((time) => lenis.raf(time * 1000));
+                const lenisTick = (time) => lenis && lenis.raf(time * 1000);
+                gsap.ticker.add(lenisTick);
+                lowHooks.push(() => { gsap.ticker.remove(lenisTick); lenis.destroy(); lenis = null; });
                 gsap.ticker.lagSmoothing(0);
                 // Enlaces internos (#servicios, #cotizador…) con el mismo deslizamiento
                 document.addEventListener("click", (e) => {
                     const a = e.target.closest('a[href^="#"]');
-                    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+                    if (!a || !lenis || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
                     const id = a.getAttribute("href");
                     const el = id.length > 1 && document.getElementById(id.slice(1));
                     if (!el) return;

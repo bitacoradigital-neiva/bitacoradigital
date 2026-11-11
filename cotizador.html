@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0b0d0f">
-    <meta name="description" content="Arma a tu medida tu cotización de soporte, desarrollo web y diseño con Bitácora Digital.">
+    <meta name="description" content="Arma a tu medida tu cotización de soporte, desarrollo web y videos publicitarios con Bitácora Digital.">
     <title>Bitácora Digital | Cotizador de servicios digitales</title>
     <link rel="canonical" href="https://bitacoradigital-lyart.vercel.app/cotizador.html">
     <meta property="og:url" content="https://bitacoradigital-lyart.vercel.app/cotizador.html">
@@ -558,7 +558,7 @@
         <section class="hero" aria-labelledby="page-title">
             <h1 id="page-title">Tecnología que trabaja para ti.</h1>
             <div>
-                <p class="hero-copy"><strong>Arma tu cotización</strong> de soporte, desarrollo web y diseño. Elige lo que necesitas y mira cómo cambia tu inversión al instante.</p>
+                <p class="hero-copy"><strong>Arma tu cotización</strong> de soporte, desarrollo web y videos publicitarios. Elige lo que necesitas y mira cómo cambia tu inversión al instante.</p>
                 <a class="hero-link" href="#servicios">Explorar servicios <i data-lucide="arrow-down-right" aria-hidden="true"></i></a>
             </div>
         </section>
@@ -630,20 +630,21 @@
     <script>
         // --- DATOS: edita aquí los servicios, sus nombres, descripciones y precios. ---
         const services = [
-            { id: 'sw1', cat: 'Software', icon: 'terminal', name: 'Configuración Básica', desc: 'Instalación y optimización.', cop: 80000, usd: 20 },
-            { id: 'sw2', cat: 'Software', icon: 'cpu', name: 'Entorno Completo', desc: 'Formateo, SO, drivers.', cop: 250000, usd: 65 },
+            { id: 'sw1', cat: 'Software', icon: 'terminal', name: 'Configuración Básica', desc: 'Instalación y optimización.', cop: 60000, usd: 15 },
+            { id: 'sw2', cat: 'Software', icon: 'cpu', name: 'Entorno Completo', desc: 'Formateo, SO, drivers.', cop: 140000, usd: 35 },
             { id: 'wb1', cat: 'Web', icon: 'layout', name: 'Landing Page', desc: 'Optimizado conversiones.', cop: 500000, usd: 125 },
-            { id: 'wb2', cat: 'Web', icon: 'globe', name: 'Sitio Llave en Mano', desc: 'Dominio, Hosting, SSL.', cop: 1500000, usd: 380 },
+            { id: 'wb2', cat: 'Web', icon: 'globe', name: 'Sitio Llave en Mano', desc: 'Dominio, Hosting, SSL.', cop: 1200000, usd: 300 },
             { id: 'wb3', cat: 'Web', icon: 'layout-grid', name: 'Sitio Corporativo', desc: 'Multi-página, infraestructura.', cop: 1800000, usd: 450 },
-            { id: 'ds1', cat: 'Diseño', icon: 'palette', name: 'Diseño de pieza publicitaria', desc: 'Pieza publicitaria.', cop: 50000, usd: 12 },
-            { id: 'ds2', cat: 'Diseño', icon: 'brush', name: 'Kit de identidad visual', desc: 'Kit de marca completo.', cop: 350000, usd: 90 }
+            { id: 'vd1', cat: 'Video', icon: 'smartphone', name: 'Video para Redes', desc: 'Reel o TikTok de hasta 30 s.', cop: 180000, usd: 45 },
+            { id: 'vd2', cat: 'Video', icon: 'clapperboard', name: 'Video Publicitario Completo', desc: 'Guion, grabación y edición.', cop: 450000, usd: 115 },
+            { id: 'vd3', cat: 'Video', icon: 'film', name: 'Paquete de 4 Videos', desc: 'Cuatro reels al mes.', cop: 600000, usd: 150 }
         ];
 
         // Etiquetas e iconos de categoría se separan de los datos editables de cada servicio.
         const categories = {
             Software: { title: 'Programas', icon: 'settings-2' },
             Web: { title: 'Desarrollo Web', icon: 'globe-2' },
-            Diseño: { title: 'Diseño Digital', icon: 'shapes' }
+            Video: { title: 'Videos Publicitarios', icon: 'video' }
         };
         const selected = {};
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

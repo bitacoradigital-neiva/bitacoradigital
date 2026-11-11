@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "projectId": "8df251b8-aaad-4496-a75b-049cd6a26d51",
+  "brandAssets": {
+    "logo": {
+      "assetKey": "img-logo-bitacora-simbolo.png",
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/8df251b8-aaad-4496-a75b-049cd6a26d51/brand-assets/img-logo-bitacora-simbolo.png/logo-bitacora-simbolo.png"
+    }
+  },
+  "contentAssets": {
+    "laptop-3d-open": {
+      "nodeId": "959f5c57-04c8-40d6-8655-f41132dbecd5"
+    }
+  },
+  "targets": {
+    "/": {
+      "baselineDraftId": "5ba84aea-5893-4185-af6b-55fa9be91e98",
+      "activeDraftId": "5ba84aea-5893-4185-af6b-55fa9be91e98",
+      "branches": [
+        {
+          "draftId": "889a51df-c40b-4a00-962c-5a13a3061c65",
+          "description": "A Cinematic launch (Inter Tight) \u2014 only hero generated"
+        },
+        {
+          "draftId": "315b895c-a67e-4cc3-adc9-aa11d7af05ca",
+          "description": "B Editorial tech (Space Grotesk, asymmetric bento)"
+        },
+        {
+          "draftId": "1991192c-47c4-4259-9c2e-35556ee11ab3",
+          "description": "C Glass and light (Unbounded, orbiting glass cards)"
+        }
+      ],
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/init/theme.md",
+        "index.html:724:808",
+        "index.html:836:1210"
+      ],
+      "fingerprints": {
+        "index.html": "39d660eb46e3dbe1aa4c7d229722e0545d88c928f66a3c4dfa67c0e0fc7816e1",
+        ".superdesign/design-system.md": "6e0f78ec7ad38ea86c102daaf47e98fca9908a0d8c0934b8e1404df42a343dd1"
+      },
+      "components": []
+    }
+  }
+}
