@@ -310,34 +310,78 @@
         .sec-head { max-width: 820px; margin: 0 auto clamp(48px, 6vw, 80px); text-align: center; }
         .sec-head .t-lead { margin: 18px auto 0; max-width: 40ch; }
 
-        /* Servicios: tarjetas grandes sobre negro */
-        .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
-        .tile {
+        /* Servicios: filas numeradas con entregables (estilo Linear / Vercel) */
+        .svc-head { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(24px, 5vw, 80px); align-items: end; margin-bottom: clamp(48px, 6vw, 88px); padding-bottom: clamp(32px, 4vw, 48px); border-bottom: 1px solid var(--dark-line); }
+        .svc-eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px; color: var(--accent-on-dark); font-size: var(--t-small); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+        .svc-eyebrow::before { content: ""; width: 24px; height: 1px; background: currentColor; }
+        .svc-head .t-h2 { text-wrap: balance; }
+        .svc-head-side { display: grid; gap: 24px; justify-items: start; }
+        .svc-head-side .t-lead { max-width: 34ch; }
+
+        .svc-list { display: grid; gap: 16px; counter-reset: svc; }
+        .svc {
             position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: clamp(28px, 3vw, 40px);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+            gap: clamp(24px, 4vw, 64px);
+            align-items: center;
+            padding: clamp(24px, 3.2vw, 44px);
             border-radius: var(--r-lg);
-            background: var(--dark-surface);
+            background: linear-gradient(180deg, #121214, #0c0c0d);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
             overflow: hidden;
-            transition: background-color 300ms var(--ease);
+            isolation: isolate;
+            transition: border-color 400ms var(--ease), background-color 400ms var(--ease);
         }
-        .tile p { color: var(--dark-ink-2); max-width: 42ch; }
-        .tile .link-more { margin-top: auto; padding-top: 8px; }
-        .tile-web { grid-column: span 4; grid-row: span 2; }
-        .tile-pc { grid-column: span 2; grid-row: span 2; }
-        .tile-sm { grid-column: span 2; }
-        .tile-media { margin-top: 20px; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 16 / 9; background: var(--dark-surface-2); }
-        .tile-media video { width: 100%; height: 100%; object-fit: cover; }
-        .tile-sm .tile-media { margin-top: auto; }
-        .tile-big-number { font-size: clamp(3.5rem, 2.5rem + 3vw, 5.5rem); font-weight: 700; letter-spacing: -0.045em; line-height: 1; color: var(--dark-ink); margin-top: auto; }
-        .tile-big-number span { display: block; font-size: var(--t-body); font-weight: 500; letter-spacing: -0.01em; color: var(--dark-ink-2); margin-top: 8px; }
+        /* Brillo azul que sigue al mouse (lo mueve el script) */
+        .svc::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(600px circle at var(--mx, 80%) var(--my, 0%), rgba(41, 151, 255, 0.10), transparent 45%);
+            opacity: 0.6;
+            transition: opacity 400ms var(--ease);
+        }
+        .svc:nth-child(even) .svc-body { order: 2; }
+        .svc-body { display: flex; flex-direction: column; min-width: 0; }
+        .svc-kicker { display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px, 2.4vw, 32px); color: var(--dark-ink-2); font-size: var(--t-small); font-weight: 500; letter-spacing: 0.02em; }
+        .svc-num { display: inline-grid; place-items: center; min-width: 40px; height: 28px; padding: 0 10px; border-radius: var(--r-pill); border: 1px solid var(--dark-line); color: var(--dark-ink); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: var(--t-xs); font-variant-numeric: tabular-nums; }
+        .svc-title { font-size: clamp(1.75rem, 1.2rem + 1.8vw, 2.75rem); line-height: 1.06; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
+        .svc-desc { margin-top: 14px; color: var(--dark-ink-2); font-size: var(--t-body); max-width: 44ch; text-wrap: pretty; }
+        .svc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+        .svc-chips li { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.09); color: #d2d2d7; font-size: var(--t-xs); font-weight: 500; line-height: 1.2; }
+        .svc-chips li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-on-dark); box-shadow: 0 0 8px rgba(41, 151, 255, 0.8); }
+        .svc-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: clamp(28px, 3vw, 40px); padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+        .svc-meta { display: grid; gap: 2px; }
+        .svc-meta span { color: var(--dark-ink-2); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; }
+        .svc-meta strong { color: var(--dark-ink); font-size: var(--t-body); font-weight: 600; font-variant-numeric: tabular-nums; }
+        .svc-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 18px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.08); color: var(--dark-ink); font-size: var(--t-small); font-weight: 500; transition: background-color 200ms var(--ease), transform 160ms var(--ease-out); }
+        .svc-link:active { transform: scale(0.97); }
+        .svc-link .icon { width: 0.9em; height: 0.9em; transition: transform 200ms var(--ease-out); }
+        .svc-media { position: relative; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 4 / 3; background: var(--dark-surface-2); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.06); }
+        .svc-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 60%, rgba(0, 0, 0, 0.35)); pointer-events: none; }
+        .svc-media video { width: 100%; height: 100%; object-fit: cover; }
+        /* La primera fila (web) es la principal: más alta y con el botón en azul */
+        .svc-feature { padding-block: clamp(28px, 4vw, 56px); border-color: rgba(41, 151, 255, 0.22); }
+        .svc-feature::before { opacity: 1; }
+        .svc-feature .svc-media { aspect-ratio: 16 / 11; }
+        .svc-feature .svc-link { background: var(--accent); color: #fff; }
+
         @media (max-width: 899px) {
-            .tile-web, .tile-pc { grid-column: 1 / -1; grid-row: auto; }
-            .tile-sm { grid-column: span 3; }
+            .svc-head { grid-template-columns: 1fr; align-items: start; }
+            .svc { grid-template-columns: 1fr; }
+            .svc:nth-child(even) .svc-body { order: 0; }
+            .svc-media, .svc-feature .svc-media { order: -1; aspect-ratio: 16 / 10; }
         }
-        @media (max-width: 599px) { .tile-sm { grid-column: 1 / -1; } }
+        @media (max-width: 599px) {
+            .svc { padding: 16px 16px 24px; border-radius: 22px; }
+            .svc-body { padding-inline: 4px; }
+            .svc-kicker { margin-bottom: 16px; }
+            .svc-foot { flex-direction: column; align-items: stretch; }
+            .svc-link { justify-content: center; }
+        }
 
         /* Proceso: lado fijo con barra de progreso + pasos */
         .process-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
@@ -567,7 +611,12 @@
             .btn-glass:hover { background: rgba(255, 255, 255, 0.82); }
             .link-more:hover { text-decoration: underline; text-underline-offset: 3px; }
             .link-more:hover .icon { transform: translateX(3px); }
-            .tile:hover { background: #1b1b1d; }
+            .svc:hover { border-color: rgba(255, 255, 255, 0.16); }
+            .svc-feature:hover { border-color: rgba(41, 151, 255, 0.4); }
+            .svc:hover::before { opacity: 1; }
+            .svc-link:hover { background: rgba(255, 255, 255, 0.14); }
+            .svc-feature .svc-link:hover { background: var(--accent-hover); }
+            .svc-link:hover .icon { transform: translateX(3px); }
             .service-row:not(.is-selected):hover { background: #ececf0; }
             .check:hover { box-shadow: inset 0 0 0 1.5px #8e8e93; }
             .segmented button[aria-pressed="false"]:hover { color: var(--ink); }
@@ -662,54 +711,97 @@
         <!-- Servicios -->
         <section class="sec sec-dark" id="servicios" data-theme="dark" aria-labelledby="servicios-titulo">
             <div class="wrap">
-                <div class="sec-head">
-                    <h2 class="t-h2" id="servicios-titulo" data-reveal>¿Qué necesitas resolver hoy?</h2>
-                    <p class="t-lead" data-reveal>Respuestas técnicas exactas, sin diagnósticos confusos ni tarifas ocultas.</p>
+                <div class="svc-head">
+                    <div>
+                        <p class="svc-eyebrow" data-reveal>Servicios</p>
+                        <h2 class="t-h2" id="servicios-titulo" data-reveal>¿Qué necesitas resolver hoy?</h2>
+                    </div>
+                    <div class="svc-head-side" data-reveal>
+                        <p class="t-lead">Respuestas técnicas exactas, sin diagnósticos confusos ni tarifas ocultas.</p>
+                        <a href="#cotizador" class="btn btn-primary">Configurar cotización</a>
+                    </div>
                 </div>
-                <div class="bento">
-                    <article class="tile tile-web" data-reveal>
-                        <h3 class="t-h3">Página web para tu negocio</h3>
-                        <p>Sitios y landing pages rápidas para captar clientes desde el celular y llevarlos directo a tu WhatsApp.</p>
-                        <a href="#cotizador" class="link-more">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
-                        <div class="tile-media">
+                <div class="svc-list">
+                    <article class="svc svc-feature" data-reveal>
+                        <div class="svc-body">
+                            <p class="svc-kicker"><span class="svc-num">01</span><span>Desarrollo web</span></p>
+                            <h3 class="svc-title">Página web para tu negocio</h3>
+                            <p class="svc-desc">Sitios y landing pages rápidas para captar clientes desde el celular y llevarlos directo a tu WhatsApp.</p>
+                            <ul class="svc-chips" aria-label="Incluye"><li>Landing page</li><li>Sitio corporativo</li><li>Dominio + hosting + SSL</li><li>Botón de WhatsApp</li></ul>
+                            <div class="svc-foot">
+                                <p class="svc-meta"><span>Desde</span><strong>$500.000 · 3–5 días</strong></p>
+                                <a href="#cotizador" class="svc-link">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+                            </div>
+                        </div>
+                        <div class="svc-media">
                             <video muted loop playsinline preload="none" poster="img/codigo-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1" data-autoplay>
                                 <source src="video/codigo.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
-                    <article class="tile tile-pc" data-reveal>
-                        <h3 class="t-h3">Tu computador va lento o se bloquea</h3>
-                        <p>Eliminación de malware, limpieza profunda y reinstalación limpia del sistema con controladores oficiales.</p>
-                        <div class="tile-media">
+                    <article class="svc" data-reveal>
+                        <div class="svc-body">
+                            <p class="svc-kicker"><span class="svc-num">02</span><span>Soporte técnico</span></p>
+                            <h3 class="svc-title">Tu computador va lento o se bloquea</h3>
+                            <p class="svc-desc">Eliminación de malware, limpieza profunda y reinstalación limpia del sistema con controladores oficiales.</p>
+                            <ul class="svc-chips" aria-label="Incluye"><li>Diagnóstico gratis</li><li>Eliminación de malware</li><li>Formateo y drivers</li><li>Respaldo de archivos</li></ul>
+                            <div class="svc-foot">
+                                <p class="svc-meta"><span>Desde</span><strong>$80.000 · 24 h</strong></p>
+                                <a href="#cotizador" class="svc-link">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+                            </div>
+                        </div>
+                        <div class="svc-media">
                             <video muted loop playsinline preload="none" poster="img/placa-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
                                 <source src="video/placa.mp4" type="video/mp4">
                             </video>
                         </div>
-                        <p class="tile-big-number">24 h<span>para la configuración básica</span></p>
-                        <a href="#cotizador" class="link-more">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
                     </article>
-                    <article class="tile tile-sm" data-reveal>
-                        <h3 class="t-h3">Windows y Office</h3>
-                        <p>Con tu licencia original, una comprada a tu nombre o LibreOffice sin costo.</p>
-                        <div class="tile-media">
+                    <article class="svc" data-reveal>
+                        <div class="svc-body">
+                            <p class="svc-kicker"><span class="svc-num">03</span><span>Software</span></p>
+                            <h3 class="svc-title">Windows y Office</h3>
+                            <p class="svc-desc">Con tu licencia original, una comprada a tu nombre o LibreOffice sin costo.</p>
+                            <ul class="svc-chips" aria-label="Incluye"><li>Licencia original</li><li>Activación legal</li><li>LibreOffice gratis</li><li>Programas esenciales</li></ul>
+                            <div class="svc-foot">
+                                <p class="svc-meta"><span>Entrega</span><strong>Desde 24 h</strong></p>
+                                <a href="https://wa.me/573144321446?text=Hola%2C%20Bit%C3%A1cora%20Digital.%20Necesito%20instalar%20Windows%20u%20Office." class="svc-link" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+                            </div>
+                        </div>
+                        <div class="svc-media">
                             <video muted loop playsinline preload="none" poster="img/teclado-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
                                 <source src="video/teclado.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
-                    <article class="tile tile-sm" data-reveal>
-                        <h3 class="t-h3">Logos y publicidad</h3>
-                        <p>Logotipos vectoriales, manuales de marca y piezas para pauta en redes sociales.</p>
-                        <div class="tile-media">
+                    <article class="svc" data-reveal>
+                        <div class="svc-body">
+                            <p class="svc-kicker"><span class="svc-num">04</span><span>Diseño gráfico</span></p>
+                            <h3 class="svc-title">Logos y publicidad</h3>
+                            <p class="svc-desc">Logotipos vectoriales, manuales de marca y piezas para pauta en redes sociales.</p>
+                            <ul class="svc-chips" aria-label="Incluye"><li>Logotipo vectorial</li><li>Manual de marca</li><li>Piezas para redes</li><li>Pauta publicitaria</li></ul>
+                            <div class="svc-foot">
+                                <p class="svc-meta"><span>Desde</span><strong>$50.000 · 24 h</strong></p>
+                                <a href="#cotizador" class="svc-link">Ver precios <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+                            </div>
+                        </div>
+                        <div class="svc-media">
                             <video muted loop playsinline preload="none" poster="img/diseno-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
                                 <source src="video/diseno.mp4" type="video/mp4">
                             </video>
                         </div>
                     </article>
-                    <article class="tile tile-sm" data-reveal>
-                        <h3 class="t-h3">Soporte remoto</h3>
-                        <p>Páginas web, diseño y soporte para cualquier ciudad de Colombia.</p>
-                        <div class="tile-media">
+                    <article class="svc" data-reveal>
+                        <div class="svc-body">
+                            <p class="svc-kicker"><span class="svc-num">05</span><span>A distancia</span></p>
+                            <h3 class="svc-title">Soporte remoto</h3>
+                            <p class="svc-desc">Páginas web, diseño y soporte para cualquier ciudad de Colombia.</p>
+                            <ul class="svc-chips" aria-label="Incluye"><li>Toda Colombia</li><li>Conexión segura</li><li>Sin desplazamientos</li><li>Atención por WhatsApp</li></ul>
+                            <div class="svc-foot">
+                                <p class="svc-meta"><span>Cobertura</span><strong>Neiva y remoto</strong></p>
+                                <a href="https://wa.me/573144321446?text=Hola%2C%20Bit%C3%A1cora%20Digital.%20Me%20interesa%20el%20soporte%20remoto." class="svc-link" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+                            </div>
+                        </div>
+                        <div class="svc-media">
                             <video muted loop playsinline preload="none" poster="img/remoto-poster.webp" width="640" height="360" aria-hidden="true" tabindex="-1" data-autoplay>
                                 <source src="video/remoto.mp4" type="video/mp4">
                             </video>
@@ -1321,6 +1413,17 @@
             });
         }
 
+        // --- Servicios: el brillo de cada fila sigue al mouse ---
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            document.querySelectorAll(".svc").forEach((card) => {
+                card.addEventListener("pointermove", (e) => {
+                    const r = card.getBoundingClientRect();
+                    card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                    card.style.setProperty("--my", `${e.clientY - r.top}px`);
+                });
+            });
+        }
+
         // --- Cotizador ---
         const servicesList = [
             { id: "sw1", name: "Configuración básica y optimización", desc: "Instalación de software, limpieza y afinamiento del sistema", cop: 80000, usd: 20, eta: "24 h" },
@@ -1477,8 +1580,8 @@
             mm.add("(prefers-reduced-motion: no-preference)", () => {
                 const smooth = 0.8;
                 // Video de cada tarjeta: se expande desde un recorte redondeado cuando su tarjeta entra
-                gsap.utils.toArray(".tile-media").forEach((m) => {
-                    const st = { trigger: m.closest(".tile"), start: "top 92%", end: "center 55%", scrub: smooth };
+                gsap.utils.toArray(".svc-media").forEach((m) => {
+                    const st = { trigger: m.closest(".svc"), start: "top 92%", end: "center 55%", scrub: smooth };
                     gsap.fromTo(m, { clipPath: "inset(10% 10% 10% 10% round 28px)" },
                         { clipPath: "inset(0% 0% 0% 0% round 18px)", ease: "none", scrollTrigger: st });
                     gsap.fromTo(m.querySelector("video"), { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: Object.assign({}, st) });
