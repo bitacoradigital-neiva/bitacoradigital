@@ -253,11 +253,19 @@ function mountScrollWorld(container, config) {
       let outside = 0;
       if (y < s.start) outside = s.start - y; else if (y > s.end) outside = y - s.end;
       const op = smooth(1 - outside / fade);
-      s.el.style.opacity = op; s.visible = op > 0.001;
-      s.el.style.zIndex = (i === ci) ? '120' : String(100 + Math.round(op * 10));
+      // Bitácora: solo escribir estilos cuando cambian (cada escritura obliga a recalcular), y las escenas
+      // invisibles se ocultan del todo para que no ocupen la tarjeta gráfica del celular.
+      const opR = Math.round(op * 1000) / 1000;
+      if (opR !== s._op) { s._op = opR; s.el.style.opacity = opR; const vis = opR > 0.001; if (vis !== s.visible) { s.el.style.visibility = vis ? '' : 'hidden'; } }
+      s.visible = opR > 0.001;
+      const z = (i === ci) ? '120' : String(100 + Math.round(op * 10));
+      if (z !== s._z) { s._z = z; s.el.style.zIndex = z; }
       if (noVideo || !s.hasClip || !s.ready) {
-        const sc = reduce ? 1 : 1.03 + local * 0.14;
-        s.img.style.transform = `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
+        if (s.visible) {
+          const sc = reduce ? 1 : 1.03 + local * 0.14;
+          const tr = `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
+          if (tr !== s._tr) { s._tr = tr; s.img.style.transform = tr; }
+        }
       }
     }
 
@@ -270,7 +278,11 @@ function mountScrollWorld(container, config) {
       else if (i === N - 1) cop = before ? 0 : smooth(pr / 0.4);       // holds CTA at the end
       else cop = (before || after) ? 0 : smooth(1 - Math.abs(pr - 0.5) / 0.5);
       const c = copies[i];
-      c.style.opacity = cop;
+      const copR = Math.round(cop * 1000) / 1000;
+      if (copR === c._cop && (copR === 0 || copR === 1)) continue;   // sin cambios y quieto: no tocar
+      c._cop = copR;
+      c.style.opacity = copR;
+      c.style.visibility = copR > 0 ? '' : 'hidden';
       // Bitácora: conservar el centrado vertical del CSS (-50%) en escritorio; antes este transform lo pisaba y el texto quedaba abajo
       c.style.transform = reduce ? (isMobile() ? 'none' : 'translateY(-50%)') : `translateY(calc(${isMobile() ? '0px' : '-50%'} + ${((0.5 - pr) * 4).toFixed(2)}vh))`;
       c.style.pointerEvents = cop > 0.5 ? 'auto' : 'none';

@@ -23,6 +23,23 @@ const GAMA = (() => {
 document.documentElement.dataset.gama = GAMA;
 $("#year").textContent = String(new Date().getFullYear());
 
+/* ---------- Posiciones en caché ----------
+   Medir posiciones (getBoundingClientRect) en cada cuadro del scroll obligaba al navegador a recalcular
+   toda la página una y otra vez, y eso trababa el inicio en celulares. Ahora se mide una vez (y de nuevo
+   solo si cambia el tamaño de la página) y en cada cuadro se compara contra window.scrollY. */
+const LAYOUT = { valid: false, tops: new Map() };
+function docTop(el) {
+    if (!el) return 0;
+    if (!LAYOUT.valid) { LAYOUT.tops.clear(); LAYOUT.valid = true; }
+    if (!LAYOUT.tops.has(el)) LAYOUT.tops.set(el, el.getBoundingClientRect().top + window.scrollY);
+    return LAYOUT.tops.get(el);
+}
+function invalidateLayout() { LAYOUT.valid = false; }
+window.addEventListener("resize", invalidateLayout, { passive: true });
+window.addEventListener("load", invalidateLayout);
+if ("ResizeObserver" in window) new ResizeObserver(invalidateLayout).observe(document.documentElement);
+if (document.fonts) document.fonts.ready.then(invalidateLayout);
+
 /* ---------- Navegación: enlace activo y menú ---------- */
 const navLinks = $$(".nav-links a");
 const sections = navLinks.map((a) => $(a.getAttribute("href")));
@@ -31,8 +48,8 @@ function syncNav() {
     navTick = false;
     const mid = window.scrollY + window.innerHeight * 0.4;
     let active = -1;
-    sections.forEach((sec, i) => { if (sec && sec.getBoundingClientRect().top + window.scrollY <= mid) active = i; });
-    navLinks.forEach((a, i) => a.classList.toggle("is-active", i === active));
+    sections.forEach((sec, i) => { if (sec && docTop(sec) <= mid) active = i; });
+    navLinks.forEach((a, i) => { if (a.classList.contains("is-active") !== (i === active)) a.classList.toggle("is-active", i === active); });
     syncFloating();
 }
 window.addEventListener("scroll", () => { if (!navTick) { navTick = true; requestAnimationFrame(syncNav); } }, { passive: true });
@@ -174,7 +191,8 @@ function syncFloating() {
         quoteBar.setAttribute("aria-hidden", String(!showBar));
         quoteBar.querySelector("a").tabIndex = showBar ? 0 : -1;
     }
-    fab.classList.toggle("is-visible", pastHero && !showBar && !summaryVisible);
+    const showFab = pastHero && !showBar && !summaryVisible;
+    if (fab.classList.contains("is-visible") !== showFab) fab.classList.toggle("is-visible", showFab);
 }
 if ("IntersectionObserver" in window) {
     new IntersectionObserver(([e]) => { inQuote = e.isIntersecting; syncFloating(); }, { rootMargin: "-20% 0px -20% 0px" }).observe($("#cotizador"));
@@ -291,7 +309,7 @@ async function mountWorld() {
     if (fallback) fallback.hidden = true;
     const after = $(".after");
     let past = null, t = false;
-    const check = () => { t = false; const p = after.getBoundingClientRect().top <= 0; if (p !== past) { past = p; document.documentElement.classList.toggle("sw-past", p); } };
+    const check = () => { t = false; const p = window.scrollY >= docTop(after) - 1; if (p !== past) { past = p; document.documentElement.classList.toggle("sw-past", p); } };
     window.addEventListener("scroll", () => { if (!t) { t = true; requestAnimationFrame(check); } }, { passive: true });
     check();
     host.querySelectorAll('a[href^="https://wa.me"]').forEach((a) => { a.target = "_blank"; a.rel = "noopener noreferrer"; });
@@ -410,6 +428,8 @@ function initServiceChapters() {
             return;
         }
         const viewport = window.innerHeight;
+        const firstTop = docTop(scenes[0].chapter), lastEnd = docTop(scenes[scenes.length - 1].chapter) + viewport * 3;
+        if (window.scrollY + viewport < firstTop - viewport * 0.5 || window.scrollY > lastEnd) return;
         const wide = window.innerWidth >= 1000 && viewport >= 760;
         // Leer todas las posiciones antes de escribir estilos.
         const positions = scenes.map(({ chapter, target }) => ({ target, rect: chapter.getBoundingClientRect() }));
@@ -450,7 +470,9 @@ function initProcessTimeline() {
     const paint = () => {
         frame = 0;
         // 1) Primero se mide todo…
-        const vh = window.innerHeight, line = vh * 0.5, r = list.getBoundingClientRect();
+        const vh = window.innerHeight, top0 = docTop(list);
+        if (window.scrollY + vh * 2 < top0 || window.scrollY > top0 + list.offsetHeight + vh) return;
+        const line = vh * 0.5, r = list.getBoundingClientRect();
         if (r.bottom < -vh || r.top > vh * 2) return;
         const tops = items.map((li) => li.getBoundingClientRect().top);
         // 2) …y después se escribe (sin volver a medir en medio)
@@ -490,51 +512,72 @@ function initServiceVideos() {
 }
 
 /* ---------- Movimiento del resto de la página ---------- */
+// Lo que está debajo del recorrido se prepara cuando el navegador está libre: así el arranque (lo primero que
+// se toca y se desliza) no compite con el armado de la galería, las animaciones de aparición y los servicios.
+const whenIdle = (fn, timeout = 1500) => ("requestIdleCallback" in window ? requestIdleCallback(fn, { timeout }) : setTimeout(fn, 400));
 window.addEventListener("DOMContentLoaded", () => {
     mountWorld();
-    buildReel();
-    initServiceChapters();
-    initProcessTimeline();
-    initServiceVideos();
     syncNav();
-    const lines = $$("#process-lines li");
-
-    const fallbackReveal = () => {
-        lines.forEach((li) => li.classList.add("on"));
-        if (reduceMotion || !("IntersectionObserver" in window)) return;
-        document.documentElement.classList.add("reveal-on");
-        const io = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); } }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-        $$(".reveal-up").forEach((el) => io.observe(el));
-    };
-    if (!window.gsap || !window.ScrollTrigger || GAMA === "baja") { fallbackReveal(); return; }
-
-    gsap.registerPlugin(ScrollTrigger);
-    ScrollTrigger.config({ ignoreMobileResize: true });
-
-    $$(".reveal-up").forEach((el) => gsap.from(el, { y: 40, autoAlpha: 0, duration: 1.1, ease: "expo.out", scrollTrigger: { trigger: el, start: "top 88%", once: true } }));
-    // Los pasos se encienden en initProcessTimeline, sincronizados con la línea y el número
-    gsap.from(ledger.querySelectorAll(".service-row"), { y: 26, autoAlpha: 0, duration: 0.8, ease: "expo.out", stagger: 0.05, scrollTrigger: { trigger: ledger, start: "top 85%", once: true } });
-    gsap.from(".summary", { y: 30, autoAlpha: 0, duration: 1, ease: "expo.out", scrollTrigger: { trigger: ".summary", start: "top 90%", once: true } });
-    gsap.from(".faq-item", { y: 20, autoAlpha: 0, duration: 0.8, ease: "expo.out", stagger: 0.05, scrollTrigger: { trigger: ".faq", start: "top 85%", once: true } });
+    whenIdle(initRest);
+});
+// Se prepara por partes, una en cada momento libre del navegador, para que ninguna congele la pantalla
+// Las secciones de abajo empiezan sin calcular (content-visibility) para que el arranque sea liviano;
+// aquí se calculan de a una en momentos libres. Si se toca un enlace del menú antes, se calculan todas y se salta.
+function revealAllSections() { document.documentElement.classList.add("cv-off"); invalidateLayout(); }
+const lazySections = () => $$(".after > section, .after > footer").map((sec) => () => { sec.classList.add("cv-on"); invalidateLayout(); });
+document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || document.documentElement.classList.contains("cv-off")) return;
+    const target = document.querySelector(a.getAttribute("href"));
+    if (!target) return;
+    e.preventDefault();
+    revealAllSections();
+    requestAnimationFrame(() => requestAnimationFrame(() => { target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); history.pushState(null, "", a.getAttribute("href")); }));
+}, true);
+function initRest() {
+    const steps = [buildReel, initServiceChapters, initProcessTimeline, initServiceVideos, initAnimations];
+    const next = () => { const f = steps.shift(); if (f) { f(); if (steps.length) whenIdle(next, 1000); } };
+    next();
+}
+/* ---------- Animaciones de aparición (sin librerías) ----------
+   CSS + IntersectionObserver + animaciones nativas del navegador: las mueve la tarjeta gráfica y no miden la
+   página al cargar. Antes GSAP/ScrollTrigger tardaba ~0,3 s en prepararse y trababa el inicio en celulares. */
+const EASE_OUT = "cubic-bezier(0.16, 1, 0.3, 1)";
+function initAnimations() {
+    if (reduceMotion || !("IntersectionObserver" in window)) return;
+    // Filas del cotizador, resumen y preguntas frecuentes aparecen al entrar en pantalla (filas y preguntas escalonadas)
+    ledger.querySelectorAll(".service-row").forEach((el, k) => { el.classList.add("reveal-up", "reveal-sm"); el.style.transitionDelay = `${(k % 8) * 50}ms`; });
+    $$(".faq-item").forEach((el, k) => { el.classList.add("reveal-up", "reveal-sm"); el.style.transitionDelay = `${(k % 8) * 50}ms`; });
+    const summary = $(".summary"); if (summary) summary.classList.add("reveal-up");
+    document.documentElement.classList.add("reveal-on");
+    const revealIO = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); revealIO.unobserve(en.target); } }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    $$(".reveal-up").forEach((el) => revealIO.observe(el));
 
     // La flecha del logo enseña una vez dónde tocar en el cotizador
     const firstCheck = ledger.querySelector(".service-row .check");
-    if (firstCheck) {
-        const guide = document.createElement("span"); guide.className = "tap-guide"; guide.setAttribute("aria-hidden", "true");
-        guide.innerHTML = '<svg viewBox="0 0 28 28"><use href="#i-cursor"/></svg>';
-        const ring = document.createElement("span"); ring.className = "tap-ring"; ring.setAttribute("aria-hidden", "true");
-        ledger.append(ring, guide);
-        ScrollTrigger.create({ trigger: ledger, start: "top 60%", once: true, onEnter: () => {
+    if (!firstCheck || !("animate" in Element.prototype)) return;
+    const guide = document.createElement("span"); guide.className = "tap-guide"; guide.setAttribute("aria-hidden", "true");
+    guide.innerHTML = '<svg viewBox="0 0 28 28"><use href="#i-cursor"/></svg>';
+    const ring = document.createElement("span"); ring.className = "tap-ring"; ring.setAttribute("aria-hidden", "true");
+    ledger.append(ring, guide);
+    const guideIO = new IntersectionObserver(([en]) => {
+        if (!en.isIntersecting) return;
+        guideIO.disconnect();
+        setTimeout(() => {
             if (selected.size) return;
             const lr = ledger.getBoundingClientRect(), cr = firstCheck.getBoundingClientRect();
             const x = cr.left - lr.left + cr.width / 2, y = cr.top - lr.top + cr.height / 2;
-            gsap.set(ring, { x, y });
-            gsap.timeline({ delay: 0.8 })
-                .fromTo(guide, { x: x - 130, y: y + 80, autoAlpha: 0 }, { x: x - 8, y: y - 6, autoAlpha: 1, duration: 1, ease: "expo.out" })
-                .to(guide, { scale: 0.85, duration: 0.12, yoyo: true, repeat: 1, transformOrigin: "8px 4px" })
-                .fromTo(ring, { scale: 0.3, autoAlpha: 0.9 }, { scale: 1.5, autoAlpha: 0, duration: 0.6, ease: "power2.out" }, "<")
-                .to(guide, { x: "-=26", y: "+=22", autoAlpha: 0, duration: 0.5, delay: 0.6 });
-        } });
-    }
-    window.addEventListener("load", () => ScrollTrigger.refresh(), { once: true });
-});
+            const at = (dx, dy, sc = 1) => `translate(${x + dx}px, ${y + dy}px) scale(${sc})`;
+            guide.style.transformOrigin = "8px 4px";
+            guide.animate([{ transform: at(-130, 80), opacity: 0 }, { transform: at(-8, -6), opacity: 1 }], { duration: 1000, easing: EASE_OUT, fill: "forwards" })
+                .finished.then(() => {
+                    guide.animate([{ transform: at(-8, -6, 1) }, { transform: at(-8, -6, 0.85) }, { transform: at(-8, -6, 1) }], { duration: 240, easing: "ease-in-out", fill: "forwards" });
+                    ring.animate([{ transform: at(0, 0, 0.3), opacity: 0.9 }, { transform: at(0, 0, 1.5), opacity: 0 }], { duration: 600, easing: "ease-out", fill: "forwards" });
+                    return new Promise((r) => setTimeout(r, 840));
+                })
+                .then(() => guide.animate([{ transform: at(-8, -6), opacity: 1 }, { transform: at(-34, 16), opacity: 0 }], { duration: 500, easing: "ease-in", fill: "forwards" }))
+                .catch(() => {});
+        }, 800);
+    }, { rootMargin: "0px 0px -40% 0px" });
+    guideIO.observe(ledger);
+}

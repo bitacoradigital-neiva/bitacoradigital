@@ -372,6 +372,7 @@ html:has(dialog[open]) { overflow: hidden; }
 @media (prefers-reduced-motion: no-preference) {
     .reveal-on .reveal-up { transition: opacity 900ms var(--ease-out), transform 900ms var(--ease-out); }
     .reveal-on .reveal-up:not(.is-in) { opacity: 0; transform: translateY(30px); }
+    .reveal-on .reveal-sm:not(.is-in) { transform: translateY(22px); }
 }
 html[data-gama="baja"] .nav-inner, html[data-gama="baja"] .nav-sheet, html[data-gama="baja"] .sw-copy__tags li, html[data-gama="baja"] .sw-btn--ghost { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: #1c1c1e !important; }
 @media (prefers-reduced-motion: reduce) {
@@ -496,3 +497,11 @@ html[data-gama="baja"] .nav-inner, html[data-gama="baja"] .nav-sheet, html[data-
 .nav .nav-inner { -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(180deg, rgba(58, 58, 62, 0.78), rgba(22, 22, 24, 0.84)); }
 html.sw-past .nav .nav-inner { -webkit-backdrop-filter: blur(14px) saturate(170%); backdrop-filter: blur(14px) saturate(170%); background: linear-gradient(180deg, rgba(64, 64, 68, 0.56), rgba(24, 24, 26, 0.62)); }
 .sw-copy__tags li, .sw-btn--ghost { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+/* Rendimiento al abrir: las secciones de abajo no se calculan ni se dibujan hasta acercarse a la pantalla
+   (antes el primer armado de toda la página tardaba ~0,2 s en celulares). auto recuerda su alto real. */
+.after > section, .after > footer { content-visibility: auto; contain-intrinsic-size: auto 1100px; }
+/* Las secciones se van calculando de a una en los momentos libres (o todas de una al tocar un enlace del menú),
+   para que los saltos del menú caigan en el lugar exacto. */
+.after > .cv-on { content-visibility: visible; }
+html.cv-off .after > section, html.cv-off .after > footer { content-visibility: visible; }
