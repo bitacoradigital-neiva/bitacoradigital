@@ -853,6 +853,62 @@
             .faq-item::details-content { transition: none; }
             .quote-bar, .fab, .menu-sheet { transition: opacity 200ms ease; }
         }
+        /* ======================================================================
+           COMPROMISOS EN BLANCO, ESTILO APPLE: fotos a sangre con un panel de vidrio líquido encima.
+           El vidrio desenfoca y satura la foto que tiene detrás, con brillo en el borde y un reflejo que sigue al mouse.
+           ====================================================================== */
+        #compromisos { background-color: #f5f5f7; background-image: radial-gradient(120% 70% at 50% 0%, #ffffff 0%, #f5f5f7 60%, #ececf0 100%); color: #1d1d1f; }
+        #compromisos .t-h2 { color: #1d1d1f; }
+        #compromisos .t-lead { color: #636366; }
+        #compromisos .promise {
+            min-height: 470px;
+            padding: 12px;
+            justify-content: flex-end;
+            border-radius: 32px;
+            background: #fff;
+            border: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 28px 60px -28px rgba(0, 0, 0, 0.3);
+            isolation: isolate;
+        }
+        #compromisos .promise:hover { border-color: transparent; }
+        .promise-media { position: absolute; inset: 0; z-index: -1; margin: 0; overflow: hidden; background: #e8e8ed; }
+        .promise-media img { position: absolute; top: 0; left: -8%; width: 116%; height: 100%; max-width: none; object-fit: cover; scale: 1.06; transition: scale 1200ms var(--ease-out); will-change: transform; }
+        #compromisos .promise:hover .promise-media img { scale: 1.12; }
+        .promise-glass {
+            position: relative;
+            padding: 20px 22px 22px;
+            border-radius: 24px;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.5));
+            -webkit-backdrop-filter: blur(22px) saturate(190%);
+            backdrop-filter: blur(22px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 1px rgba(255, 255, 255, 0.35), inset 0 0 0 0.5px rgba(255, 255, 255, 0.4), 0 10px 30px -12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: translate 900ms var(--ease-out), opacity 900ms var(--ease-out);
+        }
+        /* Reflejo: una luz suave que sigue al puntero sobre el vidrio */
+        .promise-glass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(220px circle at var(--gx, 30%) var(--gy, -40%), rgba(255, 255, 255, 0.85), transparent 60%); opacity: 0.55; pointer-events: none; mix-blend-mode: soft-light; }
+        .promise-glass::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 38%); pointer-events: none; }
+        .promise-glass > * { position: relative; z-index: 1; }
+        #compromisos .promise-icon { color: #0071e3; }
+        #compromisos .promise-icon .icon { width: 30px; height: 30px; stroke-width: 1.6; }
+        #compromisos .promise-title { margin-top: 10px; padding-top: 0; font-size: clamp(1.25rem, 1.08rem + 0.5vw, 1.5rem); color: #1d1d1f; }
+        #compromisos .promise p { margin-top: 6px; color: #3a3a3f; font-size: 15px; line-height: 1.45; }
+        /* Entrada: el panel sube y aparece cuando la tarjeta llega (lo activa el script) */
+        .js-glass .promise:not(.is-in) .promise-glass { translate: 0 28px; opacity: 0; }
+        #compromisos.promises-pinned .promise { width: clamp(300px, 26vw, 370px); min-height: min(480px, 52vh); }
+        @media (max-width: 899px) {
+            #compromisos .promise { min-height: 430px; padding: 10px; border-radius: 28px; }
+            .promise-glass { padding: 16px 18px 18px; border-radius: 20px; }
+        }
+        /* Equipos modestos: vidrio sin desenfoque (es lo más pesado de pintar) */
+        .tier-low .promise-glass { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255, 255, 255, 0.94); }
+        .tier-low .promise-media img { transition: none; will-change: auto; }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .promise-glass { background: rgba(255, 255, 255, 0.94); } }
+        @media (prefers-reduced-motion: reduce) { .promise-media img, .promise-glass { transition: none; } .js-glass .promise:not(.is-in) .promise-glass { translate: none; opacity: 1; } }
+        /* El menú flotante se vuelve vidrio claro sobre la sección blanca */
+        .nav.glass:not(.glass-dark) { background: rgba(255, 255, 255, 0.66); border-color: rgba(0, 0, 0, 0.08); color: #1d1d1f; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 12px 32px -14px rgba(0, 0, 0, 0.25); }
+        .nav.glass:not(.glass-dark) .nav-links a { color: #424245; }
     </style>
 </head>
 <body>
@@ -1057,7 +1113,7 @@
         </section>
 
         <!-- Compromisos -->
-        <section class="sec sec-dark" id="compromisos" data-theme="dark" aria-labelledby="compromisos-titulo">
+        <section class="sec sec-light" id="compromisos" data-theme="light" aria-labelledby="compromisos-titulo">
             <div class="wrap">
                 <div class="svc-head">
                     <div>
@@ -1070,34 +1126,52 @@
                 <div class="promise-track">
                 <ul class="promises">
                     <li class="promise">
-                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></span>
-                        <h3 class="promise-title">Diagnóstico sin costo</h3>
-                        <p>Revisamos tu equipo o escuchamos tu idea antes de cobrarte un solo peso.</p>
+                        <figure class="promise-media"><img src="img/compromisos/diagnostico-480.webp" srcset="img/compromisos/diagnostico-480.webp 480w, img/compromisos/diagnostico-800.webp 800w" sizes="(max-width: 899px) 78vw, 380px" width="480" height="600" alt="Técnico revisando por dentro un computador portátil" loading="lazy" decoding="async"></figure>
+                        <div class="promise-glass">
+                            <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></span>
+                            <h3 class="promise-title">Diagnóstico sin costo</h3>
+                            <p>Revisamos tu equipo o escuchamos tu idea antes de cobrarte un solo peso.</p>
+                        </div>
                     </li>
                     <li class="promise">
-                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-tag"/></svg></span>
-                        <h3 class="promise-title">Precio claro antes de empezar</h3>
-                        <p>Te confirmamos el valor antes de tocar nada. Sin cobros sorpresa al final.</p>
+                        <figure class="promise-media"><img src="img/compromisos/precio-480.webp" srcset="img/compromisos/precio-480.webp 480w, img/compromisos/precio-800.webp 800w" sizes="(max-width: 899px) 78vw, 380px" width="480" height="600" alt="Calculadora financiera" loading="lazy" decoding="async"></figure>
+                        <div class="promise-glass">
+                            <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-tag"/></svg></span>
+                            <h3 class="promise-title">Precio claro antes de empezar</h3>
+                            <p>Te confirmamos el valor antes de tocar nada. Sin cobros sorpresa al final.</p>
+                        </div>
                     </li>
                     <li class="promise">
-                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg></span>
-                        <h3 class="promise-title">Tus archivos, primero</h3>
-                        <p>Antes de formatear respaldamos tus carpetas importantes para que no pierdas nada.</p>
+                        <figure class="promise-media"><img src="img/compromisos/archivos-480.webp" srcset="img/compromisos/archivos-480.webp 480w, img/compromisos/archivos-800.webp 800w" sizes="(max-width: 899px) 78vw, 380px" width="480" height="600" alt="Disco duro externo con su cable" loading="lazy" decoding="async"></figure>
+                        <div class="promise-glass">
+                            <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg></span>
+                            <h3 class="promise-title">Tus archivos, primero</h3>
+                            <p>Antes de formatear respaldamos tus carpetas importantes para que no pierdas nada.</p>
+                        </div>
                     </li>
                     <li class="promise">
-                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
-                        <h3 class="promise-title">Solo software legal</h3>
-                        <p>Licencias originales a tu nombre o LibreOffice sin costo. Nada pirata.</p>
+                        <figure class="promise-media"><img src="img/compromisos/legal-480.webp" srcset="img/compromisos/legal-480.webp 480w, img/compromisos/legal-800.webp 800w" sizes="(max-width: 899px) 78vw, 380px" width="480" height="600" alt="Candado de combinación dorado" loading="lazy" decoding="async"></figure>
+                        <div class="promise-glass">
+                            <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+                            <h3 class="promise-title">Solo software legal</h3>
+                            <p>Licencias originales a tu nombre o LibreOffice sin costo. Nada pirata.</p>
+                        </div>
                     </li>
                     <li class="promise">
-                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-wallet"/></svg></span>
-                        <h3 class="promise-title">Pagas la mitad al empezar</h3>
-                        <p>En webs y videos: 50% de anticipo y el resto cuando recibes y revisas el trabajo.</p>
+                        <figure class="promise-media"><img src="img/compromisos/pago-480.webp" srcset="img/compromisos/pago-480.webp 480w, img/compromisos/pago-800.webp 800w" sizes="(max-width: 899px) 78vw, 380px" width="480" height="600" alt="Frasco de ahorro con monedas y billetes" loading="lazy" decoding="async"></figure>
+                        <div class="promise-glass">
+                            <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-wallet"/></svg></span>
+                            <h3 class="promise-title">Pagas la mitad al empezar</h3>
+                            <p>En webs y videos: 50% de anticipo y el resto cuando recibes y revisas el trabajo.</p>
+                        </div>
                     </li>
                     <li class="promise">
-                        <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span>
-                        <h3 class="promise-title">Atención directa por WhatsApp</h3>
-                        <p>Hablas con quien hace el trabajo, sin intermediarios ni respuestas automáticas.</p>
+                        <figure class="promise-media"><img src="img/compromisos/whatsapp-480.webp" srcset="img/compromisos/whatsapp-480.webp 480w, img/compromisos/whatsapp-800.webp 800w" sizes="(max-width: 899px) 78vw, 380px" width="480" height="600" alt="Manos escribiendo en un celular junto a un café" loading="lazy" decoding="async"></figure>
+                        <div class="promise-glass">
+                            <span class="promise-icon"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span>
+                            <h3 class="promise-title">Atención directa por WhatsApp</h3>
+                            <p>Hablas con quien hace el trabajo, sin intermediarios ni respuestas automáticas.</p>
+                        </div>
                     </li>
                 </ul>
                 </div>
@@ -1530,7 +1604,7 @@
                 }
                 shownP = p; lastT = now;
                 // f va de 0 a 70 (medidas de la tapa); fi es la posición continua entre los 101 cuadros
-                const f = clamp01((p - 0.04) / 0.84) * (GEO_N - 1);
+                const f = clamp01((p - 0.04) / 0.96) * (GEO_N - 1); // la escena usa todo el tramo fijo: al terminar el acercamiento ya viene la sección siguiente (antes quedaba media pantalla en negro)
                 const fi = f * (N - 1) / (GEO_N - 1);
                 // 8 pasos intermedios entre un cuadro y el siguiente; al moverse rápido no se notan y se omiten
                 // Al detenerse, la mezcla se retira y queda el cuadro exacto, nítido
@@ -1682,6 +1756,29 @@
                 card.addEventListener("pointerleave", () => { tilt.style.setProperty("--rx", "0deg"); tilt.style.setProperty("--ry", "0deg"); });
             });
         }
+
+        // --- Compromisos: el vidrio de cada tarjeta sube al aparecer y su reflejo sigue al puntero ---
+        (function () {
+            const cards = [...document.querySelectorAll("#compromisos .promise")];
+            if (!cards.length) return;
+            if (!reduceMotion && "IntersectionObserver" in window) {
+                document.documentElement.classList.add("js-glass");
+                const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+                    if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); }
+                }), { threshold: 0.35 });
+                cards.forEach((c) => io.observe(c));
+            }
+            if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+                cards.forEach((card) => {
+                    const glass = card.querySelector(".promise-glass");
+                    card.addEventListener("pointermove", (e) => {
+                        const r = glass.getBoundingClientRect();
+                        glass.style.setProperty("--gx", `${e.clientX - r.left}px`);
+                        glass.style.setProperty("--gy", `${e.clientY - r.top}px`);
+                    });
+                });
+            }
+        })();
 
         // --- Globo 3D de cobertura (Three.js): se descarga solo al acercarse y nunca en modo liviano ---
         (function () {
@@ -1903,8 +2000,12 @@
                     x: () => -travel(), ease: "none",
                     scrollTrigger: { trigger: promSec, start: "top top", end: () => "+=" + travel(), pin: true, scrub: 0.6, invalidateOnRefresh: true, anticipatePin: 1 }
                 });
-                lowHooks.push(() => { tween.scrollTrigger && tween.scrollTrigger.kill(true); tween.kill(); gsap.set(strip, { clearProps: "transform" }); promSec.classList.remove("promises-pinned"); });
-                return () => { promSec.classList.remove("promises-pinned"); gsap.set(strip, { clearProps: "transform" }); };
+                // Cada foto se desliza un poco dentro de su tarjeta mientras la cinta avanza (efecto ventana)
+                const pics = [...strip.querySelectorAll(".promise-media img")].map((img) => gsap.fromTo(img, { xPercent: 5 }, { xPercent: -5, ease: "none",
+                    scrollTrigger: { trigger: img.closest(".promise"), containerAnimation: tween, start: "left right", end: "right left", scrub: true } }));
+                const undoPics = () => pics.forEach((tw) => { tw.scrollTrigger && tw.scrollTrigger.kill(); tw.kill(); gsap.set(tw.targets(), { clearProps: "transform" }); });
+                lowHooks.push(() => { undoPics(); tween.scrollTrigger && tween.scrollTrigger.kill(true); tween.kill(); gsap.set(strip, { clearProps: "transform" }); promSec.classList.remove("promises-pinned"); });
+                return () => { undoPics(); promSec.classList.remove("promises-pinned"); gsap.set(strip, { clearProps: "transform" }); };
             });
             ScrollTrigger.sort();
 

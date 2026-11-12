@@ -1,0 +1,8 @@
+Fotos de Wikimedia Commons, todas de dominio público (CC0): se pueden usar sin pedir permiso ni dar crédito.
+
+diagnostico.webp  <-  https://commons.wikimedia.org/wiki/File:Hacker_repairs_a_computer_-_Linux_Day_in_Torino_2022.jpg  (CC0)
+precio.webp  <-  https://commons.wikimedia.org/wiki/File:Financial_Calculator_Hewlett-Packard_HP-12C_built_from_1981,_this_item_produced_1988_(edited_to_remove_background,_warmer_colours).jpg  (CC0)
+archivos.webp  <-  https://commons.wikimedia.org/wiki/File:WD_Elements_hard_drive.jpg  (CC0)
+legal.webp  <-  https://commons.wikimedia.org/wiki/File:Combination-lock-254923_1920.jpg  (CC0)
+pago.webp  <-  https://commons.wikimedia.org/wiki/File:Piggy-bank-968302.jpg  (CC0)
+whatsapp.webp  <-  https://commons.wikimedia.org/wiki/File:Hands-coffee-smartphone-technology_(23698591814).jpg  (CC0)
