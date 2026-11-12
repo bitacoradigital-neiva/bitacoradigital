@@ -1,0 +1,50 @@
+[
+ {
+  "file": "assets/panoramica-nocturna-neiva.jpg",
+  "media": "image",
+  "ref": "commons:58091956",
+  "title": "Panoramica-nocturna-neiva",
+  "creator": "Knomrm",
+  "creatorUrl": null,
+  "date": "2017-04-16",
+  "license": "CC BY-SA 4.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/wiki/File:Panoramica-nocturna-neiva.jpg",
+  "via": "Wikimedia Commons",
+  "image": "https://upload.wikimedia.org/wikipedia/commons/6/67/Panoramica-nocturna-neiva.jpg",
+  "width": 1920,
+  "height": 1280,
+  "bytes": 679074,
+  "credit": "\"Panoramica-nocturna-neiva\" by Knomrm, CC BY-SA 4.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-11-11T23:44:46.038Z"
+ },
+ {
+  "file": "assets/neiva-la-gaitana-monumento-emblematico-de-la.jpg",
+  "media": "image",
+  "ref": "commons:121424431",
+  "title": "Neiva, La Gaitana monumento emblematico de la ciudad",
+  "creator": "CesarRincon",
+  "creatorUrl": null,
+  "date": "2022-08-05",
+  "license": "CC BY-SA 4.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/wiki/File:Neiva,_La_Gaitana_monumento_emblematico_de_la_ciudad.jpg",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Neiva%2C_La_Gaitana_monumento_emblematico_de_la_ciudad.jpg/1920px-Neiva%2C_La_Gaitana_monumento_emblematico_de_la_ciudad.jpg",
+  "width": 1920,
+  "height": 864,
+  "bytes": 435718,
+  "credit": "\"Neiva, La Gaitana monumento emblematico de la ciudad\" by CesarRincon, CC BY-SA 4.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-11-11T23:44:47.295Z"
+ }
+]
