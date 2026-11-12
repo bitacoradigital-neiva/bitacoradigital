@@ -260,9 +260,12 @@ function watchWorld(host) {
 
 async function mountWorld() {
     const host = $("#world");
-    if (!host || typeof mountScrollWorld !== "function") return;
+    if (!host || typeof mountScrollWorld !== "function") { document.documentElement.classList.add("no-world"); return; }
+    // La cadena generada con IA (assets/world/ia/) solo se consulta si existe: poner MUNDO_IA = true cuando se genere.
+    // Así no se gasta una consulta a la red al abrir la página, que retrasaba la aparición del recorrido.
+    const MUNDO_IA = false;
     let ia = null;
-    try { const r = await fetch("assets/world/ia/manifest.json", { cache: "no-store" }); if (r.ok) ia = await r.json(); } catch (e) { /* sin cadena generada */ }
+    if (MUNDO_IA) { try { const r = await fetch("assets/world/ia/manifest.json", { cache: "no-store" }); if (r.ok) ia = await r.json(); } catch (e) { /* sin cadena generada */ } }
     const A = "#8295A3";
     // Calidad según el equipo: gama alta = video HD; gama media = versión "lite" (más liviana de decodificar);
     // gama baja o ahorro de datos = imágenes en alta calidad con acercamiento suave, sin video.

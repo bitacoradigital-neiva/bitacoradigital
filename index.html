@@ -23,6 +23,16 @@
     <link rel="apple-touch-icon" sizes="180x180" href="img/logo-bitacora-simbolo.png?v=1">
     <link rel="preload" href="fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Arranque sin destellos: fondo oscuro desde el primer cuadro y la pantalla reservada para el recorrido -->
+    <style>
+        html, body { background: #101214; }
+        .js .world-fallback { display: none; }
+        .js #world:empty { height: 100vh; height: 100svh; }
+        .no-world .world-fallback { display: block; }
+        .no-world #world { height: auto; }
+    </style>
+    <link rel="preload" href="assets/world/laptop.webp" as="image" type="image/webp" media="(min-width: 861px) and (hover: hover)">
+    <link rel="preload" href="assets/world/laptop-m.webp" as="image" type="image/webp" media="(max-width: 860px), (hover: none) and (pointer: coarse)">
     <link rel="stylesheet" href="style.css">
 
     <script>document.documentElement.classList.add("js");</script>
