@@ -505,3 +505,6 @@ html.sw-past .nav .nav-inner { -webkit-backdrop-filter: blur(14px) saturate(170%
    para que los saltos del menú caigan en el lugar exacto. */
 .after > .cv-on { content-visibility: visible; }
 html.cv-off .after > section, html.cv-off .after > footer { content-visibility: visible; }
+
+/* Galería: sin botón visible de reproducir/pausar (los videos arrancan solos); tocar el video lo pausa o reanuda */
+.piece-play span { display: none; }

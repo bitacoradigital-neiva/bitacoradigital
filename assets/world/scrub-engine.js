@@ -176,6 +176,16 @@ function mountScrollWorld(container, config) {
     }
   });
 
+  // Bitácora: en celulares los textos no se mueven con JavaScript (se quedaban "pegados" mientras el dedo
+  // desplazaba la página). Cada texto va dentro del recorrido, en el tramo de su escena, con position:sticky:
+  // el navegador lo mueve al mismo ritmo que el dedo, sin depender del hilo principal.
+  const nativeCopy = coarse && smallMQ.matches;
+  const wraps = [];
+  if (nativeCopy) {
+    container.classList.add('sw-native-copy');
+    copies.forEach((c) => { const w = el('div', 'sw-copywrap'); w.appendChild(c); track.appendChild(w); wraps.push(w); });
+  }
+
   // ---- math ----
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
   const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
@@ -195,6 +205,15 @@ function mountScrollWorld(container, config) {
     SEGMENTS.forEach(s => { s.start = off * vh; off += s.w; s.end = off * vh; });
     totalW = off;
     track.style.height = (totalW * vh + vh) + 'px';   // +1vh so the last flight completes
+    if (nativeCopy) {
+      // Cada texto ocupa el tramo de su escena (con un respiro entre escenas para que no se crucen)
+      SECTIONS.forEach((sec, i) => {
+        const seg = sec._seg;
+        const a = i === 0 ? 0 : seg.start + 0.24 * vh;
+        const z = i === N - 1 ? totalW * vh + vh : seg.end - 0.1 * vh;
+        wraps[i].style.top = a + 'px'; wraps[i].style.height = Math.max(vh * 0.6, z - a) + 'px';
+      });
+    }
     read();
   }
 
@@ -210,6 +229,18 @@ function mountScrollWorld(container, config) {
     s.loading = true;
     // Serve the lighter mobile encode on phones when one was provided.
     const url = (isMobile() && s.clipM) ? s.clipM : s.clip;
+    if (playMode) {
+      const v = document.createElement('video');
+      v.className = 'sw-scene__video';
+      v.muted = true; v.playsInline = true; v.preload = 'auto';
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+      v.src = url;
+      v.addEventListener('loadedmetadata', () => { s.ready = true; read(); });
+      v.addEventListener('playing', () => { s.el.classList.add('has-clip'); }, { once: true });
+      v.addEventListener('error', () => { s.loading = false; });
+      s.el.appendChild(v); s.video = v; s.hasClip = true;
+      return;
+    }
     fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
       .then(blob => {
         const v = document.createElement('video');
@@ -262,14 +293,16 @@ function mountScrollWorld(container, config) {
       if (z !== s._z) { s._z = z; s.el.style.zIndex = z; }
       if (noVideo || !s.hasClip || !s.ready) {
         if (s.visible) {
-          const sc = reduce ? 1 : 1.03 + local * 0.14;
-          const tr = `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
+          // Bitácora: con video en camino la imagen queda quieta e idéntica a su primer cuadro (antes saltaba de
+          // tamaño al aparecer el video = "corte" al inicio en celulares). El acercamiento solo en modo sin video.
+          const sc = (reduce || !noVideo) ? 1 : 1.03 + local * 0.14;
+          const tr = (reduce || !noVideo) ? 'none' : `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
           if (tr !== s._tr) { s._tr = tr; s.img.style.transform = tr; }
         }
       }
     }
 
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < N && !nativeCopy; i++) {
       const seg = SECTIONS[i]._seg;
       const pr = clamp((y - seg.start) / (seg.end - seg.start), 0, 1);
       const before = y < seg.start, after = y > seg.end;
@@ -429,7 +462,14 @@ function injectCSS() {
   .sw-stage{position:fixed;inset:0;z-index:10;pointer-events:none;}
   .sw-scene{position:absolute;inset:0;opacity:0;overflow:hidden;will-change:opacity;}
   .sw-scene__video,.sw-scene__still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;}
-  .sw-scene__still{will-change:transform;} .sw-scene.has-clip .sw-scene__still{opacity:0;} .sw-scene__video{z-index:1;}
+  .sw-native-copy .sw-track{z-index:21;}
+  .sw-native-copy .sw-copywrap{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
+  @supports (animation-timeline: view()){ .sw-native-copy .sw-copywrap{view-timeline-name:--swcw;} .sw-native-copy .sw-copywrap .sw-copy{animation:swCopyIO linear both;animation-timeline:--swcw;} .sw-native-copy .sw-copywrap:first-child .sw-copy{animation-name:swCopyOut;} .sw-native-copy .sw-copywrap:last-child .sw-copy{animation-name:swCopyIn;} }
+  @keyframes swCopyIO{entry 0%{opacity:0;transform:translateY(16px)} entry 16%{opacity:0;transform:translateY(16px)} entry 40%{opacity:1;transform:none} exit 0%{opacity:1;transform:none} exit 11%{opacity:0;transform:translateY(-6px)} exit 100%{opacity:0;transform:translateY(-6px)}}
+  @keyframes swCopyOut{exit 0%{opacity:1;transform:none} exit 11%{opacity:0;transform:translateY(-6px)} exit 100%{opacity:0;transform:translateY(-6px)}}
+  @keyframes swCopyIn{entry 0%{opacity:0;transform:translateY(16px)} entry 16%{opacity:0;transform:translateY(16px)} entry 40%{opacity:1;transform:none}}
+  .sw-native-copy .sw-copywrap .sw-copy{position:sticky;top:auto;left:auto;right:auto;bottom:calc(clamp(56px,12dvh,110px) + env(safe-area-inset-bottom));margin:0 clamp(18px,5vw,64px);width:auto;max-width:560px;opacity:1;transform:none;will-change:auto;pointer-events:auto;}
+  .sw-scene__still{will-change:transform;transition:opacity .35s ease;} .sw-scene.has-clip .sw-scene__still{opacity:0;} .sw-scene__video{animation:swVidIn .35s ease;} @keyframes swVidIn{from{opacity:0}to{opacity:1}} .sw-scene__video{z-index:1;}
   .sw-copylayer{position:fixed;inset:0;z-index:20;pointer-events:none;}
   .sw-copylayer::before{content:"";position:absolute;inset:0;width:min(58vw,780px);background:linear-gradient(90deg,var(--sw-bg) 0%,color-mix(in srgb,var(--sw-bg) 82%,transparent) 34%,color-mix(in srgb,var(--sw-bg) 40%,transparent) 62%,transparent 100%);}
   .sw-copy{position:absolute;left:clamp(18px,5vw,64px);top:50%;transform:translateY(-50%);width:min(42vw,460px);opacity:0;will-change:opacity,transform;}
