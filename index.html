@@ -33,7 +33,6 @@
         // Potencia del equipo: "low" (gama baja o datos limitados), "mid" o "high". La página se ajusta sola.
         (function () {
             var d = document.documentElement, n = navigator, c = n.connection || {}, m = n.deviceMemory || 8, k = n.hardwareConcurrency || 8, t = "high";
-            // Red 2G o "ahorro de datos" = modo liviano. Red 3G = gama media (animaciones sí, archivos más livianos).
             if (c.saveData || /(^|-)2g$/.test(c.effectiveType || "") || m <= 2 || k <= 2) t = "low";
             else if (m <= 4 || k <= 4 || c.effectiveType === "3g") t = "mid";
             // Si en una visita anterior el equipo se quedó corto, se recuerda por 7 días
@@ -326,11 +325,10 @@
 
         /* Desplazamiento suave (Lenis): el navegador no debe suavizar por su cuenta encima */
         html.lenis, html.lenis body { height: auto; }
-        /* Sin "anclaje de scroll": el navegador movía la página por su cuenta cuando algo arriba cambiaba de tamaño,
-           el desplazamiento suave quedaba desfasado y la rueda del mouse hacía saltar la página hacia atrás */
-        html, body { overflow-anchor: none; }
         .lenis.lenis-smooth { scroll-behavior: auto !important; }
         .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        /* Sin "anclaje de scroll": evita que la rueda del mouse haga saltar la página hacia atrás */
+        html, body { overflow-anchor: none; }
 
         /* ===== SECCIONES ===== */
         .sec { padding: clamp(96px, 12vw, 168px) var(--margin); }
@@ -814,33 +812,6 @@
         @media (hover: none), (pointer: coarse) { .cursor { display: none; } }
         .tier-low .cursor { display: none; }
 
-        /* ===== CÁMARA EN TODA LA PÁGINA: cada bloque llega acercándose y se va alejándose =====
-           Se usa la propiedad "scale" (aparte de transform) para no pelear con los giros 3D ni con las tarjetas apiladas */
-        .cam { scale: var(--cam-s, 1); will-change: scale; }
-        .cam-fade { opacity: var(--cam-o, 1); }
-
-        /* ===== RECORRIDO: una pared con los 5 videos; la cámara se acerca a cada uno y se aleja ===== */
-        .tour { background: #000; color: var(--ink); padding-top: clamp(96px, 12vw, 168px); }
-        .tour-title { text-align: center; padding-inline: var(--margin); margin-bottom: clamp(32px, 5vw, 64px); }
-        .tour-stage { position: relative; padding: 0 var(--margin) clamp(72px, 10vw, 140px); }
-        .tour-wall { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 1320px; margin: 0 auto; }
-        .tour-tile { position: relative; margin: 0; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; background: #0b0b0d; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1); transition: opacity 600ms var(--ease); }
-        .tour-tile video { width: 100%; height: 100%; object-fit: cover; }
-        .tour-tile figcaption { position: absolute; left: 12px; bottom: 12px; padding: 6px 12px; border-radius: var(--r-pill); background: rgba(0, 0, 0, 0.6); color: #fff; font-size: var(--t-small); font-weight: 600; }
-        .tour-brand { display: grid; place-items: center; background: radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.18), #0b0b0d 70%); }
-        .tour-brand img { width: 34%; height: auto; }
-        .tour-caption { display: none; }
-        @media (max-width: 699px) { .tour-wall { grid-template-columns: 1fr 1fr; gap: 10px; } .tour-tile { border-radius: 14px; } .tour-tile figcaption { left: 8px; bottom: 8px; padding: 4px 9px; font-size: 12px; } }
-        /* Modo cámara (lo activa el script; en modo liviano queda la pared quieta) */
-        .tour.is-zoom .tour-stage { height: 100vh; height: 100svh; padding: 0; overflow: hidden; }
-        .tour.is-zoom .tour-wall { position: absolute; left: 0; top: 0; width: min(1320px, 92vw); margin: 0; transform-origin: 0 0; will-change: transform; }
-        .tour.is-zoom.has-focus .tour-tile:not(.is-active) { opacity: 0.22; }
-        .tour.is-zoom .tour-tile.is-active figcaption { opacity: 0; }
-        .tour.is-zoom .tour-caption { display: block; position: absolute; z-index: 2; left: 50%; bottom: clamp(20px, 5vh, 56px); width: min(90vw, 820px); translate: -50% 12px; text-align: center; opacity: 0; transition: opacity 400ms var(--ease), translate 500ms var(--ease-out); pointer-events: none; }
-        .tour.is-zoom .tour-caption.is-on { opacity: 1; translate: -50% 0; }
-        .tour-step { display: block; margin-bottom: 8px; color: var(--accent-on-dark); font-size: var(--t-small); font-weight: 600; }
-        .tour-caption strong { display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 0.9rem + 2.6vw, 3.25rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.03em; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.85); text-wrap: balance; }
-
         /* ======================================================================
            ESTILO APPLE: títulos grandes y centrados, mucho aire, botones píldora y enlaces "›"
            ====================================================================== */
@@ -961,37 +932,6 @@
                     <li class="chip glass"><strong>Desde 24 h</strong>Configuración básica</li>
                     <li class="chip glass"><strong>Neiva</strong>y remoto a toda Colombia</li>
                 </ul>
-            </div>
-        </section>
-
-        <!-- Recorrido: la cámara se acerca a cada servicio, lo muestra y se aleja hacia el siguiente -->
-        <section class="tour" id="recorrido" data-theme="dark" aria-labelledby="tour-titulo">
-            <h2 class="t-h2 tour-title" id="tour-titulo" data-reveal>Mira de cerca lo que hacemos.</h2>
-            <div class="tour-stage">
-                <div class="tour-wall">
-                    <figure class="tour-tile" data-caption="Páginas que llevan clientes directo a tu WhatsApp.">
-                        <video muted loop playsinline preload="none" poster="img/pagina-web-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1"><source src="video/pagina-web-motion.mp4" type="video/mp4"></video>
-                        <figcaption>Página web</figcaption>
-                    </figure>
-                    <figure class="tour-tile" data-caption="Tu computador rápido otra vez, listo en 24 horas.">
-                        <video muted loop playsinline preload="none" poster="img/computador-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1"><source src="video/computador-motion.mp4" type="video/mp4"></video>
-                        <figcaption>Computador lento</figcaption>
-                    </figure>
-                    <figure class="tour-tile" data-caption="Programas originales, instalados y activados.">
-                        <video muted loop playsinline preload="none" poster="img/windows-office-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1"><source src="video/windows-office-motion.mp4" type="video/mp4"></video>
-                        <figcaption>Windows y Office</figcaption>
-                    </figure>
-                    <figure class="tour-tile" data-caption="Videos que muestran tu negocio y venden en redes.">
-                        <video muted loop playsinline preload="none" poster="img/videos-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1"><source src="video/videos-motion.mp4" type="video/mp4"></video>
-                        <figcaption>Videos publicitarios</figcaption>
-                    </figure>
-                    <figure class="tour-tile" data-caption="Te ayudamos desde Neiva, estés donde estés.">
-                        <video muted loop playsinline preload="none" poster="img/soporte-remoto-motion-poster.webp" width="960" height="540" aria-hidden="true" tabindex="-1"><source src="video/soporte-remoto-motion.mp4" type="video/mp4"></video>
-                        <figcaption>Soporte remoto</figcaption>
-                    </figure>
-                    <figure class="tour-tile tour-brand" aria-hidden="true"><img src="img/logo-glow.webp?v=2" width="300" height="300" alt="" loading="lazy" decoding="async"></figure>
-                </div>
-                <p class="tour-caption" aria-hidden="true"><span class="tour-step"></span><strong></strong></p>
             </div>
         </section>
 
@@ -1701,7 +1641,7 @@
         }
 
         // --- Si el equipo se queda corto mientras se hace scroll, pasa al modo liviano y se recuerda ---
-        // Se miden los cuadros por segundo solo mientras hay scroll: si tres tandas seguidas van por debajo de ~25 cuadros por segundo, se aligera
+        // Se miden los cuadros por segundo solo mientras hay scroll: si dos tandas seguidas van por debajo de ~25 cuadros por segundo, se aligera
         if (!lowEnd && !reduceMotion) {
             let last = 0, total = 0, slow = 0, badRuns = 0, until = 0, sampling = false, armed = false;
             window.addEventListener("load", () => setTimeout(() => { armed = true; }, 2500), { once: true });
@@ -1914,85 +1854,8 @@
                     tweens.push(gsap.fromTo(m.querySelector("video"), { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: Object.assign({}, st) }));
                     tweens.push(gsap.fromTo(m, { "--rxs": "18deg" }, { "--rxs": "0deg", ease: "none", scrollTrigger: Object.assign({}, st) }));
                 });
-                // Cobertura: la foto se mueve más lento que la página
                 lowHooks.push(() => tweens.forEach((tw) => { tw.scrollTrigger && tw.scrollTrigger.kill(); tw.progress(1).kill(); }));
             });
-            // Recorrido: la cámara recorre la pared de videos. Se acerca a uno hasta llenar la pantalla,
-            // lo muestra con su frase, se aleja y pasa al siguiente. Solo se reproduce el video enfocado.
-            const tour = document.getElementById("recorrido");
-            mm.add("(prefers-reduced-motion: no-preference)", () => {
-                if (lowEnd || !tour) return;
-                tour.classList.add("is-zoom");
-                const stage = tour.querySelector(".tour-stage"), wall = tour.querySelector(".tour-wall");
-                const tiles = [...wall.querySelectorAll(".tour-tile[data-caption]")];
-                const cap = tour.querySelector(".tour-caption"), capStep = cap.querySelector(".tour-step"), capText = cap.querySelector("strong");
-                // Posición de la pared para ver todo (i = -1) o para llenar la pantalla con el video i
-                const view = (i) => {
-                    const W = stage.clientWidth, H = stage.clientHeight;
-                    if (i < 0) {
-                        const s = Math.min(1, (H * 0.84) / wall.offsetHeight, (W * 0.96) / wall.offsetWidth);
-                        return { x: (W - wall.offsetWidth * s) / 2, y: (H - wall.offsetHeight * s) / 2, scale: s };
-                    }
-                    const t = tiles[i];
-                    const s = Math.min((W * 0.9) / t.offsetWidth, (H * 0.68) / t.offsetHeight);
-                    return { x: W / 2 - (t.offsetLeft + t.offsetWidth / 2) * s, y: H * 0.43 - (t.offsetTop + t.offsetHeight / 2) * s, scale: s };
-                };
-                gsap.set(wall, view(-1));
-                const ranges = [];
-                let active = -2;
-                const tl = gsap.timeline({
-                    defaults: { ease: "power2.inOut" },
-                    onUpdate: () => sync(), // se revisa en cada paso de la cámara (incluido el suavizado), no solo al hacer scroll
-                    scrollTrigger: { trigger: stage, start: "top top", end: () => "+=" + Math.round(window.innerHeight * tiles.length * 1.15), pin: true, scrub: 0.8, invalidateOnRefresh: true }
-                });
-                tl.to({}, { duration: 0.4 }); // un instante viendo toda la pared
-                tiles.forEach((t, i) => {
-                    tl.to(wall, { x: () => view(i).x, y: () => view(i).y, scale: () => view(i).scale, duration: 1 });
-                    const a = tl.duration() - 0.35;
-                    tl.to({}, { duration: 0.8 }); // se queda mirando el detalle
-                    ranges.push([a, tl.duration() + 0.15, i]);
-                    tl.to(wall, { x: () => view(-1).x, y: () => view(-1).y, scale: () => view(-1).scale, duration: 0.9 });
-                });
-                function sync() {
-                    const time = tl.time();
-                    let idx = -1;
-                    for (const [a, b, i] of ranges) if (time >= a && time <= b) idx = i;
-                    if (idx === active) return;
-                    active = idx;
-                    tour.classList.toggle("has-focus", idx >= 0);
-                    cap.classList.toggle("is-on", idx >= 0);
-                    if (idx >= 0) { capStep.textContent = tiles[idx].querySelector("figcaption").textContent; capText.textContent = tiles[idx].dataset.caption; }
-                    tiles.forEach((t, k) => {
-                        t.classList.toggle("is-active", k === idx);
-                        const v = t.querySelector("video");
-                        if (k === idx) { v.preload = "auto"; const p = v.play(); if (p) p.catch(() => {}); } else v.pause();
-                    });
-                }
-                lowHooks.push(() => { if (tl.scrollTrigger) tl.scrollTrigger.kill(true); tl.kill(); tour.classList.remove("is-zoom", "has-focus"); gsap.set(wall, { clearProps: "all" }); tiles.forEach((t) => t.querySelector("video").pause()); });
-                return () => { tour.classList.remove("is-zoom", "has-focus"); gsap.set(wall, { clearProps: "all" }); };
-            });
-
-            // Cámara en toda la página: cada bloque llega desde lejos (se acerca) y al irse se aleja un poco.
-            // Los que ya tienen su propia aparición (títulos, pasos) solo cambian de tamaño; el resto también se aclara.
-            mm.add("(prefers-reduced-motion: no-preference)", () => {
-                if (lowEnd) return;
-                // Solo cambian de tamaño (ya tienen su propia aparición, o como el globo, su etiqueta debe moverse con él)
-                const own = ".svc-head, .tour-title, .route-head, .waypoint, .faq-side, .closing-copy, .coverage-globe";
-                const camTweens = [];
-                document.querySelectorAll(own + ", .svc-media, .promise, .ledger, .summary, .coverage-inner, .faq").forEach((el) => {
-                    const fade = !el.matches(own);
-                    el.classList.add("cam");
-                    if (fade) el.classList.add("cam-fade");
-                    camTweens.push(gsap.fromTo(el, { "--cam-s": 0.84, "--cam-o": fade ? 0.3 : 1 }, { "--cam-s": 1, "--cam-o": 1, ease: "none",
-                        scrollTrigger: { trigger: el, start: "top bottom", end: "center 58%", scrub: 0.6 } }));
-                    camTweens.push(gsap.fromTo(el, { "--cam-s": 1, "--cam-o": 1 }, { "--cam-s": 0.9, "--cam-o": fade ? 0.4 : 1, ease: "none", immediateRender: false,
-                        scrollTrigger: { trigger: el, start: "center 38%", end: "bottom top", scrub: 0.6 } }));
-                });
-                const reset = () => document.querySelectorAll(".cam").forEach((el) => { el.classList.remove("cam", "cam-fade"); el.style.removeProperty("--cam-s"); el.style.removeProperty("--cam-o"); });
-                lowHooks.push(() => { camTweens.forEach((tw) => { if (tw.scrollTrigger) tw.scrollTrigger.kill(); tw.kill(); }); reset(); });
-                return reset;
-            });
-
             // Servicios: cada tarjeta se queda arriba y la siguiente sube encima; la de atrás se achica y oscurece.
             // Solo si todas caben en la pantalla, para que ningún botón quede tapado (en celulares bajitos queda como lista)
             const svcList = document.querySelector(".svc-list");
