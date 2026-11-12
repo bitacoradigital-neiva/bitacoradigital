@@ -24,9 +24,9 @@
 
 :root {
     color-scheme: dark;
-    --bg-color: #0b0d0f;
-    --card-bg: #151719;
-    --card-raised: #1c1f22;
+    --bg-color: #000000;
+    --card-bg: #0f0f10;
+    --card-raised: #1d1d1f;
     --primary: #1685ff;
     --primary-ink: #07111d;
     --accent: var(--primary);

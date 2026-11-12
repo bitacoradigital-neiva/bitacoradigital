@@ -200,12 +200,16 @@ form.addEventListener("submit", (e) => {
     });
     if (!ok) return;
     const text = `Hola, Bitácora Digital. Soy ${name}.\nNecesito: ${service}.\n\n${msg}`;
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
 });
 ["name", "message"].forEach((n) => contactFields[n].addEventListener("input", () => {
     const f = contactFields[n].closest(".field");
     if (f.classList.contains("has-error")) { f.classList.remove("has-error"); contactFields[n].removeAttribute("aria-invalid"); f.querySelector(".field-error").textContent = ""; }
 }));
+
+// Solo habilitar el envío después de registrar el manejador que evita la navegación.
+form.querySelector('button[type="submit"]').disabled = false;
+$("#contact-fallback").hidden = true;
 
 /* ---------- El recorrido Scroll World ----------
    Si existe assets/world/ia/manifest.json (lo escribe produccion/scroll-world/generar.sh) se usa la cadena
@@ -213,7 +217,7 @@ form.addEventListener("submit", (e) => {
    con videos de stock. Cuando exista la cadena vertical nativa, el manifiesto trae "movilNativo": true. */
 const WA_LINK = "https://wa.me/573144321446?text=" + encodeURIComponent("Hola, Bitácora Digital. Quiero información sobre sus servicios.");
 const SCENES = [
-    { id: "marca", label: "Bitácora Digital", free: "laptop", scroll: 1.7, linger: 0.35,
+    { id: "marca", label: "Bitácora Digital", free: "marca", scroll: 1.7, linger: 0.35,
       title: "Diseño, web y video para marcas que quieren verse profesionales.",
       body: "Páginas web, landing pages y producción audiovisual digital. Desde Neiva para toda Colombia.",
       tags: ["Páginas web", "Landing pages", "Video digital"] },
@@ -225,11 +229,15 @@ const SCENES = [
       title: "Landing pages que llevan a la acción.",
       body: "Una estructura pensada para presentar tu producto y convertir visitas en mensajes de WhatsApp.",
       tags: ["Desde $500.000", "Plazo a convenir"] },
-    { id: "video", label: "Producción digital", free: "edicion", linger: 0.3,
+    { id: "video", label: "Producción digital", free: "video", linger: 0.3,
       title: "Videos hechos con diseño, edición y animación.",
       body: "Publicidad, motion graphics y demos de páginas producidos en digital, sin cámaras ni estudio.",
       tags: ["Motion graphics", "Edición", "Redes sociales"] },
-    { id: "contacto", label: "Hablemos", free: "cierre", scroll: 1.5, linger: 0.4,
+    { id: "software", label: "Windows y Office", free: "software", linger: 0.3,
+      title: "Windows, Office y los programas que necesitas.",
+      body: "Instalación y configuración en tu equipo. La licencia oficial se cotiza y paga aparte, con tu aprobación previa.",
+      tags: ["Instalación", "Configuración", "LibreOffice de obsequio"] },
+    { id: "contacto", label: "Hablemos", free: "contacto", scroll: 1.5, linger: 0.4,
       title: "¿Creamos algo juntos?",
       body: "Cuéntanos tu idea y te enviamos una propuesta con precio.",
       cta: { primary: { label: "Arma tu cotización", href: "#cotizador" }, secondary: { label: "WhatsApp", href: WA_LINK } } }
@@ -266,7 +274,7 @@ async function mountWorld() {
     const MUNDO_IA = false;
     let ia = null;
     if (MUNDO_IA) { try { const r = await fetch("assets/world/ia/manifest.json", { cache: "no-store" }); if (r.ok) ia = await r.json(); } catch (e) { /* sin cadena generada */ } }
-    const A = "#8295A3";
+    const A = "#8EA4BF";
     // Calidad según el equipo: gama alta = video HD; gama media = versión "lite" (más liviana de decodificar);
     // gama baja o ahorro de datos = imágenes en alta calidad con acercamiento suave, sin video.
     const lite = GAMA === "baja";
@@ -316,10 +324,12 @@ async function buildReel() {
         reel.innerHTML = '<p class="lead">Consulta las muestras disponibles por <a href="https://wa.me/573144321446">WhatsApp</a>.</p>';
         return;
     }
+    // Full HD solo en computadores potentes; celulares, tablets y gama media reciben la versión 720p (mucho más liviana)
+    const hd = GAMA === "alta" && window.innerWidth >= 1000 && !window.matchMedia("(hover: none) and (pointer: coarse)").matches;
     reel.innerHTML = available.map((p, k) => {
         const real = ready[p.id];
         const media = real
-            ? `<video class="piece-video" controls muted loop playsinline preload="none" poster="assets/reel/${p.id}.webp" data-autoplay aria-label="${p.title}"><source src="assets/reel/${p.id}.mp4" type="video/mp4"></video>`
+            ? `<video class="piece-video" muted loop playsinline preload="none" poster="assets/reel/${p.id}.webp" data-autoplay aria-label="${p.title}"><source src="assets/reel/${p.id}${hd ? "" : "-720"}.mp4" type="video/mp4"></video><button type="button" class="piece-play" aria-label="Reproducir ${p.title}"><span aria-hidden="true"></span></button>`
             : `<div class="piece-frame" aria-hidden="true"><span class="piece-letter">${p.tag}</span><span class="piece-bars"><i></i><i></i><i></i><i></i></span></div>`;
         return `<article class="piece${k === 0 || k === 3 ? " piece-wide" : ""}${real ? " has-video" : ""}">
             <div class="piece-media">${media}<span class="piece-badge">${real ? "Concepto demostrativo" : "Concepto en producción"}</span></div>
@@ -327,10 +337,46 @@ async function buildReel() {
         </article>`;
     }).join("");
     // En gama baja los videos de la galería no arrancan solos: se ven con su portada y se reproducen al tocar
+    // Botón propio de reproducir/pausar (los controles del navegador recargaban la vista en el celular).
+    // Al reproducirse un video, los demás se pausan.
+    const allVids = [...reel.querySelectorAll("video.piece-video")];
+    reel.querySelectorAll(".piece.has-video").forEach((art) => {
+        const v = art.querySelector("video"), btn = art.querySelector(".piece-play");
+        const title = v.getAttribute("aria-label");
+        const sync = () => { art.classList.toggle("is-playing", !v.paused); btn.setAttribute("aria-label", (v.paused ? "Reproducir " : "Pausar ") + title); };
+        v.addEventListener("play", () => { if (!hd) allVids.forEach((o) => { if (o !== v && !o.paused) o.pause(); }); sync(); });
+        v.addEventListener("pause", sync);
+        btn.addEventListener("click", () => { if (v.paused) { v.preload = "auto"; const pr = v.play(); if (pr) pr.catch(() => {}); } else v.pause(); });
+    });
+    // Solo se reproduce UN video a la vez (el que más se ve): varios videos a la vez trababan el celular
     if (!reduceMotion && !saveData && GAMA !== "baja" && "IntersectionObserver" in window) {
-        reel.querySelectorAll("video[data-autoplay]").forEach((v) => new IntersectionObserver(([en]) => {
-            if (en.isIntersecting) { v.preload = "auto"; const pr = v.play(); if (pr) pr.catch(() => {}); } else v.pause();
-        }, { threshold: 0.3 }).observe(v));
+        const vids = [...reel.querySelectorAll("video[data-autoplay]")];
+        const ratio = new Map();
+        let current = null, pending = 0;
+        // Computadores potentes: se reproducen todos los videos visibles. Resto: solo el que más se ve.
+        const multi = hd;
+        const pick = () => {
+            pending = 0;
+            if (multi) {
+                vids.forEach((v) => {
+                    const r = ratio.get(v) || 0;
+                    if (r > 0.35 && v.paused) { v.preload = "auto"; const pr = v.play(); if (pr) pr.catch(() => {}); }
+                    else if (r <= 0.05 && !v.paused) v.pause();
+                });
+                return;
+            }
+            let best = null, bestR = 0.55;
+            vids.forEach((v) => { const r = ratio.get(v) || 0; if (r > bestR) { best = v; bestR = r; } });
+            if (best === current) return;
+            if (current) current.pause();
+            current = best;
+            if (best) { best.preload = "auto"; const pr = best.play(); if (pr) pr.catch(() => {}); }
+        };
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((en) => ratio.set(en.target, en.isIntersecting ? en.intersectionRatio : 0));
+            if (!pending) pending = requestAnimationFrame(pick);
+        }, { threshold: [0, 0.3, 0.55, 0.75, 1] });
+        vids.forEach((v) => io.observe(v));
     }
 }
 
@@ -395,24 +441,32 @@ function initProcessTimeline() {
     const list = $("#process-lines"), num = $("#pc-num");
     if (!list || !num) return;
     const items = $$("#process-lines li");
-    let shown = 1, frame = 0;
+    // La barra de avance es un elemento propio que se mueve con transform: así no se recalcula el estilo
+    // de todos los pasos en cada cuadro (antes una variable heredada obligaba a hacerlo).
+    const fill = document.createElement("span");
+    fill.className = "process-fill"; fill.setAttribute("aria-hidden", "true");
+    list.appendChild(fill);
+    let shown = 1, frame = 0, lastFill = -1;
     const paint = () => {
         frame = 0;
+        // 1) Primero se mide todo…
         const vh = window.innerHeight, line = vh * 0.5, r = list.getBoundingClientRect();
         if (r.bottom < -vh || r.top > vh * 2) return;
-        list.style.setProperty("--fill", Math.max(0, Math.min(1, (line - r.top) / r.height)).toFixed(3));
+        const tops = items.map((li) => li.getBoundingClientRect().top);
+        // 2) …y después se escribe (sin volver a medir en medio)
+        const f = Math.round(Math.max(0, Math.min(1, (line - r.top) / r.height)) * 400) / 400;
+        if (f !== lastFill) { lastFill = f; fill.style.transform = `scaleY(${f})`; }
         let active = 1;
         items.forEach((li, k) => {
-            const lit = li.getBoundingClientRect().top < line;
-            li.classList.toggle("on", lit || k === 0);
+            const lit = tops[k] < line;
+            if (li.classList.contains("on") !== (lit || k === 0)) li.classList.toggle("on", lit || k === 0);
             if (lit) active = k + 1;
         });
         if (active !== shown) {
             shown = active;
             num.textContent = String(active).padStart(2, "0");
             num.classList.toggle("swap", false);
-            void num.offsetWidth; // reinicia la animación del número
-            num.classList.toggle("swap", true);
+            requestAnimationFrame(() => num.classList.toggle("swap", true)); // reinicia la animación del número sin forzar un recálculo
         }
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(paint); };
@@ -421,12 +475,27 @@ function initProcessTimeline() {
     paint();
 }
 
+/* ---------- Servicios: los videos 3D se reproducen solo mientras se ven ---------- */
+function initServiceVideos() {
+    const vids = $$(".svc-video");
+    if (!vids.length || !("IntersectionObserver" in window)) return;
+    // En gama baja, ahorro de datos o movimiento reducido se queda la portada (la imagen fija)
+    if (reduceMotion || saveData || GAMA === "baja") return;
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+        const v = en.target;
+        if (en.isIntersecting && en.intersectionRatio >= 0.35) { v.preload = "auto"; const p = v.play(); if (p) p.catch(() => {}); }
+        else if (!v.paused) v.pause();
+    }), { threshold: [0, 0.35, 0.7] });
+    vids.forEach((v) => io.observe(v));
+}
+
 /* ---------- Movimiento del resto de la página ---------- */
 window.addEventListener("DOMContentLoaded", () => {
     mountWorld();
     buildReel();
     initServiceChapters();
     initProcessTimeline();
+    initServiceVideos();
     syncNav();
     const lines = $$("#process-lines li");
 

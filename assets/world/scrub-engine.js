@@ -74,6 +74,10 @@ function mountScrollWorld(container, config) {
   const coarse = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   const smallMQ = window.matchMedia('(max-width: 860px)');
   const isMobile = () => coarse || smallMQ.matches;
+  // Bitácora: en pantallas táctiles (celulares y tablets) el video de cada escena se REPRODUCE cuando llega
+  // su escena, en vez de moverlo cuadro a cuadro con el dedo. Buscar cuadros en el celular es lo que trababa
+  // el scroll; reproducir lo hace el chip de video del teléfono y el desplazamiento queda libre y fluido.
+  const playMode = config.playMode != null ? !!config.playMode : coarse;
   const SECTIONS = config.sections || [];
   const CONNECTORS = config.connectors || [];
   const CONNECTORS_M = config.connectorsMobile || [];
@@ -180,6 +184,7 @@ function mountScrollWorld(container, config) {
   // mid-scene pause. f(0)=0, f(1)=1 always, so seam frames are untouched.
   const lingerEase = (x, L) => { L = clamp(L); const c = x - 0.5; return (1 - L) * x + L * (4 * c * c * c + 0.5); };
   let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false;
+  let curSeg = 0, past = false, rafOn = false;
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
   function layout() {
@@ -217,6 +222,7 @@ function mountScrollWorld(container, config) {
         // painted — on iOS a seeked-but-never-played muted video stays blank, so
         // hiding the still on metadata alone would flash an empty scene.
         v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
+        v.addEventListener('playing', () => { s.el.classList.add('has-clip'); }, { once: true });
         v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); });
         s.el.appendChild(v); s.video = v; s.hasClip = true;
       }).catch(() => { s.loading = false; });
@@ -234,6 +240,10 @@ function mountScrollWorld(container, config) {
     const fade = CROSSFADE * vh;
     let ci = 0;
     for (let i = 0; i < NSEG; i++) if (y >= SEGMENTS[i].start) ci = i;
+    curSeg = ci;
+    // Pasado el recorrido no se hace trabajo por cuadro (el motor descansa hasta que se vuelva a subir)
+    past = y > SEGMENTS[NSEG - 1].end + 1.2 * vh;
+    if (!past && !rafOn) { rafOn = true; requestAnimationFrame(raf); }
 
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
@@ -282,11 +292,23 @@ function mountScrollWorld(container, config) {
   }
 
   function raf() {
+    if (past) {
+      SEGMENTS.forEach((s) => { if (s.video && !s.video.paused) { try { s.video.pause(); } catch (e) {} } });
+      rafOn = false; return;
+    }
     // Bitácora: paso mínimo de ~1 cuadro (24 fps) también en computador; buscar más fino gastaba decodificaciones sin cambiar la imagen
     const eps = isMobile() ? 0.04 : 0.03;
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
       if (noVideo || !s.hasClip || !s.ready || !s.video) continue;
+      if (playMode) {
+        // Escena actual: se reproduce una vez y se queda en su último cuadro. Las demás, en pausa;
+        // al salir de la vista vuelven al inicio para repetirse si se regresa a ellas.
+        const v = s.video;
+        if (i === curSeg) { if (v.paused && !v.ended) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } }
+        else { if (!v.paused) { try { v.pause(); } catch (e) {} } if (!s.visible && v.currentTime > 0.05) { try { v.currentTime = 0; } catch (e) {} } }
+        continue;
+      }
       // Never queue a seek while the decoder is still resolving the last one.
       // On phones a fast flick would otherwise pile up seeks and freeze the clip;
       // cur keeps lerping, so we snap to the latest target the moment it's free.
@@ -334,7 +356,7 @@ function mountScrollWorld(container, config) {
   window.addEventListener('orientationchange', layout);
   window.addEventListener('load', layout);
   layout();
-  requestAnimationFrame(raf);
+  if (!rafOn) { rafOn = true; requestAnimationFrame(raf); }
 
   // ---- helpers ----
   function el(tag, cls) { const n = document.createElement(tag); if (cls) n.className = cls; return n; }
