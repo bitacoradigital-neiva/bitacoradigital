@@ -7,6 +7,7 @@ const WHATSAPP = "573144321446";
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const touchScroll = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 const saveData = !!(navigator.connection && navigator.connection.saveData);
 
@@ -404,7 +405,7 @@ async function buildReel() {
 /* ---------- Servicios: capítulos tipográficos con scroll nativo ---------- */
 function initServiceChapters() {
     const chapters = $$(".service-chapter");
-    if (!chapters.length) return;
+    if (!chapters.length || touchScroll) return;
     // Solo sostener una escena cuando todo su contenido cabe en la pantalla.
     const measure = () => chapters.forEach((chapter) => {
         const article = chapter.querySelector("article");
@@ -516,7 +517,8 @@ function initServiceVideos() {
 }
 // Precarga de videos cuando están a ~1 pantalla de distancia: llegan listos y el arranque no traba el scroll
 function warmUp(vids) {
-    if (!("IntersectionObserver" in window)) return;
+    // En celulares, cargar al entrar en pantalla evita preparar varios decodificadores durante el scroll.
+    if (touchScroll || !("IntersectionObserver" in window)) return;
     const wio = new IntersectionObserver((entries) => entries.forEach((en) => {
         if (!en.isIntersecting) return;
         const v = en.target; wio.unobserve(v);
@@ -531,7 +533,7 @@ function warmUp(vids) {
 const whenIdle = (fn, timeout = 1500) => ("requestIdleCallback" in window ? requestIdleCallback(fn, { timeout }) : setTimeout(fn, 400));
 window.addEventListener("DOMContentLoaded", () => {
     mountWorld();
-    syncNav();
+    whenIdle(syncNav, 800);   // medir el menú activo en un momento libre (al abrir obligaba a medir toda la página)
     whenIdle(initRest);
 });
 // Se prepara por partes, una en cada momento libre del navegador, para que ninguna congele la pantalla
@@ -542,7 +544,9 @@ const lazySections = () => $$(".after > section, .after > footer").map((sec) => 
 document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest('a[href^="#"]');
     if (!a || document.documentElement.classList.contains("cv-off")) return;
-    const target = document.querySelector(a.getAttribute("href"));
+    const hash = a.getAttribute("href");
+    if (!hash || hash.length < 2) return;
+    const target = document.getElementById(decodeURIComponent(hash.slice(1)));
     if (!target) return;
     e.preventDefault();
     revealAllSections();
@@ -569,7 +573,7 @@ function initAnimations() {
 
     // La flecha del logo enseña una vez dónde tocar en el cotizador
     const firstCheck = ledger.querySelector(".service-row .check");
-    if (!firstCheck || !("animate" in Element.prototype)) return;
+    if (touchScroll || !firstCheck || !("animate" in Element.prototype)) return;
     const guide = document.createElement("span"); guide.className = "tap-guide"; guide.setAttribute("aria-hidden", "true");
     guide.innerHTML = '<svg viewBox="0 0 28 28"><use href="#i-cursor"/></svg>';
     const ring = document.createElement("span"); ring.className = "tap-ring"; ring.setAttribute("aria-hidden", "true");

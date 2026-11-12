@@ -44,7 +44,8 @@ const server = http.createServer((req, res) => {
             await page.addInitScript(() => { window.cspViolations = []; document.addEventListener('securitypolicyviolation', e => window.cspViolations.push(e.effectiveDirective)); window.open = url => { window.testOutgoing = url; return null; }; });
             await page.goto(base + '/index.html');
             await page.waitForSelector('#services-target input');
-            assert.equal(await page.evaluate(() => window.gsap.version), '3.13.0');
+            assert.equal(await page.evaluate(() => typeof window.mountScrollWorld), 'function');
+            assert.equal(await page.locator('script[src^="https:"]').count(), 0);
             assert(await page.locator('#contact-form button[type=submit]').isEnabled());
             await page.locator('[data-id="wb2"] input').check(); await page.locator('[data-id="vd1"] input').check();
             assert((await page.locator('#total-val').innerText()).includes('990.000'));
@@ -90,6 +91,33 @@ const server = http.createServer((req, res) => {
         await page.goto(base + '/no-headers/frame-test'); await page.waitForTimeout(200);
         assert(await page.locator('iframe').evaluate(el => !el.contentDocument || !el.contentDocument.querySelector('#contact-form')));
         console.log('PASS CSP bloquea script inline, envío forzado e incrustación en iframe.');
+        // Perfiles táctiles con CPU limitada; no sustituyen una prueba en teléfonos físicos.
+        for (const profile of [{width:360,cores:2,rate:6},{width:390,cores:4,rate:4},{width:430,cores:8,rate:1}]) {
+            const ctx = await browser.newContext({viewport:{width:profile.width,height:800},isMobile:true,hasTouch:true});
+            await ctx.addInitScript(({cores}) => {
+                Object.defineProperty(navigator, 'hardwareConcurrency', {get:()=>cores});
+                Object.defineProperty(navigator, 'deviceMemory', {get:()=>cores});
+                const raf=window.requestAnimationFrame.bind(window); window.framesRequested=0;
+                window.requestAnimationFrame=fn=>{window.framesRequested++;return raf(fn);};
+            }, profile);
+            const phone=await ctx.newPage(); const errors=[];
+            phone.on('pageerror',e=>errors.push(e.message));
+            const cdp=await ctx.newCDPSession(phone); await cdp.send('Emulation.setCPUThrottlingRate',{rate:profile.rate});
+            await phone.goto(base+'/index.html'); await phone.waitForSelector('.sw-native-copy');
+            await phone.waitForTimeout(3500);
+            const idleStart=await phone.evaluate(()=>window.framesRequested);
+            await phone.waitForTimeout(600);
+            assert(await phone.evaluate(()=>window.framesRequested)-idleStart < 15, 'El motor no debe mantener un bucle por cuadro en reposo');
+            await phone.locator('#svc-web').scrollIntoViewIfNeeded(); await phone.waitForTimeout(400);
+            await phone.evaluate(()=>window.scrollBy({top:180,behavior:'instant'}));
+            await phone.waitForTimeout(200);
+            assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+            assert.equal(await phone.locator('.service-chapter article').first().evaluate(el=>el.style.getPropertyValue('--p')),'');
+            assert.equal(await phone.locator('.svc-a').first().evaluate(el=>getComputedStyle(el).transform),'none');
+            assert.deepEqual(errors,[]);
+            console.log(`PASS móvil ${profile.width}px, CPU ${profile.rate}x: sin bucle continuo, sin repintado JS de títulos ni desbordamiento.`);
+            await ctx.close();
+        }
         // La política debe permitir videos blob y el motor real, con movimiento activado.
         const motion = await browser.newPage({ viewport: { width: 1440, height: 900 } });
         await motion.addInitScript(() => { window.cspViolations = []; document.addEventListener('securitypolicyviolation', e => window.cspViolations.push(e.effectiveDirective)); });

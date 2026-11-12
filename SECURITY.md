@@ -6,7 +6,7 @@ Responsabilidad en este trabajo: Codex mantiene las protecciones y sus pruebas; 
 
 - `vercel.json`: CSP, bloqueo de incrustación (`frame-ancestors 'none'` y `X-Frame-Options: DENY`), `nosniff`, ausencia de Referer y restricción de cámara, micrófono, geolocalización, pagos y USB.
 - Meta CSP y referrer en las cuatro páginas HTML: protecciones del contenido también con servidores locales que no interpreten `vercel.json`. La protección contra incrustación requiere las cabeceras HTTP, no puede hacerse mediante meta.
-- Scripts ejecutables únicamente del mismo origen. GSAP y ScrollTrigger 3.13.0 están en `assets/vendor/gsap-3.13.0/`, con sus avisos de licencia originales y SRI verificado. No se habilitan `unsafe-inline` ni `unsafe-eval` para JavaScript.
+- Scripts ejecutables únicamente del mismo origen. El motor de animación y los scripts se sirven localmente; las animaciones actuales no requieren librerías externas. No se habilitan `unsafe-inline` ni `unsafe-eval` para JavaScript.
 - Se permite `style-src 'unsafe-inline'` porque el diseño utiliza estilos inline y el motor inserta su CSS. Es una concesión limitada a estilos, no a scripts. Los videos del recorrido requieren `media-src blob:`.
 - El botón del formulario nace deshabilitado. `script.js` lo habilita después de registrar el manejador que prepara el mensaje para WhatsApp. Si no puede hacerlo, queda un enlace directo de contacto.
 - `assets/security/bootstrap.js` impide el envío tradicional de ese formulario incluso si falla otro script. `form-action 'none'` bloquea también envíos forzados que omitan los eventos. `method="post"` evita el fallback GET con datos en la URL si una versión sin CSP se abre sin JavaScript.

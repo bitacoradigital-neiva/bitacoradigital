@@ -195,6 +195,8 @@ function mountScrollWorld(container, config) {
   const lingerEase = (x, L) => { L = clamp(L); const c = x - 0.5; return (1 - L) * x + L * (4 * c * c * c + 0.5); };
   let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false;
   let curSeg = 0, past = false, rafOn = false;
+  let pageReady = document.readyState === 'complete';
+  if (!pageReady) window.addEventListener('load', () => { setTimeout(() => { pageReady = true; read(); }, 120); }, { once: true });
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
   function layout() {
@@ -226,6 +228,9 @@ function mountScrollWorld(container, config) {
     // Under prefers-reduced-motion we never load the clips at all — the stills stay up
     // and simply cross-dissolve as you scroll. No scrubbed video motion, no decode cost.
     if (noVideo || s.loading || !s.clip) return;
+    // Bitácora: en celulares los videos esperan a que la página termine de cargar (la imagen de espera es igual
+    // a su primer cuadro); así la carga inicial no compite con el arranque del video y el primer scroll no se traba.
+    if (playMode && !pageReady) return;
     s.loading = true;
     // Serve the lighter mobile encode on phones when one was provided.
     const url = (isMobile() && s.clipM) ? s.clipM : s.clip;
@@ -274,11 +279,11 @@ function mountScrollWorld(container, config) {
     curSeg = ci;
     // Pasado el recorrido no se hace trabajo por cuadro (el motor descansa hasta que se vuelva a subir)
     past = y > SEGMENTS[NSEG - 1].end + 1.2 * vh;
-    if (!past && !rafOn) { rafOn = true; requestAnimationFrame(raf); }
+    if (!rafOn) { rafOn = true; requestAnimationFrame(raf); }
 
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
-      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh) loadClip(s);
+      if (playMode ? (!past && i === ci) : (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh)) loadClip(s);
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
       let outside = 0;
@@ -295,8 +300,8 @@ function mountScrollWorld(container, config) {
         if (s.visible) {
           // Bitácora: con video en camino la imagen queda quieta e idéntica a su primer cuadro (antes saltaba de
           // tamaño al aparecer el video = "corte" al inicio en celulares). El acercamiento solo en modo sin video.
-          const sc = (reduce || !noVideo) ? 1 : 1.03 + local * 0.14;
-          const tr = (reduce || !noVideo) ? 'none' : `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
+          const sc = (reduce || coarse || !noVideo) ? 1 : 1.03 + local * 0.14;
+          const tr = (reduce || coarse || !noVideo) ? 'none' : `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
           if (tr !== s._tr) { s._tr = tr; s.img.style.transform = tr; }
         }
       }
@@ -337,7 +342,7 @@ function mountScrollWorld(container, config) {
   }
 
   function raf() {
-    if (past) {
+    if (past || document.hidden) {
       SEGMENTS.forEach((s) => { if (s.video && !s.video.paused) { try { s.video.pause(); } catch (e) {} } });
       rafOn = false; return;
     }
@@ -364,6 +369,8 @@ function mountScrollWorld(container, config) {
       const t = clamp(s.cur, 0, 0.999) * dur;
       if (Math.abs(s.video.currentTime - t) > eps) { try { s.video.currentTime = t; } catch (e) {} }
     }
+    // Native video playback and still images need updates only when scroll/state changes.
+    if (playMode || noVideo) { rafOn = false; return; }
     requestAnimationFrame(raf);
   }
 
@@ -380,6 +387,7 @@ function mountScrollWorld(container, config) {
   function onFirstGesture() {
     if (userReady) return;
     userReady = true;
+    if (playMode) { read(); return; }
     SEGMENTS.forEach(s => primeVideo(s.video));
   }
   window.addEventListener('pointerdown', onFirstGesture, { once: true, passive: true });
@@ -397,6 +405,7 @@ function mountScrollWorld(container, config) {
     if (coarse && window.innerWidth === laidOutW) return;
     layout();
   }
+  document.addEventListener('visibilitychange', read);
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', layout);
   window.addEventListener('load', layout);
@@ -468,7 +477,7 @@ function injectCSS() {
   @keyframes swCopyIO{entry 0%{opacity:0;transform:translateY(16px)} entry 16%{opacity:0;transform:translateY(16px)} entry 40%{opacity:1;transform:none} exit 0%{opacity:1;transform:none} exit 11%{opacity:0;transform:translateY(-6px)} exit 100%{opacity:0;transform:translateY(-6px)}}
   @keyframes swCopyOut{exit 0%{opacity:1;transform:none} exit 11%{opacity:0;transform:translateY(-6px)} exit 100%{opacity:0;transform:translateY(-6px)}}
   @keyframes swCopyIn{entry 0%{opacity:0;transform:translateY(16px)} entry 16%{opacity:0;transform:translateY(16px)} entry 40%{opacity:1;transform:none}}
-  .sw-native-copy .sw-copywrap .sw-copy{position:sticky;top:auto;left:auto;right:auto;bottom:calc(clamp(56px,12dvh,110px) + env(safe-area-inset-bottom));margin:0 clamp(18px,5vw,64px);width:auto;max-width:560px;opacity:1;transform:none;will-change:auto;pointer-events:auto;}
+  .sw-native-copy .sw-copywrap .sw-copy{position:sticky;top:auto;left:auto;right:auto;bottom:calc(clamp(56px,12svh,110px) + env(safe-area-inset-bottom));margin:0 clamp(18px,5vw,64px);width:auto;max-width:560px;opacity:1;transform:none;will-change:auto;pointer-events:auto;}
   .sw-scene__still{will-change:transform;transition:opacity .35s ease;} .sw-scene.has-clip .sw-scene__still{opacity:0;} .sw-scene__video{animation:swVidIn .35s ease;} @keyframes swVidIn{from{opacity:0}to{opacity:1}} .sw-scene__video{z-index:1;}
   .sw-copylayer{position:fixed;inset:0;z-index:20;pointer-events:none;}
   .sw-copylayer::before{content:"";position:absolute;inset:0;width:min(58vw,780px);background:linear-gradient(90deg,var(--sw-bg) 0%,color-mix(in srgb,var(--sw-bg) 82%,transparent) 34%,color-mix(in srgb,var(--sw-bg) 40%,transparent) 62%,transparent 100%);}
@@ -502,7 +511,7 @@ function injectCSS() {
     /* Anchor copy to the bottom, clear of the home indicator / collapsing URL bar.
        dvh + env() are progressive: browsers that lack them keep the vh fallback line. */
     .sw-copy{left:clamp(18px,5vw,64px);right:clamp(18px,5vw,64px);top:auto;bottom:clamp(64px,14vh,120px);transform:none;width:auto;max-width:560px;}
-    .sw-copy{bottom:calc(clamp(56px,12dvh,110px) + env(safe-area-inset-bottom));}
+    .sw-copy{bottom:calc(clamp(56px,12svh,110px) + env(safe-area-inset-bottom));}
     .sw-copy__title{font-size:clamp(1.9rem,7.5vw,2.7rem);}
     .sw-copy__body{max-width:none;font-size:clamp(.98rem,3.6vw,1.1rem);} .sw-scene__video,.sw-scene__still{object-position:center 46%;}
     .sw-hint{bottom:calc(20px + env(safe-area-inset-bottom));}
