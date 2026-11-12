@@ -395,6 +395,9 @@ async function buildReel() {
             if (!pending) pending = requestAnimationFrame(pick);
         }, { threshold: [0, 0.3, 0.55, 0.75, 1] });
         vids.forEach((v) => io.observe(v));
+        // Preparar cada video un poco antes de que llegue a la pantalla (el arranque del decodificador causaba
+        // una pausa corta en celulares justo al entrar a la galería)
+        warmUp(vids);
     }
 }
 
@@ -509,6 +512,17 @@ function initServiceVideos() {
         else if (!v.paused) v.pause();
     }), { threshold: [0, 0.35, 0.7] });
     vids.forEach((v) => io.observe(v));
+    warmUp(vids);
+}
+// Precarga de videos cuando están a ~1 pantalla de distancia: llegan listos y el arranque no traba el scroll
+function warmUp(vids) {
+    if (!("IntersectionObserver" in window)) return;
+    const wio = new IntersectionObserver((entries) => entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const v = en.target; wio.unobserve(v);
+        if (v.preload !== "auto") { v.preload = "auto"; try { v.load(); } catch (e) {} }
+    }), { rootMargin: "100% 0px 100% 0px" });
+    vids.forEach((v) => wio.observe(v));
 }
 
 /* ---------- Movimiento del resto de la página ---------- */

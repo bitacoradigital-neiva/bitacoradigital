@@ -508,3 +508,6 @@ html.cv-off .after > section, html.cv-off .after > footer { content-visibility: 
 
 /* Galería: sin botón visible de reproducir/pausar (los videos arrancan solos); tocar el video lo pausa o reanuda */
 .piece-play span { display: none; }
+/* Cada video vive en una caja aislada: lo que pase dentro (cargar, reproducir, pausar) no obliga a recalcular
+   el resto de la página (antes provocaba una pausa corta al entrar a la galería en celulares). */
+.piece-media, .svc-stack { contain: layout paint style; }
