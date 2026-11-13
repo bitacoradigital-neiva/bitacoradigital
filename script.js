@@ -354,7 +354,11 @@ function mountStackedWorld(host) {
 
 async function mountWorld() {
     const host = $("#world");
-    if (host && window.matchMedia("(hover: none) and (pointer: coarse)").matches) { mountStackedWorld(host); return; }
+    // Celulares con navegador moderno: el mismo recorrido que en computador, con fundidos y textos movidos por el
+    // navegador (animaciones ligadas al scroll). Celulares sin ese soporte: secciones normales, para no trabarse.
+    const touchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const scrollAnims = typeof CSS !== "undefined" && CSS.supports && CSS.supports("animation-timeline: scroll()");
+    if (host && touchDevice && (!scrollAnims || reduceMotion)) { mountStackedWorld(host); return; }
     if (!host || typeof mountScrollWorld !== "function") { document.documentElement.classList.add("no-world"); return; }
     // La cadena generada con IA (assets/world/ia/) solo se consulta si existe: poner MUNDO_IA = true cuando se genere.
     // Así no se gasta una consulta a la red al abrir la página, que retrasaba la aparición del recorrido.

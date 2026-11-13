@@ -180,6 +180,11 @@ function mountScrollWorld(container, config) {
   // desplazaba la página). Cada texto va dentro del recorrido, en el tramo de su escena, con position:sticky:
   // el navegador lo mueve al mismo ritmo que el dedo, sin depender del hilo principal.
   const nativeCopy = coarse && smallMQ.matches;
+  // Bitácora: en celulares los fundidos entre escenas también los hace el navegador (animaciones ligadas al
+  // scroll, sin JavaScript por cuadro). El código solo actúa al cambiar de escena (play/pausa del video).
+  const cssMode = nativeCopy && !reduce && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('animation-timeline: scroll()');
+  if (cssMode) container.classList.add('sw-css');
+  let lastCi = -1;
   const wraps = [];
   if (nativeCopy) {
     container.classList.add('sw-native-copy');
@@ -207,6 +212,24 @@ function mountScrollWorld(container, config) {
     SEGMENTS.forEach(s => { s.start = off * vh; off += s.w; s.end = off * vh; });
     totalW = off;
     track.style.height = (totalW * vh + vh) + 'px';   // +1vh so the last flight completes
+    if (cssMode) {
+      const fadePx = CROSSFADE * vh;
+      SEGMENTS.forEach((sg, i) => {
+        sg.el.style.zIndex = String(100 + i);
+        sg.el.style.opacity = '';
+        if (i === 0) { sg.el.style.animation = 'none'; sg.el.style.opacity = '1'; return; }
+        sg.el.style.animation = 'swSceneIn linear both';
+        sg.el.style.animationTimeline = 'scroll(root block)';
+        sg.el.style.animationRange = `${Math.max(0, Math.round(sg.start - fadePx))}px ${Math.round(sg.start)}px`;
+      });
+      scrollbarFill.style.animation = 'swBar linear both';
+      scrollbarFill.style.animationTimeline = 'scroll(root block)';
+      scrollbarFill.style.animationRange = `0px ${Math.round(totalW * vh)}px`;
+      hint.style.animation = 'swHintOut linear both';
+      hint.style.animationTimeline = 'scroll(root block)';
+      hint.style.animationRange = `0px ${Math.round(0.5 * vh)}px`;
+      lastCi = -1;
+    }
     if (nativeCopy) {
       // Cada texto ocupa el tramo de su escena (con un respiro entre escenas para que no se crucen)
       SECTIONS.forEach((sec, i) => {
@@ -281,6 +304,19 @@ function mountScrollWorld(container, config) {
     past = y > SEGMENTS[NSEG - 1].end + 1.2 * vh;
     if (!rafOn) { rafOn = true; requestAnimationFrame(raf); }
 
+    if (cssMode) {
+      // Solo al cambiar de escena: cargar su video y dejar visibles la anterior, la actual y la siguiente
+      if (ci !== lastCi) {
+        lastCi = ci;
+        for (let i = 0; i < NSEG; i++) {
+          const sg = SEGMENTS[i], vis = i >= ci - 1 && i <= ci + 1;
+          if (vis !== sg.visible) { sg.visible = vis; sg.el.style.visibility = vis ? '' : 'hidden'; }
+        }
+      }
+      if (!past) loadClip(SEGMENTS[ci]);
+      ticking = false;
+      return;
+    }
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
       if (playMode ? (!past && i === ci) : (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh)) loadClip(s);
@@ -472,6 +508,8 @@ function injectCSS() {
   .sw-scene{position:absolute;inset:0;opacity:0;overflow:hidden;will-change:opacity;}
   .sw-scene__video,.sw-scene__still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;}
   .sw-native-copy .sw-track{z-index:21;}
+  @keyframes swSceneIn{from{opacity:0}to{opacity:1}} @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
+  .sw-css .sw-scene{will-change:opacity;}
   .sw-native-copy .sw-copywrap{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
   @supports (animation-timeline: view()){ .sw-native-copy .sw-copywrap{view-timeline-name:--swcw;} .sw-native-copy .sw-copywrap .sw-copy{animation:swCopyIO linear both;animation-timeline:--swcw;} .sw-native-copy .sw-copywrap:first-child .sw-copy{animation-name:swCopyOut;} .sw-native-copy .sw-copywrap:last-child .sw-copy{animation-name:swCopyIn;} }
   @keyframes swCopyIO{entry 0%{opacity:0;transform:translateY(16px)} entry 16%{opacity:0;transform:translateY(16px)} entry 40%{opacity:1;transform:none} exit 0%{opacity:1;transform:none} exit 11%{opacity:0;transform:translateY(-6px)} exit 100%{opacity:0;transform:translateY(-6px)}}
