@@ -551,3 +551,47 @@ html.cv-off .after > section, html.cv-off .after > footer { content-visibility: 
 @media (hover: none) and (pointer: coarse) and (max-width: 860px) {
     .sw-scene__video, .sw-scene__still { object-fit: contain !important; object-position: center 16% !important; }
 }
+
+/* ==========================================================================
+   Servicios: carrusel estilo portafolio (tarjeta grande, texto a la izquierda, video 3D a la derecha)
+   ========================================================================== */
+.svc-carousel { position: relative; margin-top: clamp(32px, 5vw, 56px); container-type: inline-size; }
+.svc-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; border-radius: 28px; outline: none; }
+.svc-track::-webkit-scrollbar { display: none; }
+.svc-track:focus-visible { box-shadow: 0 0 0 3px var(--slate); }
+.svc-slide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr); min-height: clamp(520px, 64vh, 660px);
+  border-radius: 28px; overflow: hidden; background: #0b0b0c; color: var(--warm); contain: layout paint; }
+.svc-slide-copy { display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; padding: clamp(28px, 4.2vw, 60px) clamp(28px, 4.2vw, 60px) clamp(60px, 6vw, 76px); background: linear-gradient(180deg, #141416 0%, #0b0b0c 100%); }
+.svc-eyebrow { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--neutral); }
+.svc-slide h3 { font-family: var(--display); font-weight: 560; font-size: clamp(2rem, 1.1rem + 2.7vw, 3.4rem); line-height: 1.02; letter-spacing: -0.035em; color: #f5f5f7; text-wrap: balance; }
+.svc-desc { max-width: 46ch; font-size: 1.05rem; line-height: 1.5; color: #d6d6d2; }
+.svc-slide .service-detail { max-width: 52ch; font-size: 0.92rem; color: var(--neutral); }
+.svc-slide .service-rates { gap: 18px; margin-block: 4px; }
+.svc-slide .service-rates dt { font-size: 0.9rem; color: var(--neutral); }
+.svc-slide .service-rates dd { margin-top: 4px; font-size: 1.15rem; color: #f5f5f7; }
+.svc-slide .service-plan-note { margin-top: 6px; font-size: 0.85rem; color: var(--neutral); }
+.svc-slide .service-plan-link { margin-top: 4px; color: var(--warm); }
+.svc-btn { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; min-height: 46px; margin-top: 6px; padding: 0 20px; border-radius: 999px; font-weight: 550; color: var(--warm); box-shadow: inset 0 0 0 1px rgba(243, 242, 238, 0.3); transition: background-color 200ms; }
+.svc-btn .icon { width: 18px; height: 18px; }
+@media (hover: hover) { .svc-btn:hover { background: rgba(243, 242, 238, 0.08); } }
+.svc-slide-media { position: relative; background: #000; }
+.svc-slide-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.svc-nav { position: absolute; top: 50%; z-index: 3; display: grid; place-items: center; width: 46px; height: 46px; margin-top: -23px; border-radius: 50%; color: #f5f5f7; background: rgba(28, 28, 30, 0.78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 8px 20px -8px rgba(0, 0, 0, 0.6); transition: opacity 200ms, transform 160ms; -webkit-tap-highlight-color: transparent; }
+.svc-nav svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.svc-nav:active { transform: scale(0.94); }
+.svc-nav:disabled { opacity: 0.3; cursor: default; }
+.svc-prev { left: 16px; } .svc-next { right: 16px; }
+.svc-dots { position: absolute; left: 0; right: 0; bottom: 22px; z-index: 3; display: flex; justify-content: center; gap: 4px; pointer-events: none; }
+.svc-dots button { position: relative; width: 22px; height: 22px; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
+.svc-dots button::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 4px; background: rgba(243, 242, 238, 0.35); transition: width 300ms var(--ease-out), margin 300ms var(--ease-out), background-color 300ms; }
+.svc-dots button[aria-current="true"]::after { width: 22px; margin-left: -11px; background: #f5f5f7; }
+@media (max-width: 860px) {
+    .svc-slide { grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 0; border-radius: 24px; }
+    .svc-track { border-radius: 24px; }
+    .svc-slide-media { order: -1; aspect-ratio: 16 / 11; }
+    .svc-slide-copy { justify-content: flex-start; gap: 12px; padding: 22px 20px 60px; }
+    .svc-slide h3 { font-size: clamp(1.8rem, 7.6vw, 2.4rem); }
+    .svc-nav { top: calc(100cqw * 11 / 32); width: 40px; height: 40px; margin-top: -20px; }
+    .svc-prev { left: 10px; } .svc-next { right: 10px; }
+}

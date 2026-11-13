@@ -573,6 +573,41 @@ function initProcessTimeline() {
     paint();
 }
 
+/* ---------- Servicios: carrusel estilo portafolio ----------
+   El desplazamiento lo hace el navegador (scroll horizontal con encaje): con el dedo es nativo y fluido.
+   Las flechas y los puntos solo le indican a qué tarjeta ir. */
+function initServicesCarousel() {
+    const track = $("#svc-track");
+    if (!track) return;
+    const slides = $$(".svc-slide", track), dots = $$(".svc-dots button"), prev = $(".svc-prev"), next = $(".svc-next");
+    let current = 0;
+    const go = (i) => {
+        const k = Math.max(0, Math.min(slides.length - 1, i));
+        track.scrollTo({ left: slides[k].offsetLeft - slides[0].offsetLeft, behavior: reduceMotion ? "auto" : "smooth" });
+    };
+    const mark = (i) => {
+        if (i === current && dots[i] && dots[i].getAttribute("aria-current") === "true") return;
+        current = i;
+        dots.forEach((d, k) => d.setAttribute("aria-current", String(k === i)));
+        if (prev) prev.disabled = i === 0;
+        if (next) next.disabled = i === slides.length - 1;
+    };
+    prev && prev.addEventListener("click", () => go(current - 1));
+    next && next.addEventListener("click", () => go(current + 1));
+    dots.forEach((d, k) => d.addEventListener("click", () => go(k)));
+    track.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") { e.preventDefault(); go(current + 1); }
+        if (e.key === "ArrowLeft") { e.preventDefault(); go(current - 1); }
+    });
+    if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+            if (en.isIntersecting && en.intersectionRatio >= 0.6) mark(slides.indexOf(en.target));
+        }), { root: track, threshold: [0.6] });
+        slides.forEach((s) => io.observe(s));
+    }
+    mark(0);
+}
+
 /* ---------- Servicios: los videos 3D se reproducen solo mientras se ven ---------- */
 function initServiceVideos() {
     const vids = $$(".svc-video");
@@ -625,7 +660,7 @@ document.addEventListener("click", (e) => {
     requestAnimationFrame(() => requestAnimationFrame(() => { target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); history.pushState(null, "", a.getAttribute("href")); }));
 }, true);
 function initRest() {
-    const steps = [renderLedger, buildReel, initServiceChapters, initProcessTimeline, initServiceVideos, initAnimations];
+    const steps = [renderLedger, initServicesCarousel, buildReel, initServiceChapters, initProcessTimeline, initServiceVideos, initAnimations];
     const next = () => { const f = steps.shift(); if (f) { f(); if (steps.length) whenIdle(next, 1000); } };
     next();
 }

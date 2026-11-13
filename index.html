@@ -108,44 +108,56 @@
                         <h2 class="display" id="servicios-titulo">Servicios digitales.<br>Un mismo cuidado.</h2>
                         <p class="lead">Diseño para presentar tu marca, contenido para contar tu idea y tecnología para trabajar mejor.</p>
                     </div>
-                    <div class="service-chapter" id="svc-web">
-                    <article class="service-feature" aria-labelledby="svc-web-title">
-                        <div class="service-title"><h3 id="svc-web-title">Páginas web<br>con identidad.</h3><figure class="svc-shot"><div class="svc-stack"><video class="svc-a svc-video" muted loop playsinline preload="none" poster="assets/servicios/web.webp" aria-label="Laptop, tablet y celular mostrando la misma página web adaptada a cada pantalla" width="1280" height="800"><source src="assets/servicios/web.mp4" type="video/mp4"></video></div></figure></div>
-                        <div class="service-copy">
-                            <p>Presenta tu negocio con un diseño propio, claro y adaptable a cualquier pantalla.</p>
-                            <p class="service-detail">Dominio, hosting y SSL por un año. El alcance y el plazo se acuerdan contigo.</p>
-                            <dl class="service-rates"><div><dt>Llave en mano</dt><dd>Desde $990.000 COP<span class="service-plan-note">Hasta 4 páginas · 2 rondas de ajustes</span><a class="service-plan-link" href="#cotizador" data-pick="wb2">Elegir llave en mano <span aria-hidden="true">↗</span></a></dd></div><div><dt>Corporativo</dt><dd>Desde $1.490.000 COP<span class="service-plan-note">Hasta 7 páginas · Blog básico</span><a class="service-plan-link" href="#cotizador" data-pick="wb3">Elegir corporativo <span aria-hidden="true">↗</span></a></dd></div></dl>
-
+                    <!-- Carrusel de servicios estilo portafolio: tarjeta grande, texto a la izquierda y video 3D a la derecha -->
+                    <div class="svc-carousel" role="region" aria-roledescription="carrusel" aria-label="Servicios de Bitácora Digital">
+                        <div class="svc-track" id="svc-track" tabindex="0">
+                            <article class="svc-slide" id="svc-web" aria-roledescription="diapositiva" aria-label="1 de 4" aria-labelledby="svc-web-title">
+                                <div class="svc-slide-copy">
+                                    <p class="svc-eyebrow">01 · Páginas web</p>
+                                    <h3 id="svc-web-title">Páginas web con identidad.</h3>
+                                    <p class="svc-desc">Presenta tu negocio con un diseño propio, claro y adaptable a cualquier pantalla.</p>
+                                    <p class="service-detail">Dominio, hosting y SSL por un año. El alcance y el plazo se acuerdan contigo.</p>
+                                    <dl class="service-rates"><div><dt>Llave en mano</dt><dd>Desde $990.000 COP<span class="service-plan-note">Hasta 4 páginas · 2 rondas de ajustes</span><a class="service-plan-link" href="#cotizador" data-pick="wb2">Elegir llave en mano <span aria-hidden="true">↗</span></a></dd></div><div><dt>Corporativo</dt><dd>Desde $1.490.000 COP<span class="service-plan-note">Hasta 7 páginas · Blog básico</span><a class="service-plan-link" href="#cotizador" data-pick="wb3">Elegir corporativo <span aria-hidden="true">↗</span></a></dd></div></dl>
+                                </div>
+                                <div class="svc-slide-media"><video class="svc-video" muted loop playsinline preload="none" poster="assets/servicios/web.webp" aria-label="Laptop, tablet y celular mostrando la misma página web adaptada a cada pantalla" width="1280" height="800"><source src="assets/servicios/web.mp4" type="video/mp4"></video></div>
+                            </article>
+                            <article class="svc-slide" id="svc-landing" aria-roledescription="diapositiva" aria-label="2 de 4" aria-labelledby="svc-landing-title">
+                                <div class="svc-slide-copy">
+                                    <p class="svc-eyebrow">02 · Landing pages</p>
+                                    <h3 id="svc-landing-title">Landing pages que conectan.</h3>
+                                    <p class="svc-desc">Tu producto, tu propuesta y una acción clara: que el visitante te escriba.</p>
+                                    <p class="service-detail">Una sola página, pensada para celular y conectada a tu WhatsApp. 50% para empezar.</p>
+                                    <dl class="service-rates"><div><dt>Landing page</dt><dd>Desde $500.000 COP</dd></div></dl>
+                                    <a class="svc-btn" href="#cotizador" data-pick="wb1">Cotizar mi landing<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                                </div>
+                                <div class="svc-slide-media"><video class="svc-video" muted loop playsinline preload="none" poster="assets/servicios/landing.webp" aria-label="Celular con una landing page: la visita toca el botón de WhatsApp y llega el mensaje" width="1280" height="800"><source src="assets/servicios/landing.mp4" type="video/mp4"></video></div>
+                            </article>
+                            <article class="svc-slide" id="svc-video" aria-roledescription="diapositiva" aria-label="3 de 4" aria-labelledby="svc-video-title">
+                                <div class="svc-slide-copy">
+                                    <p class="svc-eyebrow">03 · Producción audiovisual</p>
+                                    <h3 id="svc-video-title">Tu idea, en movimiento.</h3>
+                                    <p class="svc-desc">Video publicitario, edición y motion graphics para presentar lo que haces y darle voz a tu marca.</p>
+                                    <dl class="service-rates"><div><dt>Video publicitario</dt><dd>Desde $50.000 COP<a class="service-plan-link" href="#cotizador" data-pick="vd1">Cotizar publicidad <span aria-hidden="true">↗</span></a></dd></div><div><dt>Motion graphics</dt><dd>Desde $100.000 COP<a class="service-plan-link" href="#cotizador" data-pick="vd2">Cotizar animación <span aria-hidden="true">↗</span></a></dd></div></dl>
+                                    <p class="service-detail">Valores mínimos de referencia. Cotizamos según la calidad de producción, complejidad y alcance que necesitas.</p>
+                                </div>
+                                <div class="svc-slide-media"><video class="svc-video" muted loop playsinline preload="none" poster="assets/servicios/video.webp" aria-label="Laptop con un editor de video: vista previa animada y línea de tiempo" width="1280" height="800"><source src="assets/servicios/video.mp4" type="video/mp4"></video></div>
+                            </article>
+                            <article class="svc-slide" id="svc-software" aria-roledescription="diapositiva" aria-label="4 de 4" aria-labelledby="svc-software-title">
+                                <div class="svc-slide-copy">
+                                    <p class="svc-eyebrow">04 · Instalación de software</p>
+                                    <h3 id="svc-software-title">Windows y Office.</h3>
+                                    <p class="svc-desc">Instalación y configuración de Windows, Microsoft Office y los programas que necesitas.</p>
+                                    <p class="service-detail">Si necesitas una licencia, cotizamos su compra por separado y la activamos oficialmente con tu aprobación y pago previo.</p>
+                                    <a class="svc-btn" href="#cotizador" data-pick="sw1">Cotizar instalación<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                                </div>
+                                <div class="svc-slide-media"><video class="svc-video" muted loop playsinline preload="none" poster="assets/servicios/software.webp" aria-label="Laptop instalando el sistema y abriendo documento, hoja de cálculo y presentación" width="1280" height="800"><source src="assets/servicios/software.mp4" type="video/mp4"></video></div>
+                            </article>
                         </div>
-                    </article>
-                    </div>
-                    <div class="service-chapter" id="svc-landing">
-                    <article class="service-feature service-landing-editorial" aria-labelledby="svc-landing-title">
-                        <div class="service-title"><h3 id="svc-landing-title">Landing pages<br>que conectan.</h3><figure class="svc-shot"><div class="svc-stack"><video class="svc-a svc-video" muted loop playsinline preload="none" poster="assets/servicios/landing.webp" aria-label="Celular con una landing page: la visita toca el botón de WhatsApp y llega el mensaje" width="1280" height="800"><source src="assets/servicios/landing.mp4" type="video/mp4"></video></div></figure></div>
-                        <div class="service-copy">
-                            <p>Tu producto, tu propuesta y una acción clara: que el visitante te escriba.</p>
-                            <p class="service-detail">Una sola página, pensada para celular y conectada a tu WhatsApp. 50% para empezar.</p>
-                            <dl class="service-rates"><div><dt>Landing page</dt><dd>Desde $500.000 COP</dd></div></dl>
-                            <a class="link-arrow" href="#cotizador" data-pick="wb1">Cotizar mi landing<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                        <button type="button" class="svc-nav svc-prev" aria-controls="svc-track" aria-label="Servicio anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+                        <button type="button" class="svc-nav svc-next" aria-controls="svc-track" aria-label="Servicio siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+                        <div class="svc-dots" role="group" aria-label="Elegir servicio">
+                            <button type="button" aria-label="Páginas web" aria-current="true"></button><button type="button" aria-label="Landing pages"></button><button type="button" aria-label="Producción audiovisual"></button><button type="button" aria-label="Windows y Office"></button>
                         </div>
-                    </article>
-                    </div>
-                    <div class="service-chapter" id="svc-video">
-                    <article class="service-feature service-video-editorial" aria-labelledby="svc-video-title">
-                        <div class="service-title"><h3 id="svc-video-title">Tu idea,<br>en movimiento.</h3><figure class="svc-shot"><div class="svc-stack"><video class="svc-a svc-video" muted loop playsinline preload="none" poster="assets/servicios/video.webp" aria-label="Laptop con un editor de video: vista previa animada y línea de tiempo" width="1280" height="800"><source src="assets/servicios/video.mp4" type="video/mp4"></video></div></figure></div>
-                        <div class="service-copy">
-                            <p>Video publicitario, edición y motion graphics para presentar lo que haces y darle voz a tu marca.</p>
-                            <dl class="service-rates"><div><dt>Video publicitario</dt><dd>Desde $50.000 COP<a class="service-plan-link" href="#cotizador" data-pick="vd1">Cotizar publicidad <span aria-hidden="true">↗</span></a></dd></div><div><dt>Motion graphics</dt><dd>Desde $100.000 COP<a class="service-plan-link" href="#cotizador" data-pick="vd2">Cotizar animación <span aria-hidden="true">↗</span></a></dd></div></dl>
-                            <p class="service-detail">Valores mínimos de referencia. Cotizamos según la calidad de producción, complejidad y alcance que necesitas.</p>
-
-                        </div>
-                    </article>
-                    </div>
-                    <div class="service-chapter" id="svc-software">
-                    <article class="service-software" aria-labelledby="svc-software-title">
-                        <div class="service-title"><h3 id="svc-software-title">Windows<br>y Office.</h3><figure class="svc-shot"><div class="svc-stack"><video class="svc-a svc-video" muted loop playsinline preload="none" poster="assets/servicios/software.webp" aria-label="Laptop instalando el sistema y abriendo documento, hoja de cálculo y presentación" width="1280" height="800"><source src="assets/servicios/software.mp4" type="video/mp4"></video></div></figure></div>
-                        <div class="service-copy"><p>Instalación y configuración de Windows, Microsoft Office y los programas que necesitas.</p><p class="service-detail">Si necesitas una licencia, cotizamos su compra por separado y la activamos oficialmente con tu aprobación y pago previo.</p><a class="link-arrow" href="#cotizador" data-pick="sw1">Cotizar instalación<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-                    </article>
                     </div>
                 </div>
             </section>
