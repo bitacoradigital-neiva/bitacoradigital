@@ -545,3 +545,9 @@ html.cv-off .after > section, html.cv-off .after > footer { content-visibility: 
 }
 /* Solo la primera escena se arma al abrir; las demás cuando se acercan a la pantalla */
 .mw-scene + .mw-scene { content-visibility: auto; contain-intrinsic-size: auto 820px; }
+/* Celulares: el video de cada escena se muestra completo (ajustado al ancho). Antes se ampliaba para llenar la
+   pantalla alargada del teléfono y recortaba los costados (la laptop del inicio salía cortada). El fondo del
+   video es negro puro, igual que la página, así que el espacio sobrante no se nota. */
+@media (hover: none) and (pointer: coarse) and (max-width: 860px) {
+    .sw-scene__video, .sw-scene__still { object-fit: contain !important; object-position: center 16% !important; }
+}

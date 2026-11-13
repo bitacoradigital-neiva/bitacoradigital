@@ -218,28 +218,38 @@ function mountScrollWorld(container, config) {
     totalW = off;
     track.style.height = (totalW * vh + vh) + 'px';   // +1vh so the last flight completes
     if (cssMode) {
-      const fadePx = CROSSFADE * vh;
+      // Bitácora: fundido a negro entre escenas (nunca dos escenas encima, que se veía como doble exposición).
+      // La escena que termina se oscurece hasta negro y luego aparece la siguiente; su texto sigue el mismo ritmo.
+      const f = Math.max(CROSSFADE * vh, 0.24 * vh);
+      const inR = (S) => `${Math.round(S - 0.02 * f)}px ${Math.round(S + 0.7 * f)}px`;
+      const outR = (B) => `${Math.round(B - f)}px ${Math.round(B - 0.12 * f)}px`;
       SEGMENTS.forEach((sg, i) => {
         sg.el.style.zIndex = String(100 + i);
-        sg.el.style.opacity = '';
-        if (i === 0) { sg.el.style.animation = 'none'; sg.el.style.opacity = '1'; return; }
-        sg.el.style.animation = 'swSceneIn linear both';
-        sg.el.style.animationTimeline = 'scroll(root block)';
-        sg.el.style.animationRange = `${Math.max(0, Math.round(sg.start - fadePx))}px ${Math.round(sg.start)}px`;
+        if (i === 0) { sg.el.style.animation = 'none'; sg.el.style.opacity = '1'; }
+        else {
+          sg.el.style.opacity = '';
+          sg.el.style.animation = 'swSceneIn linear both';
+          sg.el.style.animationTimeline = 'scroll(root block)';
+          sg.el.style.animationRange = inR(sg.start);
+        }
+        // Salida: la imagen y el video de la escena se apagan antes de que entre la siguiente
+        const nx = SEGMENTS[i + 1];
+        const [oa, ob] = nx ? outR(nx.start).split(' ') : ['9999999px', '10000000px'];
+        sg.el.style.setProperty('--sw-oa', oa); sg.el.style.setProperty('--sw-ob', ob);
       });
       scrollbarFill.style.animation = 'swBar linear both';
       scrollbarFill.style.animationTimeline = 'scroll(root block)';
       scrollbarFill.style.animationRange = `0px ${Math.round(totalW * vh)}px`;
-      // Textos: entran cuando entra el video de su escena y salen cuando ese video empieza a irse
-      const tf = Math.max(fadePx, 0.2 * vh);
+      // Textos: mismo rango que el video de su escena (entrada y salida), así van sincronizados
       SECTIONS.forEach((sec, i) => {
-        const sg = sec._seg, c = copies[i], S = sg.start, E = sg.end;
+        const sg = sec._seg, c = copies[i];
         c.style.opacity = '1'; c.style.visibility = ''; c.style.transform = 'none';
         c.style.pointerEvents = i === N - 1 ? 'auto' : 'none';
         if (i === 0) c.style.animation = 'none';
-        else { c.style.animation = 'swCpIn linear both'; c.style.animationTimeline = 'scroll(root block)'; c.style.animationRange = `${Math.round(S - 0.35 * tf)}px ${Math.round(S + 0.45 * tf)}px`; }
-        if (i === N - 1) c._in.style.animation = 'none';
-        else { c._in.style.animation = 'swCpOut linear both'; c._in.style.animationTimeline = 'scroll(root block)'; c._in.style.animationRange = `${Math.round(E - tf)}px ${Math.round(E - 0.35 * tf)}px`; }
+        else { c.style.animation = 'swCpIn linear both'; c.style.animationTimeline = 'scroll(root block)'; c.style.animationRange = inR(sg.start); }
+        const nx = SECTIONS[i + 1];
+        if (!nx) c._in.style.animation = 'none';
+        else { c._in.style.animation = 'swCpOut linear both'; c._in.style.animationTimeline = 'scroll(root block)'; c._in.style.animationRange = outR(nx._seg.start); }
       });
       hint.style.animation = 'swHintOut linear both';
       hint.style.animationTimeline = 'scroll(root block)';
@@ -527,6 +537,7 @@ function injectCSS() {
   @keyframes swSceneIn{from{opacity:0}to{opacity:1}}
   @keyframes swCpIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}} @keyframes swCpOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-8px)}} @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
   .sw-css .sw-scene{will-change:opacity;}
+  .sw-css .sw-scene>.sw-scene__still,.sw-css .sw-scene>.sw-scene__video{animation:swSceneOut linear both;animation-timeline:scroll(root block);animation-range:var(--sw-oa,9999999px) var(--sw-ob,10000000px);} @keyframes swSceneOut{from{opacity:1}to{opacity:0}}
   .sw-native-copy .sw-copywrap{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
   @supports (animation-timeline: view()){ .sw-native-copy .sw-copywrap{view-timeline-name:--swcw;} .sw-native-copy .sw-copywrap .sw-copy{animation:swCopyIO linear both;animation-timeline:--swcw;} .sw-native-copy .sw-copywrap:first-child .sw-copy{animation-name:swCopyOut;} .sw-native-copy .sw-copywrap:last-child .sw-copy{animation-name:swCopyIn;} }
   @keyframes swCopyIO{entry 0%{opacity:0;transform:translateY(16px)} entry 16%{opacity:0;transform:translateY(16px)} entry 40%{opacity:1;transform:none} exit 0%{opacity:1;transform:none} exit 11%{opacity:0;transform:translateY(-6px)} exit 100%{opacity:0;transform:translateY(-6px)}}
