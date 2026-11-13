@@ -115,23 +115,32 @@ const barCount = $("#quote-bar-count");
 const fab = $("#fab");
 const price = (s) => s.cop == null ? "A cotizar" : (s.from ? "Desde " : "") + formatters[currency].format(s[currency.toLowerCase()]);
 
-ledger.innerHTML = servicesList.map((s) => `
-    <label class="service-row" data-id="${s.id}">
-        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[s.id]}</svg></span>
-        <input class="check" type="checkbox" value="${s.id}" aria-label="${s.name}" aria-describedby="desc-${s.id}">
-        <span class="svc-body-q">
-            <span class="service-cat">${s.cat}</span><span class="service-name">${s.short}</span>
-            <span class="service-price"><span class="p-val"></span><span class="service-eta">${s.eta}</span></span>
-            <span class="service-desc" id="desc-${s.id}"><span>${s.desc}</span></span>
-        </span>
-    </label>`).join("") + `
-    <a class="service-row svc-other" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hola, Bitácora Digital. Necesito algo que no está en el cotizador:")}" target="_blank" rel="noopener noreferrer">
-        <svg class="icon" aria-hidden="true"><use href="#i-whatsapp"/></svg>
-        <span class="service-name">¿Necesitas algo distinto?</span>
-        <span class="svc-other-text">Cuéntanos y te cotizamos.</span>
-    </a>`;
+// El cotizador está muy abajo: se arma en un momento libre después del arranque (antes alargaba la carga en
+// celulares de gama baja). Si se toca un botón "Cotizar" antes, se arma en ese momento.
+function renderLedger() {
+    if (ledger.dataset.ready) return;
+    ledger.dataset.ready = "1";
+    ledger.innerHTML = servicesList.map((s) => `
+        <label class="service-row" data-id="${s.id}">
+            <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[s.id]}</svg></span>
+            <input class="check" type="checkbox" value="${s.id}" aria-label="${s.name}" aria-describedby="desc-${s.id}">
+            <span class="svc-body-q">
+                <span class="service-cat">${s.cat}</span><span class="service-name">${s.short}</span>
+                <span class="service-price"><span class="p-val"></span><span class="service-eta">${s.eta}</span></span>
+                <span class="service-desc" id="desc-${s.id}"><span>${s.desc}</span></span>
+            </span>
+        </label>`).join("") + `
+        <a class="service-row svc-other" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hola, Bitácora Digital. Necesito algo que no está en el cotizador:")}" target="_blank" rel="noopener noreferrer">
+            <svg class="icon" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+            <span class="service-name">¿Necesitas algo distinto?</span>
+            <span class="svc-other-text">Cuéntanos y te cotizamos.</span>
+        </a>`;
+    renderPrices();
+    updateSummary();
+}
 
 function renderPrices() {
+    renderLedger();
     servicesList.forEach((s) => { ledger.querySelector(`[data-id="${s.id}"] .p-val`).textContent = price(s); });
 }
 function updateSummary(animate = false) {
@@ -156,6 +165,7 @@ function updateSummary(animate = false) {
     syncFloating();
 }
 function setSelected(id, on) {
+    renderLedger();
     const input = ledger.querySelector(`.check[value="${id}"]`);
     if (!input) return;
     input.checked = on;
@@ -199,8 +209,6 @@ if ("IntersectionObserver" in window) {
     new IntersectionObserver(([e]) => { inQuote = e.isIntersecting; syncFloating(); }, { rootMargin: "-20% 0px -20% 0px" }).observe($("#cotizador"));
     new IntersectionObserver(([e]) => { summaryVisible = e.isIntersecting; syncFloating(); }, { threshold: 0.35 }).observe($("#summary"));
 }
-renderPrices();
-updateSummary();
 setConsent(terms.checked);
 
 /* ---------- Formulario de contacto: arma el mensaje y abre WhatsApp ---------- */
@@ -285,8 +293,68 @@ function watchWorld(host) {
     window.addEventListener("scroll", () => { lastScroll = performance.now(); if (!raf && !off) { last = lastScroll; raf = requestAnimationFrame(tick); } }, { passive: true });
 }
 
+/* ---------- Inicio en celulares y tablets: secciones normales (sin capas fijas) ----------
+   En pantallas táctiles el recorrido con capas fijas (video detrás, textos encima, fundidos) trababa los
+   teléfonos reales. Aquí cada escena es una sección más de la página: su video 3D arriba y su texto debajo,
+   todo con el scroll nativo del teléfono. Los videos se reproducen solos al aparecer, uno a la vez. */
+function mountStackedWorld(host) {
+    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const wide = window.innerWidth >= 700;
+    const N = SCENES.length;
+    host.innerHTML = '<div class="mw">' + SCENES.map((sc, i) => {
+        const base = `assets/world/${sc.free}`;
+        const src = wide ? `${base}-lite.mp4` : `${base}-m.mp4`;
+        const poster = wide ? `${base}.webp` : `${base}-m.webp`;
+        const cta = sc.cta ? `<div class="mw-cta"><a class="btn btn-light" href="${sc.cta.primary.href}">${esc(sc.cta.primary.label)}</a><a class="btn mw-ghost" href="${sc.cta.secondary.href}" target="_blank" rel="noopener noreferrer">${esc(sc.cta.secondary.label)}</a></div>` : "";
+        return `<section class="mw-scene" aria-label="${esc(sc.label)}">
+            <div class="mw-media"><video class="mw-video" muted loop playsinline preload="${i === 0 ? "metadata" : "none"}" ${i === 0 ? `poster="${poster}"` : `data-poster="${poster}"`} aria-hidden="true"><source src="${src}" type="video/mp4"></video></div>
+            <div class="mw-copy wrap">
+                <span class="mw-num">${String(i + 1).padStart(2, "0")} / ${String(N).padStart(2, "0")}</span>
+                <h2 class="mw-title">${esc(sc.title)}</h2>
+                <p class="mw-body">${esc(sc.body)}</p>
+                ${sc.tags ? `<ul class="mw-tags">${sc.tags.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+                ${cta}
+            </div>
+        </section>`;
+    }).join("") + "</div>";
+    document.documentElement.classList.add("mw-on");
+    // Imágenes de espera bajo demanda: solo la primera escena carga de entrada; las demás al acercarse
+    const lazyPosters = $$(".mw-video[data-poster]", host);
+    if ("IntersectionObserver" in window) {
+        const posterIO = new IntersectionObserver((entries) => entries.forEach((en) => {
+            if (!en.isIntersecting) return;
+            en.target.poster = en.target.dataset.poster; posterIO.unobserve(en.target);
+        }), { rootMargin: "150% 0px 150% 0px" });
+        lazyPosters.forEach((v) => posterIO.observe(v));
+    } else lazyPosters.forEach((v) => { v.poster = v.dataset.poster; });
+    const fallback = $("#world-fallback"); if (fallback) fallback.hidden = true;
+    // Reproducción: solo el video que más se ve; en gama baja, ahorro de datos o movimiento reducido, solo la imagen
+    if (reduceMotion || saveData || GAMA === "baja" || !("IntersectionObserver" in window)) return;
+    const vids = $$(".mw-video", host), ratio = new Map();
+    let current = null, pending = 0;
+    const pick = () => {
+        pending = 0;
+        let best = null, bestR = 0.45;
+        vids.forEach((v) => { const r = ratio.get(v) || 0; if (r > bestR) { best = v; bestR = r; } });
+        if (best === current) return;
+        if (current) current.pause();
+        current = best;
+        if (best) { best.preload = "auto"; const p = best.play(); if (p) p.catch(() => {}); }
+    };
+    const start = () => {
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((en) => ratio.set(en.target, en.isIntersecting ? en.intersectionRatio : 0));
+            if (!pending) pending = requestAnimationFrame(pick);
+        }, { threshold: [0, 0.25, 0.45, 0.65, 0.85, 1] });
+        vids.forEach((v) => io.observe(v));
+    };
+    // Los videos empiezan cuando la página ya cargó (mientras tanto se ve la imagen, igual a su primer cuadro)
+    if (document.readyState === "complete") start(); else window.addEventListener("load", () => setTimeout(start, 150), { once: true });
+}
+
 async function mountWorld() {
     const host = $("#world");
+    if (host && window.matchMedia("(hover: none) and (pointer: coarse)").matches) { mountStackedWorld(host); return; }
     if (!host || typeof mountScrollWorld !== "function") { document.documentElement.classList.add("no-world"); return; }
     // La cadena generada con IA (assets/world/ia/) solo se consulta si existe: poner MUNDO_IA = true cuando se genere.
     // Así no se gasta una consulta a la red al abrir la página, que retrasaba la aparición del recorrido.
@@ -348,7 +416,7 @@ async function buildReel() {
     reel.innerHTML = available.map((p, k) => {
         const real = ready[p.id];
         const media = real
-            ? `<video class="piece-video" muted loop playsinline preload="none" poster="assets/reel/${p.id}.webp" data-autoplay aria-label="${p.title}"><source src="assets/reel/${p.id}${hd ? "" : "-720"}.mp4" type="video/mp4"></video><button type="button" class="piece-play" aria-label="Reproducir ${p.title}"><span aria-hidden="true"></span></button>`
+            ? `<video class="piece-video" muted loop playsinline preload="none" poster="assets/reel/${p.id}${hd ? "" : "-720"}.webp" data-autoplay aria-label="${p.title}"><source src="assets/reel/${p.id}${hd ? "" : "-720"}.mp4" type="video/mp4"></video><button type="button" class="piece-play" aria-label="Reproducir ${p.title}"><span aria-hidden="true"></span></button>`
             : `<div class="piece-frame" aria-hidden="true"><span class="piece-letter">${p.tag}</span><span class="piece-bars"><i></i><i></i><i></i><i></i></span></div>`;
         return `<article class="piece${k === 0 || k === 3 ? " piece-wide" : ""}${real ? " has-video" : ""}">
             <div class="piece-media">${media}<span class="piece-badge">${real ? "Concepto demostrativo" : "Concepto en producción"}</span></div>
@@ -553,7 +621,7 @@ document.addEventListener("click", (e) => {
     requestAnimationFrame(() => requestAnimationFrame(() => { target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); history.pushState(null, "", a.getAttribute("href")); }));
 }, true);
 function initRest() {
-    const steps = [buildReel, initServiceChapters, initProcessTimeline, initServiceVideos, initAnimations];
+    const steps = [renderLedger, buildReel, initServiceChapters, initProcessTimeline, initServiceVideos, initAnimations];
     const next = () => { const f = steps.shift(); if (f) { f(); if (steps.length) whenIdle(next, 1000); } };
     next();
 }
