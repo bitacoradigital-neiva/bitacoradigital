@@ -146,7 +146,7 @@ function mountScrollWorld(container, config) {
   SEGMENTS.forEach(s => {
     const scene = el('div', 'sw-scene'); scene.style.setProperty('--sw-accent', s.accent || '');
     const img = el('img', 'sw-scene__still'); img.alt = ''; img.decoding = 'async'; img.loading = 'lazy';
-    const poster = (isMobile() && s.stillM) ? s.stillM : s.still;
+    const poster = (isMobile() && (smallMQ.matches || window.innerHeight > window.innerWidth) && s.stillM) ? s.stillM : s.still;
     if (poster) img.src = poster;
     scene.appendChild(img); stage.appendChild(scene);
     s.el = scene; s.img = img; s.video = null; s.hasClip = false;
@@ -182,7 +182,7 @@ function mountScrollWorld(container, config) {
   const touchSmall = coarse && smallMQ.matches;
   // Bitácora: en celulares los fundidos entre escenas y los textos los hace el navegador (animaciones ligadas al
   // scroll, sin JavaScript por cuadro). Texto y video usan la misma posición del scroll, así van sincronizados.
-  const cssMode = touchSmall && !reduce && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('animation-timeline: scroll()');
+  const cssMode = coarse && !reduce && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('animation-timeline: scroll()');
   const nativeCopy = touchSmall && !cssMode;
   if (cssMode) {
     container.classList.add('sw-css');
@@ -243,7 +243,7 @@ function mountScrollWorld(container, config) {
       // Textos: mismo rango que el video de su escena (entrada y salida), así van sincronizados
       SECTIONS.forEach((sec, i) => {
         const sg = sec._seg, c = copies[i];
-        c.style.opacity = '1'; c.style.visibility = ''; c.style.transform = 'none';
+        c.style.opacity = '1'; c.style.visibility = ''; c.style.transform = smallMQ.matches ? 'none' : '';
         c.style.pointerEvents = i === N - 1 ? 'auto' : 'none';
         if (i === 0) c.style.animation = 'none';
         else { c.style.animation = 'swCpIn linear both'; c.style.animationTimeline = 'scroll(root block)'; c.style.animationRange = inR(sg.start); }
@@ -286,7 +286,8 @@ function mountScrollWorld(container, config) {
     if (playMode && !pageReady) return;
     s.loading = true;
     // Serve the lighter mobile encode on phones when one was provided.
-    const url = (isMobile() && s.clipM) ? s.clipM : s.clip;
+    const portrait = smallMQ.matches || window.innerHeight > window.innerWidth;
+    const url = (isMobile() && portrait && s.clipM) ? s.clipM : s.clip;
     if (playMode) {
       const v = document.createElement('video');
       v.className = 'sw-scene__video';
@@ -362,13 +363,9 @@ function mountScrollWorld(container, config) {
       if (playMode ? (!past && i === ci) : (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh)) loadClip(s);
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
-      // Bitácora: fundido a negro entre escenas (igual que en celular): la escena que termina se apaga antes del
-      // cambio y la siguiente entra después; nunca se ven dos escenas encimadas.
-      const fd = Math.max(fade, 0.24 * vh);
-      const opIn = i === 0 ? 1 : smooth((y - (s.start - 0.02 * fd)) / (0.72 * fd));
-      const nextSeg = SEGMENTS[i + 1];
-      const opOut = nextSeg ? smooth(1 - (y - (nextSeg.start - fd)) / (0.88 * fd)) : 1;
-      const op = Math.min(opIn, opOut);
+      let outside = 0;
+      if (y < s.start) outside = s.start - y; else if (y > s.end) outside = y - s.end;
+      const op = smooth(1 - outside / fade);
       // Bitácora: solo escribir estilos cuando cambian (cada escritura obliga a recalcular), y las escenas
       // invisibles se ocultan del todo para que no ocupen la tarjeta gráfica del celular.
       const opR = Math.round(op * 1000) / 1000;
@@ -555,7 +552,7 @@ function injectCSS() {
   .sw-native-copy .sw-track{z-index:21;}
   @keyframes swSceneIn{from{opacity:0}to{opacity:1}}
   @keyframes swCpIn{from{opacity:0}to{opacity:1}} @keyframes swCpOut{from{opacity:1}to{opacity:0}}
-  .sw-css .sw-copy{top:var(--sw-copy-top,52vh)!important;bottom:auto!important;transform:none!important;} @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
+  @media (max-width:860px){ .sw-css .sw-copy{top:var(--sw-copy-top,52vh)!important;bottom:auto!important;transform:none!important;} } @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
   .sw-css .sw-scene{will-change:opacity;}
   .sw-css .sw-scene>.sw-scene__still,.sw-css .sw-scene>.sw-scene__video{animation:swSceneOut linear both;animation-timeline:scroll(root block);animation-range:var(--sw-oa,9999999px) var(--sw-ob,10000000px);} @keyframes swSceneOut{from{opacity:1}to{opacity:0}} .sw-css .sw-scene.has-clip>.sw-scene__still{animation:none!important;opacity:0!important;visibility:hidden;}
   .sw-native-copy .sw-copywrap{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
