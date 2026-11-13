@@ -251,6 +251,10 @@ function mountScrollWorld(container, config) {
         if (!nx) c._in.style.animation = 'none';
         else { c._in.style.animation = 'swCpOut linear both'; c._in.style.animationTimeline = 'scroll(root block)'; c._in.style.animationRange = outR(nx._seg.start); }
       });
+      // Todos los textos empiezan en la misma línea (antes iban pegados abajo y cada título arrancaba a otra altura)
+      const tallest = Math.max(...copies.map((c) => c.offsetHeight || 0));
+      const topPx = Math.round(Math.max(vh * 0.42, Math.min(vh * 0.54, vh - tallest - 28)));
+      container.style.setProperty('--sw-copy-top', topPx + 'px');
       hint.style.animation = 'swHintOut linear both';
       hint.style.animationTimeline = 'scroll(root block)';
       hint.style.animationRange = `0px ${Math.round(0.5 * vh)}px`;
@@ -475,6 +479,7 @@ function mountScrollWorld(container, config) {
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', layout);
   window.addEventListener('load', layout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layout());
   layout();
   if (!rafOn) { rafOn = true; requestAnimationFrame(raf); }
 
@@ -539,7 +544,8 @@ function injectCSS() {
   .sw-scene__video,.sw-scene__still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;}
   .sw-native-copy .sw-track{z-index:21;}
   @keyframes swSceneIn{from{opacity:0}to{opacity:1}}
-  @keyframes swCpIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}} @keyframes swCpOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-8px)}} @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
+  @keyframes swCpIn{from{opacity:0}to{opacity:1}} @keyframes swCpOut{from{opacity:1}to{opacity:0}}
+  .sw-css .sw-copy{top:var(--sw-copy-top,52vh)!important;bottom:auto!important;transform:none!important;} @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
   .sw-css .sw-scene{will-change:opacity;}
   .sw-css .sw-scene>.sw-scene__still,.sw-css .sw-scene>.sw-scene__video{animation:swSceneOut linear both;animation-timeline:scroll(root block);animation-range:var(--sw-oa,9999999px) var(--sw-ob,10000000px);} @keyframes swSceneOut{from{opacity:1}to{opacity:0}} .sw-css .sw-scene.has-clip>.sw-scene__still{animation:none!important;opacity:0!important;visibility:hidden;}
   .sw-native-copy .sw-copywrap{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
