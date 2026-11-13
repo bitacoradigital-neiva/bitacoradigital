@@ -179,11 +179,16 @@ function mountScrollWorld(container, config) {
   // Bitácora: en celulares los textos no se mueven con JavaScript (se quedaban "pegados" mientras el dedo
   // desplazaba la página). Cada texto va dentro del recorrido, en el tramo de su escena, con position:sticky:
   // el navegador lo mueve al mismo ritmo que el dedo, sin depender del hilo principal.
-  const nativeCopy = coarse && smallMQ.matches;
-  // Bitácora: en celulares los fundidos entre escenas también los hace el navegador (animaciones ligadas al
-  // scroll, sin JavaScript por cuadro). El código solo actúa al cambiar de escena (play/pausa del video).
-  const cssMode = nativeCopy && !reduce && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('animation-timeline: scroll()');
-  if (cssMode) container.classList.add('sw-css');
+  const touchSmall = coarse && smallMQ.matches;
+  // Bitácora: en celulares los fundidos entre escenas y los textos los hace el navegador (animaciones ligadas al
+  // scroll, sin JavaScript por cuadro). Texto y video usan la misma posición del scroll, así van sincronizados.
+  const cssMode = touchSmall && !reduce && typeof CSS !== 'undefined' && CSS.supports && CSS.supports('animation-timeline: scroll()');
+  const nativeCopy = touchSmall && !cssMode;
+  if (cssMode) {
+    container.classList.add('sw-css');
+    // Cada texto lleva un envoltorio interno: el de afuera hace la entrada y el de adentro la salida
+    copies.forEach((c) => { const inner = el('div', 'sw-copy__in'); while (c.firstChild) inner.appendChild(c.firstChild); c.appendChild(inner); c._in = inner; });
+  }
   let lastCi = -1;
   const wraps = [];
   if (nativeCopy) {
@@ -225,6 +230,17 @@ function mountScrollWorld(container, config) {
       scrollbarFill.style.animation = 'swBar linear both';
       scrollbarFill.style.animationTimeline = 'scroll(root block)';
       scrollbarFill.style.animationRange = `0px ${Math.round(totalW * vh)}px`;
+      // Textos: entran cuando entra el video de su escena y salen cuando ese video empieza a irse
+      const tf = Math.max(fadePx, 0.2 * vh);
+      SECTIONS.forEach((sec, i) => {
+        const sg = sec._seg, c = copies[i], S = sg.start, E = sg.end;
+        c.style.opacity = '1'; c.style.visibility = ''; c.style.transform = 'none';
+        c.style.pointerEvents = i === N - 1 ? 'auto' : 'none';
+        if (i === 0) c.style.animation = 'none';
+        else { c.style.animation = 'swCpIn linear both'; c.style.animationTimeline = 'scroll(root block)'; c.style.animationRange = `${Math.round(S - 0.35 * tf)}px ${Math.round(S + 0.45 * tf)}px`; }
+        if (i === N - 1) c._in.style.animation = 'none';
+        else { c._in.style.animation = 'swCpOut linear both'; c._in.style.animationTimeline = 'scroll(root block)'; c._in.style.animationRange = `${Math.round(E - tf)}px ${Math.round(E - 0.35 * tf)}px`; }
+      });
       hint.style.animation = 'swHintOut linear both';
       hint.style.animationTimeline = 'scroll(root block)';
       hint.style.animationRange = `0px ${Math.round(0.5 * vh)}px`;
@@ -343,7 +359,7 @@ function mountScrollWorld(container, config) {
       }
     }
 
-    for (let i = 0; i < N && !nativeCopy; i++) {
+    for (let i = 0; i < N && !nativeCopy && !cssMode; i++) {
       const seg = SECTIONS[i]._seg;
       const pr = clamp((y - seg.start) / (seg.end - seg.start), 0, 1);
       const before = y < seg.start, after = y > seg.end;
@@ -508,7 +524,8 @@ function injectCSS() {
   .sw-scene{position:absolute;inset:0;opacity:0;overflow:hidden;will-change:opacity;}
   .sw-scene__video,.sw-scene__still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;}
   .sw-native-copy .sw-track{z-index:21;}
-  @keyframes swSceneIn{from{opacity:0}to{opacity:1}} @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
+  @keyframes swSceneIn{from{opacity:0}to{opacity:1}}
+  @keyframes swCpIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}} @keyframes swCpOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-8px)}} @keyframes swBar{from{transform:scaleX(0)}to{transform:scaleX(1)}} @keyframes swHintOut{to{opacity:0}}
   .sw-css .sw-scene{will-change:opacity;}
   .sw-native-copy .sw-copywrap{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
   @supports (animation-timeline: view()){ .sw-native-copy .sw-copywrap{view-timeline-name:--swcw;} .sw-native-copy .sw-copywrap .sw-copy{animation:swCopyIO linear both;animation-timeline:--swcw;} .sw-native-copy .sw-copywrap:first-child .sw-copy{animation-name:swCopyOut;} .sw-native-copy .sw-copywrap:last-child .sw-copy{animation-name:swCopyIn;} }
