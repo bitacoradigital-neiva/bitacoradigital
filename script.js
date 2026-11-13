@@ -581,6 +581,16 @@ function initServicesCarousel() {
     if (!track) return;
     const slides = $$(".svc-slide", track), dots = $$(".svc-dots button"), prev = $(".svc-prev"), next = $(".svc-next");
     let current = 0;
+    // Celulares y tablets: videos livianos (854 px) para que el cambio de tarjeta no trabe
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) {
+        $$("video source", track).forEach((src) => { src.src = src.getAttribute("src").replace(/\.mp4$/, "-m.mp4"); });
+        $$("video", track).forEach((v) => { try { v.load(); } catch (e) {} });
+    }
+    // El video de la tarjeta siguiente se prepara por adelantado (llega listo al cambiar)
+    const warmNext = (i) => {
+        const v = slides[(i + 1) % slides.length].querySelector("video");
+        if (v && v.preload !== "auto") { v.preload = "auto"; try { v.load(); } catch (e) {} }
+    };
     const go = (i) => {
         const k = Math.max(0, Math.min(slides.length - 1, i));
         track.scrollTo({ left: slides[k].offsetLeft - slides[0].offsetLeft, behavior: reduceMotion ? "auto" : "smooth" });
@@ -588,6 +598,7 @@ function initServicesCarousel() {
     const mark = (i) => {
         if (i === current && dots[i] && dots[i].getAttribute("aria-current") === "true") return;
         current = i;
+        warmNext(i);
         dots.forEach((d, k) => d.setAttribute("aria-current", String(k === i)));
         if (prev) prev.disabled = i === 0;
         if (next) next.disabled = i === slides.length - 1;
@@ -611,11 +622,16 @@ function initServicesCarousel() {
     // interactúa, cuando la sección no está en pantalla o la pestaña está oculta, y con "reducir movimiento".
     const carousel = track.closest(".svc-carousel");
     const DELAY = 6000;
-    let timer = 0, inView = false, hover = false;
-    const schedule = () => {
+    let timer = 0, inView = false, hover = false, pageScrollAt = 0;
+    // Si la persona está desplazando la página, el carrusel espera (dos movimientos a la vez traban el celular)
+    window.addEventListener("scroll", () => { pageScrollAt = performance.now(); }, { passive: true });
+    const schedule = (wait = DELAY) => {
         clearTimeout(timer);
         if (reduceMotion || !inView || hover || document.hidden) return;
-        timer = setTimeout(() => { go(current >= slides.length - 1 ? 0 : current + 1); schedule(); }, DELAY);
+        timer = setTimeout(() => {
+            if (performance.now() - pageScrollAt < 1200) { schedule(1500); return; }
+            go(current >= slides.length - 1 ? 0 : current + 1); schedule();
+        }, wait);
     };
     if ("IntersectionObserver" in window && carousel) {
         new IntersectionObserver(([en]) => { inView = en.isIntersecting && en.intersectionRatio >= 0.5; schedule(); }, { threshold: [0, 0.5] }).observe(carousel);
@@ -624,10 +640,10 @@ function initServicesCarousel() {
         carousel.addEventListener("mouseenter", () => { hover = true; schedule(); });
         carousel.addEventListener("mouseleave", () => { hover = false; schedule(); });
         // Tocar, deslizar o usar las flechas/puntos reinicia la cuenta (no cambia en medio de la interacción)
-        ["pointerdown", "keydown", "wheel"].forEach((ev) => carousel.addEventListener(ev, schedule, { passive: true }));
-        track.addEventListener("scroll", () => { clearTimeout(timer); clearTimeout(track._st); track._st = setTimeout(schedule, 400); }, { passive: true });
+        ["pointerdown", "keydown", "wheel"].forEach((ev) => carousel.addEventListener(ev, () => schedule(), { passive: true }));
+        track.addEventListener("scroll", () => { clearTimeout(timer); clearTimeout(track._st); track._st = setTimeout(() => schedule(), 400); }, { passive: true });
     }
-    document.addEventListener("visibilitychange", schedule);
+    document.addEventListener("visibilitychange", () => schedule());
 }
 
 /* ---------- Servicios: los videos 3D se reproducen solo mientras se ven ---------- */

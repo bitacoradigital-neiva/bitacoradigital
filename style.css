@@ -595,3 +595,5 @@ html.cv-off .after > section, html.cv-off .after > footer { content-visibility: 
     .svc-nav { top: calc(100cqw * 11 / 32); width: 40px; height: 40px; margin-top: -20px; }
     .svc-prev { left: 10px; } .svc-next { right: 10px; }
 }
+/* Rendimiento del carrusel: sin recorte redondeado en la zona que se desliza (cada tarjeta ya tiene sus esquinas) */
+.svc-track { border-radius: 0; }
