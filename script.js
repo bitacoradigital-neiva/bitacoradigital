@@ -606,6 +606,28 @@ function initServicesCarousel() {
         slides.forEach((s) => io.observe(s));
     }
     mark(0);
+
+    // Avance automático cada 6 s (vuelve a la primera tras la última). Se detiene mientras la persona
+    // interactúa, cuando la sección no está en pantalla o la pestaña está oculta, y con "reducir movimiento".
+    const carousel = track.closest(".svc-carousel");
+    const DELAY = 6000;
+    let timer = 0, inView = false, hover = false;
+    const schedule = () => {
+        clearTimeout(timer);
+        if (reduceMotion || !inView || hover || document.hidden) return;
+        timer = setTimeout(() => { go(current >= slides.length - 1 ? 0 : current + 1); schedule(); }, DELAY);
+    };
+    if ("IntersectionObserver" in window && carousel) {
+        new IntersectionObserver(([en]) => { inView = en.isIntersecting && en.intersectionRatio >= 0.5; schedule(); }, { threshold: [0, 0.5] }).observe(carousel);
+    }
+    if (carousel) {
+        carousel.addEventListener("mouseenter", () => { hover = true; schedule(); });
+        carousel.addEventListener("mouseleave", () => { hover = false; schedule(); });
+        // Tocar, deslizar o usar las flechas/puntos reinicia la cuenta (no cambia en medio de la interacción)
+        ["pointerdown", "keydown", "wheel"].forEach((ev) => carousel.addEventListener(ev, schedule, { passive: true }));
+        track.addEventListener("scroll", () => { clearTimeout(timer); clearTimeout(track._st); track._st = setTimeout(schedule, 400); }, { passive: true });
+    }
+    document.addEventListener("visibilitychange", schedule);
 }
 
 /* ---------- Servicios: los videos 3D se reproducen solo mientras se ven ---------- */
