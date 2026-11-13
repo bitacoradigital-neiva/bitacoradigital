@@ -4,8 +4,8 @@
    como único acento. Titulares editoriales (Bricolage Grotesque) y texto en Inter.
    ========================================================================== */
 
-@font-face { font-family: "Bricolage Grotesque"; src: url("fonts/BricolageGrotesque-latin.woff2") format("woff2"); font-weight: 400 800; font-style: normal; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Bricolage Grotesque"; src: url("fonts/BricolageGrotesque-latin.woff2") format("woff2"); font-weight: 400 800; font-style: normal; font-display: block; }
+@font-face { font-family: "Inter"; src: url("fonts/Inter-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: block; }
 
 :root {
     --charcoal: #000000;
