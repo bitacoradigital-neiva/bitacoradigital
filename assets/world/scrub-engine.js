@@ -348,9 +348,13 @@ function mountScrollWorld(container, config) {
       if (playMode ? (!past && i === ci) : (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh)) loadClip(s);
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
-      let outside = 0;
-      if (y < s.start) outside = s.start - y; else if (y > s.end) outside = y - s.end;
-      const op = smooth(1 - outside / fade);
+      // Bitácora: fundido a negro entre escenas (igual que en celular): la escena que termina se apaga antes del
+      // cambio y la siguiente entra después; nunca se ven dos escenas encimadas.
+      const fd = Math.max(fade, 0.24 * vh);
+      const opIn = i === 0 ? 1 : smooth((y - (s.start - 0.02 * fd)) / (0.72 * fd));
+      const nextSeg = SEGMENTS[i + 1];
+      const opOut = nextSeg ? smooth(1 - (y - (nextSeg.start - fd)) / (0.88 * fd)) : 1;
+      const op = Math.min(opIn, opOut);
       // Bitácora: solo escribir estilos cuando cambian (cada escritura obliga a recalcular), y las escenas
       // invisibles se ocultan del todo para que no ocupen la tarjeta gráfica del celular.
       const opR = Math.round(op * 1000) / 1000;
