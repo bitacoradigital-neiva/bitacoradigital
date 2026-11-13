@@ -221,8 +221,8 @@ function mountScrollWorld(container, config) {
       // Bitácora: fundido a negro entre escenas (nunca dos escenas encima, que se veía como doble exposición).
       // La escena que termina se oscurece hasta negro y luego aparece la siguiente; su texto sigue el mismo ritmo.
       const f = Math.max(CROSSFADE * vh, 0.24 * vh);
-      const inR = (S) => `${Math.round(S - 0.02 * f)}px ${Math.round(S + 0.7 * f)}px`;
-      const outR = (B) => `${Math.round(B - f)}px ${Math.round(B - 0.12 * f)}px`;
+      const inR = (S) => `${Math.round(S - 0.06 * f)}px ${Math.round(S + 0.42 * f)}px`;
+      const outR = (B) => `${Math.round(B - 0.6 * f)}px ${Math.round(B - 0.08 * f)}px`;
       SEGMENTS.forEach((sg, i) => {
         sg.el.style.zIndex = String(100 + i);
         if (i === 0) { sg.el.style.animation = 'none'; sg.el.style.opacity = '1'; }
@@ -335,15 +335,25 @@ function mountScrollWorld(container, config) {
     if (!rafOn) { rafOn = true; requestAnimationFrame(raf); }
 
     if (cssMode) {
-      // Solo al cambiar de escena: cargar su video y dejar visibles la anterior, la actual y la siguiente
-      if (ci !== lastCi) {
-        lastCi = ci;
+      // La escena "en juego" empieza cuando su fundido de entrada comienza (no al terminar): su video arranca ahí
+      const fPx = Math.max(CROSSFADE * vh, 0.24 * vh);
+      let cp = 0;
+      for (let i = 0; i < NSEG; i++) if (y >= SEGMENTS[i].start - 0.06 * fPx) cp = i;
+      curSeg = cp;
+      // Solo al cambiar de escena: dejar visibles la anterior, la actual y la siguiente
+      if (cp !== lastCi) {
+        lastCi = cp;
         for (let i = 0; i < NSEG; i++) {
-          const sg = SEGMENTS[i], vis = i >= ci - 1 && i <= ci + 1;
+          const sg = SEGMENTS[i], vis = i >= cp - 1 && i <= cp + 1;
           if (vis !== sg.visible) { sg.visible = vis; sg.el.style.visibility = vis ? '' : 'hidden'; }
         }
       }
-      if (!past) loadClip(SEGMENTS[ci]);
+      if (!past) {
+        loadClip(SEGMENTS[cp]);
+        // Desde la mitad de la escena actual se prepara (descarga) el video de la siguiente, sin reproducirlo
+        const sg = SEGMENTS[cp], nx = SEGMENTS[cp + 1];
+        if (nx && y > sg.start + 0.4 * (sg.end - sg.start)) loadClip(nx);
+      }
       ticking = false;
       return;
     }
