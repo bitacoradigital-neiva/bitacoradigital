@@ -84,8 +84,6 @@ const servicesList = [
     { id: "wb3", short: "Página web completa", cat: "Páginas web", name: "Página web completa", desc: "Para negocios con varios servicios o productos que quieren mostrar cada uno con calma. Hasta 7 secciones, con una página propia para cada servicio, botón de WhatsApp y formulario. Incluye 3 rondas de cambios. Tú nos pasas los textos, el logo y las fotos", cop: 1490000, usd: 372.5, from: true, eta: "Hasta 7 secciones" },
     { id: "vd1", short: "Video publicitario", cat: "Producción audiovisual", name: "Video publicitario digital", desc: "Desde $50.000 COP como referencia. El precio final se cotiza según la calidad de producción, complejidad y alcance que necesitas", cop: 50000, usd: 12.5, from: true, customQuote: true, eta: "Según el proyecto" },
     { id: "vd2", short: "Motion graphics o video explicativo", cat: "Producción audiovisual", name: "Motion graphics o video explicativo", desc: "Desde $100.000 COP como referencia. El precio final se cotiza según la calidad de producción, complejidad y alcance que necesitas", cop: 100000, usd: 25, from: true, customQuote: true, eta: "Según el proyecto" },
-    { id: "sw1", short: "Windows y programas", cat: "Instalación de software", name: "Instalación de Windows y programas", desc: "Instalación y configuración. La compra de una licencia oficial se cotiza y paga por separado, con tu aprobación previa", cop: null, usd: null, eta: "Según el equipo" },
-    { id: "sw2", short: "Microsoft Office", cat: "Instalación de software", name: "Instalación de Microsoft Office", desc: "Instalación y activación con licencia oficial. Si necesitas comprarla, te informamos su valor y la adquirimos con tu aprobación y pago previo", cop: null, usd: null, eta: "Licencia aparte" }
 ];
 const ICONS = {
     wb1: '<path d="M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M11 18h2"/>',
@@ -94,8 +92,6 @@ const ICONS = {
     vd1: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>',
     vd2: '<path d="M4 18 9 9l4 6 3-4 4 7z"/><circle cx="17" cy="6" r="2"/>'
 };
-ICONS.sw1 = ICONS.wb3;
-ICONS.sw2 = ICONS.wb3;
 const formatters = {
     COP: new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }),
     USD: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 })
@@ -152,7 +148,7 @@ function updateSummary(animate = false) {
     const totalText = pending && !priced ? "A cotizar" : (starting ? "Desde " : "") + formatters[currency].format(total) + (pending ? " + por cotizar" : "");
     summaryItems.innerHTML = active.map((s) => `<div class="summary-line"><span>${s.name}</span><span class="cost">${s.customQuote ? "A cotizar" : price(s)}</span></div>`).join("");
     const label = `${active.length} ${active.length === 1 ? "servicio" : "servicios"}`;
-    totalLabel.textContent = active.length ? `Inversión estimada por ${label}` + (pending ? " (los servicios sin precio final y las licencias se cotizan aparte)" : "") : "Marca una o más opciones para calcular.";
+    totalLabel.textContent = active.length ? `Inversión estimada por ${label}` + (pending ? " (los servicios sin precio final se cotizan aparte)" : "") : "Marca una o más opciones para calcular.";
     totalEl.textContent = barTotal.textContent = pending && !priced ? "A cotizar" : (starting ? "Desde " : "") + formatters[currency].format(total);
     barCount.textContent = label;
     if (animate && !reduceMotion && totalEl.animate) {
@@ -260,10 +256,6 @@ const SCENES = [
       title: "Videos hechos con diseño, edición y animación.",
       body: "Publicidad, motion graphics y demos de páginas producidos en digital, sin cámaras ni estudio.",
       tags: ["Motion graphics", "Edición", "Redes sociales"] },
-    { id: "software", label: "Windows y Office", free: "software", linger: 0.3,
-      title: "Windows, Office y los programas que necesitas.",
-      body: "Instalación y configuración en tu equipo. La licencia oficial se cotiza y paga aparte, con tu aprobación previa.",
-      tags: ["Instalación", "Configuración", "LibreOffice de obsequio"] },
     { id: "contacto", label: "Hablemos", free: "contacto", scroll: 1.5, linger: 0.4,
       title: "¿Creamos algo juntos?",
       body: "Cuéntanos tu idea y te enviamos una propuesta con precio.",
