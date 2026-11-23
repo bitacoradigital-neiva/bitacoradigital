@@ -597,3 +597,52 @@ html.cv-off .after > section, html.cv-off .after > footer { content-visibility: 
 }
 /* Rendimiento del carrusel: sin recorte redondeado en la zona que se desliza (cada tarjeta ya tiene sus esquinas) */
 .svc-track { border-radius: 0; }
+
+/* ===== Recorrido: sin numeración "01 / 05" ===== */
+.sw-copy__num { display: none !important; }
+
+/* ===== Elige tu servicio (reemplaza al cotizador): tarjetas que abren la ficha de cada servicio ===== */
+.pick-sec { padding-block: var(--pad); }
+.pick-head { display: grid; gap: 18px; max-width: 760px; margin-bottom: clamp(36px, 5vw, 56px); }
+.pick-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 1.6vw, 20px); }
+.pick { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-rows: auto auto 1fr auto; gap: 8px; padding: 12px 12px 18px; border-radius: 22px; background: #0b0b0c; color: #f5f5f7;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 18px 40px -24px rgba(0, 0, 0, 0.5); transition: transform 0.35s var(--ease-out); -webkit-tap-highlight-color: transparent; }
+.pick:focus-visible { outline: 3px solid var(--slate); outline-offset: 3px; }
+.pick-img { display: block; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; background: #000; margin-bottom: 8px; }
+.pick-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s var(--ease-out); }
+.pick-t { font-family: var(--display); font-weight: 560; font-size: 1.3rem; letter-spacing: -0.02em; padding-inline: 6px; }
+.pick-d { font-size: 0.95rem; line-height: 1.45; color: #b9b9be; padding-inline: 6px; }
+.pick-go { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding-inline: 6px; font-weight: 550; font-size: 0.92rem; color: #f5f5f7; }
+.pick-go .icon { width: 16px; height: 16px; transition: transform 0.3s var(--ease-out); }
+@media (hover: hover) { .pick:hover { transform: translateY(-4px); } .pick:hover .pick-img img { transform: scale(1.04); } .pick:hover .pick-go .icon { transform: translateX(4px); } }
+.pick:active { transform: scale(0.98); }
+@media (max-width: 1000px) { .pick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .pick-grid { grid-template-columns: 1fr; } }
+
+/* Ficha del servicio (ventana) */
+.svc-dlg { width: min(1080px, calc(100% - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0; border-radius: 28px; background: #0b0b0c; color: #f5f5f7; overflow: auto;
+           box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.svc-dlg::backdrop { background: rgba(0, 0, 0, 0.72); }
+.svc-dlg[open] { animation: dlgIn 0.45s var(--ease-out); }
+@keyframes dlgIn { from { opacity: 0; transform: translateY(18px) scale(0.98); } }
+html.dlg-open { overflow: hidden; }
+.dlg-in { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+.dlg-media { background: #000; display: grid; place-items: center; }
+.dlg-media video { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.dlg-copy { display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: clamp(28px, 3.6vw, 48px); }
+.dlg-copy h3 { font-family: var(--display); font-weight: 560; font-size: clamp(1.8rem, 1.1rem + 1.8vw, 2.6rem); line-height: 1.04; letter-spacing: -0.035em; }
+.dlg-desc { font-size: 1.02rem; line-height: 1.55; color: #d6d6d2; }
+.dlg-points { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; color: #d6d6d2; font-size: 0.97rem; }
+.dlg-points li { display: flex; gap: 10px; align-items: baseline; }
+.dlg-points li::before { content: ""; flex: none; width: 14px; height: 1px; background: var(--neutral); transform: translateY(-4px); }
+.dlg-wa { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; margin-top: 8px; min-height: 50px; padding: 0 24px; border-radius: 999px; background: var(--wa); color: var(--wa-ink); font-weight: 600; text-decoration: none; }
+.dlg-wa .icon { width: 20px; height: 20px; }
+.dlg-note { font-size: 0.85rem; color: var(--neutral); }
+.dlg-x { position: absolute; top: 14px; right: 14px; z-index: 2; width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(20, 20, 22, 0.8); color: #f5f5f7; display: grid; place-items: center; cursor: pointer; }
+.dlg-x svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+@media (max-width: 760px) {
+    .svc-dlg { width: 100%; max-width: 100%; max-height: 100dvh; height: 100dvh; border-radius: 0; margin: 0; }
+    .dlg-in { grid-template-columns: 1fr; }
+    .dlg-copy { padding: 24px 20px 36px; }
+}
+@media (prefers-reduced-motion: reduce) { .svc-dlg[open] { animation: none; } .pick, .pick-img img { transition: none; } }

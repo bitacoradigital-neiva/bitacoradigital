@@ -77,135 +77,33 @@ if (!reduceMotion && !saveData && "IntersectionObserver" in window) {
     });
 }
 
-/* ---------- Cotizador ---------- */
-const servicesList = [
-    { id: "wb1", short: "Landing page", cat: "Landing pages", name: "Landing page comercial", desc: "Una página enfocada en presentar tu producto o servicio y llevar al cliente a tu WhatsApp", cop: 500000, usd: 125, eta: "Una sola página" },
-    { id: "wb2", short: "Página web para tu negocio", cat: "Páginas web", name: "Página web para tu negocio", desc: "Para que la gente sepa quién eres, qué ofreces y cómo escribirte. Hasta 4 secciones (por ejemplo: inicio, servicios, quiénes somos y contacto), botón de WhatsApp y formulario. Se ve bien en celular. Incluye 2 rondas de cambios. Tú nos pasas los textos, el logo y las fotos", cop: 990000, usd: 247.5, from: true, eta: "Hasta 4 secciones" },
-    { id: "wb3", short: "Página web completa", cat: "Páginas web", name: "Página web completa", desc: "Para negocios con varios servicios o productos que quieren mostrar cada uno con calma. Hasta 7 secciones, con una página propia para cada servicio, botón de WhatsApp y formulario. Incluye 3 rondas de cambios. Tú nos pasas los textos, el logo y las fotos", cop: 1490000, usd: 372.5, from: true, eta: "Hasta 7 secciones" },
-    { id: "vd1", short: "Video publicitario", cat: "Producción audiovisual", name: "Video publicitario digital", desc: "Desde $50.000 COP como referencia. El precio final se cotiza según la calidad de producción, complejidad y alcance que necesitas", cop: 50000, usd: 12.5, from: true, customQuote: true, eta: "Según el proyecto" },
-    { id: "vd2", short: "Motion graphics o video explicativo", cat: "Producción audiovisual", name: "Motion graphics o video explicativo", desc: "Desde $100.000 COP como referencia. El precio final se cotiza según la calidad de producción, complejidad y alcance que necesitas", cop: 100000, usd: 25, from: true, customQuote: true, eta: "Según el proyecto" },
-];
-const ICONS = {
-    wb1: '<path d="M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M11 18h2"/>',
-    wb2: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
-    wb3: '<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 8h18M7 6h.01M10 6h.01M8 21h8M12 18v3"/>',
-    vd1: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>',
-    vd2: '<path d="M4 18 9 9l4 6 3-4 4 7z"/><circle cx="17" cy="6" r="2"/>'
-};
-const formatters = {
-    COP: new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }),
-    USD: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 })
-};
-let currency = "COP";
-const selected = new Set();
-const ledger = $("#services-target");
-const summaryItems = $("#summary-items");
-const totalEl = $("#total-val");
-const totalLabel = $("#total-label");
-const waBtn = $("#btn-wa-quote");
-const terms = $("#agree-terms");
-const waReason = $("#wa-reason");
-const quoteBar = $("#quote-bar");
-const barTotal = $("#quote-bar-total");
-const barCount = $("#quote-bar-count");
+/* ---------- Botón flotante de WhatsApp ---------- */
 const fab = $("#fab");
-const price = (s) => s.cop == null ? "A cotizar" : (s.from ? "Desde " : "") + formatters[currency].format(s[currency.toLowerCase()]);
-
-// El cotizador está muy abajo: se arma en un momento libre después del arranque (antes alargaba la carga en
-// celulares de gama baja). Si se toca un botón "Cotizar" antes, se arma en ese momento.
-function renderLedger() {
-    if (ledger.dataset.ready) return;
-    ledger.dataset.ready = "1";
-    ledger.innerHTML = servicesList.map((s) => `
-        <label class="service-row" data-id="${s.id}">
-            <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[s.id]}</svg></span>
-            <input class="check" type="checkbox" value="${s.id}" aria-label="${s.name}" aria-describedby="desc-${s.id}">
-            <span class="svc-body-q">
-                <span class="service-cat">${s.cat}</span><span class="service-name">${s.short}</span>
-                <span class="service-price"><span class="p-val"></span><span class="service-eta">${s.eta}</span></span>
-                <span class="service-desc" id="desc-${s.id}"><span>${s.desc}</span></span>
-            </span>
-        </label>`).join("") + `
-        <a class="service-row svc-other" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hola, Bitácora Digital. Necesito algo que no está en el cotizador:")}" target="_blank" rel="noopener noreferrer">
-            <svg class="icon" aria-hidden="true"><use href="#i-whatsapp"/></svg>
-            <span class="service-name">¿Necesitas algo distinto?</span>
-            <span class="svc-other-text">Cuéntanos y te cotizamos.</span>
-        </a>`;
-    renderPrices();
-    updateSummary();
-}
-
-function renderPrices() {
-    renderLedger();
-    servicesList.forEach((s) => { ledger.querySelector(`[data-id="${s.id}"] .p-val`).textContent = price(s); });
-}
-function updateSummary(animate = false) {
-    const active = servicesList.filter((s) => selected.has(s.id));
-    const total = active.reduce((sum, s) => sum + (s.customQuote ? 0 : (s[currency.toLowerCase()] || 0)), 0);
-    const pending = active.some((s) => s.cop == null || s.customQuote);
-    const priced = active.some((s) => s.cop != null && !s.customQuote);
-    const starting = active.some((s) => s.from && !s.customQuote);
-    const totalText = pending && !priced ? "A cotizar" : (starting ? "Desde " : "") + formatters[currency].format(total) + (pending ? " + por cotizar" : "");
-    summaryItems.innerHTML = active.map((s) => `<div class="summary-line"><span>${s.name}</span><span class="cost">${s.customQuote ? "A cotizar" : price(s)}</span></div>`).join("");
-    const label = `${active.length} ${active.length === 1 ? "servicio" : "servicios"}`;
-    totalLabel.textContent = active.length ? `Inversión estimada por ${label}` + (pending ? " (los servicios sin precio final se cotizan aparte)" : "") : "Marca una o más opciones para calcular.";
-    totalEl.textContent = barTotal.textContent = pending && !priced ? "A cotizar" : (starting ? "Desde " : "") + formatters[currency].format(total);
-    barCount.textContent = label;
-    if (animate && !reduceMotion && totalEl.animate) {
-        totalEl.animate([{ opacity: 0.3, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
-    }
-    const message = active.length
-        ? "Hola, Bitácora Digital. He armado la siguiente cotización en su sitio web:\n\n" + active.map((s) => `• ${s.name}: ${price(s)}${s.customQuote ? " (referencia mínima; precio final por cotizar según calidad, complejidad y alcance)" : ""}`).join("\n") + `\n\nTotal estimado: ${totalText} ${currency}` + `\n¿Me confirman disponibilidad? Gracias.`
-        : "Hola, Bitácora Digital. Me gustaría consultar por sus servicios.";
-    waBtn.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
-    syncFloating();
-}
-function setSelected(id, on) {
-    renderLedger();
-    const input = ledger.querySelector(`.check[value="${id}"]`);
-    if (!input) return;
-    input.checked = on;
-    on ? selected.add(id) : selected.delete(id);
-    input.closest(".service-row").classList.toggle("is-selected", on);
-}
-ledger.addEventListener("change", (e) => {
-    const input = e.target.closest(".check");
-    if (!input) return;
-    setSelected(input.value, input.checked);
-    updateSummary(true);
-});
-// Los botones "Cotizar" de cada servicio llegan con la opción ya marcada
-$$("[data-pick]").forEach((btn) => btn.addEventListener("click", () => { setSelected(btn.dataset.pick, true); updateSummary(true); }));
-$$("[data-currency]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        currency = btn.dataset.currency;
-        $$("[data-currency]").forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
-        renderPrices();
-        updateSummary(true);
-    });
-});
-function setConsent(ok) { waBtn.setAttribute("aria-disabled", String(!ok)); waBtn.tabIndex = ok ? 0 : -1; waReason.hidden = ok; }
-terms.addEventListener("change", () => setConsent(terms.checked));
-waBtn.addEventListener("click", (e) => { if (!terms.checked) { e.preventDefault(); terms.focus(); } });
-
-/* ---------- Botón flotante y barra de total ---------- */
-let inQuote = false, summaryVisible = false;
 function syncFloating() {
-    const pastHero = window.scrollY > window.innerHeight * 0.7;
-    const showBar = inQuote && selected.size > 0 && !summaryVisible;
-    if (quoteBar.classList.contains("is-visible") !== showBar) {
-        quoteBar.classList.toggle("is-visible", showBar);
-        quoteBar.setAttribute("aria-hidden", String(!showBar));
-        quoteBar.querySelector("a").tabIndex = showBar ? 0 : -1;
-    }
-    const showFab = pastHero && !showBar && !summaryVisible;
+    const showFab = window.scrollY > window.innerHeight * 0.7;
     if (fab.classList.contains("is-visible") !== showFab) fab.classList.toggle("is-visible", showFab);
 }
-if ("IntersectionObserver" in window) {
-    new IntersectionObserver(([e]) => { inQuote = e.isIntersecting; syncFloating(); }, { rootMargin: "-20% 0px -20% 0px" }).observe($("#cotizador"));
-    new IntersectionObserver(([e]) => { summaryVisible = e.isIntersecting; syncFloating(); }, { threshold: 0.35 }).observe($("#summary"));
+
+/* ---------- Elige tu servicio: cada tarjeta abre la ficha del servicio ---------- */
+function initPicker() {
+    const light = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    $$(".svc-dlg").forEach((dlg) => {
+        const v = dlg.querySelector("video");
+        if (light && v) $$("source", v).forEach((src) => { src.src = src.getAttribute("src").replace(/\.mp4$/, "-m.mp4"); });
+        dlg.addEventListener("close", () => { if (v) v.pause(); document.documentElement.classList.remove("dlg-open"); });
+        // Tocar fuera de la ficha la cierra
+        dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+        dlg.querySelector(".dlg-x").addEventListener("click", () => dlg.close());
+    });
+    $$(".pick").forEach((btn) => btn.addEventListener("click", () => {
+        const dlg = document.getElementById(btn.dataset.dlg);
+        if (!dlg || typeof dlg.showModal !== "function") return;
+        dlg.showModal();
+        document.documentElement.classList.add("dlg-open");
+        const v = dlg.querySelector("video");
+        if (v && !reduceMotion && !saveData) { v.preload = "auto"; const pr = v.play(); if (pr) pr.catch(() => {}); }
+    }));
 }
-setConsent(terms.checked);
 
 /* ---------- Formulario de contacto: arma el mensaje y abre WhatsApp ---------- */
 const form = $("#contact-form");
@@ -242,24 +140,28 @@ const WA_LINK = "https://wa.me/573144321446?text=" + encodeURIComponent("Hola, B
 const SCENES = [
     { id: "marca", label: "Bitácora Digital", free: "marca", scroll: 1.7, linger: 0.35,
       title: "Diseño, web y video para marcas que quieren verse profesionales.",
-      body: "Páginas web, landing pages y producción audiovisual digital. Desde Neiva para toda Colombia.",
-      tags: ["Páginas web", "Landing pages", "Video digital"] },
+      body: "Páginas web, landing pages, videos publicitarios y software. Desde Neiva para toda Colombia.",
+      tags: ["Páginas web", "Landing pages", "Video", "Software"] },
     { id: "web", label: "Páginas web", free: "web", linger: 0.3,
       title: "Sitios web con personalidad propia.",
       body: "Diseño a la medida, interfaces modernas y una presentación de marca que se adapta a cualquier pantalla.",
-      tags: ["Desde $990.000", "Alcance según tu proyecto"] },
+      tags: ["Diseño propio", "Celular primero"] },
     { id: "landing", label: "Landing pages", free: "landing", linger: 0.3,
       title: "Landing pages que llevan a la acción.",
       body: "Una estructura pensada para presentar tu producto y convertir visitas en mensajes de WhatsApp.",
-      tags: ["Desde $500.000", "Plazo a convenir"] },
+      tags: ["Un objetivo claro", "Directo a WhatsApp"] },
     { id: "video", label: "Producción digital", free: "video", linger: 0.3,
       title: "Videos hechos con diseño, edición y animación.",
       body: "Publicidad, motion graphics y demos de páginas producidos en digital, sin cámaras ni estudio.",
       tags: ["Motion graphics", "Edición", "Redes sociales"] },
+    { id: "software", label: "Software", free: "software", linger: 0.3,
+      title: "Software que trabaja por ti.",
+      body: "Reservas, pedidos o inventario en tiempo real, desde el celular o el computador.",
+      tags: ["A tu medida", "Tiempo real"] },
     { id: "contacto", label: "Hablemos", free: "contacto", scroll: 1.5, linger: 0.4,
       title: "¿Creamos algo juntos?",
       body: "Cuéntanos tu idea y te enviamos una propuesta con precio.",
-      cta: { primary: { label: "Arma tu cotización", href: "#cotizador" }, secondary: { label: "WhatsApp", href: WA_LINK } } }
+      cta: { primary: { label: "Elige tu servicio", href: "#cotizador" }, secondary: { label: "WhatsApp", href: WA_LINK } } }
 ];
 /* Vigilancia: si mientras se recorre el mundo los cuadros tardan de verdad (3 tandas seguidas),
    el recorrido pasa a modo económico (imágenes en vez de video) y se apagan efectos costosos. */
@@ -690,7 +592,7 @@ document.addEventListener("click", (e) => {
     requestAnimationFrame(() => requestAnimationFrame(() => { target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); history.pushState(null, "", a.getAttribute("href")); }));
 }, true);
 function initRest() {
-    const steps = [renderLedger, initServicesCarousel, buildReel, initServiceChapters, initProcessTimeline, initServiceVideos, initAnimations];
+    const steps = [initPicker, initServicesCarousel, buildReel, initServiceChapters, initProcessTimeline, initServiceVideos, initAnimations];
     const next = () => { const f = steps.shift(); if (f) { f(); if (steps.length) whenIdle(next, 1000); } };
     next();
 }
@@ -700,39 +602,11 @@ function initRest() {
 const EASE_OUT = "cubic-bezier(0.16, 1, 0.3, 1)";
 function initAnimations() {
     if (reduceMotion || !("IntersectionObserver" in window)) return;
-    // Filas del cotizador, resumen y preguntas frecuentes aparecen al entrar en pantalla (filas y preguntas escalonadas)
-    ledger.querySelectorAll(".service-row").forEach((el, k) => { el.classList.add("reveal-up", "reveal-sm"); el.style.transitionDelay = `${(k % 8) * 50}ms`; });
+    // Tarjetas de servicios y preguntas frecuentes aparecen al entrar en pantalla (filas y preguntas escalonadas)
+    $$(".pick").forEach((el, k) => { el.classList.add("reveal-up", "reveal-sm"); el.style.transitionDelay = `${k * 60}ms`; });
     $$(".faq-item").forEach((el, k) => { el.classList.add("reveal-up", "reveal-sm"); el.style.transitionDelay = `${(k % 8) * 50}ms`; });
-    const summary = $(".summary"); if (summary) summary.classList.add("reveal-up");
     document.documentElement.classList.add("reveal-on");
     const revealIO = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); revealIO.unobserve(en.target); } }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
     $$(".reveal-up").forEach((el) => revealIO.observe(el));
 
-    // La flecha del logo enseña una vez dónde tocar en el cotizador
-    const firstCheck = ledger.querySelector(".service-row .check");
-    if (touchScroll || !firstCheck || !("animate" in Element.prototype)) return;
-    const guide = document.createElement("span"); guide.className = "tap-guide"; guide.setAttribute("aria-hidden", "true");
-    guide.innerHTML = '<svg viewBox="0 0 28 28"><use href="#i-cursor"/></svg>';
-    const ring = document.createElement("span"); ring.className = "tap-ring"; ring.setAttribute("aria-hidden", "true");
-    ledger.append(ring, guide);
-    const guideIO = new IntersectionObserver(([en]) => {
-        if (!en.isIntersecting) return;
-        guideIO.disconnect();
-        setTimeout(() => {
-            if (selected.size) return;
-            const lr = ledger.getBoundingClientRect(), cr = firstCheck.getBoundingClientRect();
-            const x = cr.left - lr.left + cr.width / 2, y = cr.top - lr.top + cr.height / 2;
-            const at = (dx, dy, sc = 1) => `translate(${x + dx}px, ${y + dy}px) scale(${sc})`;
-            guide.style.transformOrigin = "8px 4px";
-            guide.animate([{ transform: at(-130, 80), opacity: 0 }, { transform: at(-8, -6), opacity: 1 }], { duration: 1000, easing: EASE_OUT, fill: "forwards" })
-                .finished.then(() => {
-                    guide.animate([{ transform: at(-8, -6, 1) }, { transform: at(-8, -6, 0.85) }, { transform: at(-8, -6, 1) }], { duration: 240, easing: "ease-in-out", fill: "forwards" });
-                    ring.animate([{ transform: at(0, 0, 0.3), opacity: 0.9 }, { transform: at(0, 0, 1.5), opacity: 0 }], { duration: 600, easing: "ease-out", fill: "forwards" });
-                    return new Promise((r) => setTimeout(r, 840));
-                })
-                .then(() => guide.animate([{ transform: at(-8, -6), opacity: 1 }, { transform: at(-34, 16), opacity: 0 }], { duration: 500, easing: "ease-in", fill: "forwards" }))
-                .catch(() => {});
-        }, 800);
-    }, { rootMargin: "0px 0px -40% 0px" });
-    guideIO.observe(ledger);
 }
