@@ -95,6 +95,27 @@ function initPicker() {
         dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
         dlg.querySelector(".dlg-x").addEventListener("click", () => dlg.close());
     });
+    // Videos de las tarjetas: solo se reproducen los que están a la vista (en gama baja queda la imagen fija)
+    const pv = $$(".pick video");
+    // Las tarjetas miden ~600 px: la versión de 960 px se ve igual de nítida y pesa la mitad (4 a la vez no traban)
+    pv.forEach((v) => $$("source", v).forEach((src) => { src.src = src.getAttribute("src").replace(/\.mp4$/, "-m.mp4"); }));
+    // En celulares y tablets las tarjetas muestran la imagen fija (4 videos a la vez traban el scroll); el video va en la ficha
+    if (!light && pv.length && "IntersectionObserver" in window && !reduceMotion && !saveData && GAMA !== "baja") {
+        // Se preparan una pantalla antes de llegar (la carga no coincide con el scroll) y arrancan uno tras otro
+        const warm = new IntersectionObserver((entries) => entries.forEach((en) => {
+            if (!en.isIntersecting) return; const v = en.target; warm.unobserve(v);
+            if (v.preload !== "auto") { v.preload = "auto"; try { v.load(); } catch (e) {} }
+        }), { rootMargin: "100% 0px 100% 0px" });
+        let queue = Promise.resolve();
+        const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+            const v = en.target;
+            if (en.isIntersecting && !document.documentElement.classList.contains("dlg-open")) {
+                queue = queue.then(() => new Promise((r) => setTimeout(() => { if (v._vis) { const pr = v.play(); if (pr) pr.catch(() => {}); } r(); }, 220)));
+                v._vis = true;
+            } else { v._vis = false; if (!v.paused) v.pause(); }
+        }), { threshold: 0.5 });
+        pv.forEach((v) => { warm.observe(v); io.observe(v); });
+    }
     $$(".pick").forEach((btn) => btn.addEventListener("click", () => {
         const dlg = document.getElementById(btn.dataset.dlg);
         if (!dlg || typeof dlg.showModal !== "function") return;

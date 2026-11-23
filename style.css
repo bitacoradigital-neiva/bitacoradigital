@@ -646,3 +646,56 @@ html.dlg-open { overflow: hidden; }
     .dlg-copy { padding: 24px 20px 36px; }
 }
 @media (prefers-reduced-motion: reduce) { .svc-dlg[open] { animation: none; } .pick, .pick-img img { transition: none; } }
+
+/* ===== Elige tu servicio v2: tarjetas grandes con video (2 x 2), sin espacio vacío, tipografía estilo Apple ===== */
+.pick-sec { padding-block: clamp(64px, 7vw, 104px); }
+.pick-head { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr); align-items: end; gap: 24px 48px; margin-bottom: clamp(28px, 3.5vw, 44px); }
+.pick-head .display { font-family: var(--font); font-weight: 700; font-size: clamp(2.6rem, 1.4rem + 4.2vw, 5rem); line-height: 1; letter-spacing: -0.045em; }
+.pick-head .lead { font-size: clamp(1.02rem, 0.95rem + 0.35vw, 1.22rem); color: var(--ink-2); max-width: 46ch; justify-self: end; }
+.pick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 18px); }
+.pick { position: relative; display: block; padding: 0; border-radius: 28px; overflow: hidden; aspect-ratio: 16 / 11; background: #000; isolation: isolate; }
+.pick-img { position: absolute; inset: 0; margin: 0; border-radius: 0; aspect-ratio: auto; }
+.pick-img video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.02); transition: transform 0.9s var(--ease-out); }
+/* Degradado inferior para que el texto se lea sobre el video */
+.pick::after { content: ""; position: absolute; inset: 55% 0 0; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%); z-index: 1; pointer-events: none; }
+.pick-t, .pick-d, .pick-go { position: relative; z-index: 2; padding-inline: 0; }
+.pick-t { position: absolute; left: clamp(20px, 2.4vw, 32px); right: 30%; bottom: calc(clamp(20px, 2.2vw, 30px) + 1.85rem); font-family: var(--font); font-weight: 650; font-size: clamp(1.45rem, 1rem + 1.4vw, 2.2rem); letter-spacing: -0.035em; line-height: 1.05; }
+.pick-d { position: absolute; left: clamp(20px, 2.4vw, 32px); right: 30%; bottom: clamp(20px, 2.2vw, 30px); font-size: clamp(0.92rem, 0.85rem + 0.25vw, 1.05rem); color: rgba(245,245,247,0.78); }
+.pick-go { position: absolute; right: clamp(16px, 2vw, 26px); bottom: clamp(18px, 2vw, 28px); margin: 0; width: 46px; height: 46px; border-radius: 50%; justify-content: center; background: rgba(245,245,247,0.14); backdrop-filter: none; font-size: 0; gap: 0; transition: background-color 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
+.pick-go .icon { width: 18px; height: 18px; }
+@media (hover: hover) {
+    .pick:hover { transform: none; }
+    .pick:hover .pick-img video { transform: scale(1.06); }
+    .pick:hover .pick-go { background: #f5f5f7; color: var(--ink); transform: scale(1.06); }
+}
+.pick:active { transform: scale(0.985); }
+@media (max-width: 860px) {
+    .pick-head { grid-template-columns: 1fr; }
+    .pick-head .lead { justify-self: start; }
+}
+@media (max-width: 620px) {
+    .pick-grid { grid-template-columns: 1fr; }
+    .pick { aspect-ratio: 4 / 3.4; border-radius: 24px; }
+    .pick-t, .pick-d { right: 72px; }
+}
+@media (prefers-reduced-motion: reduce) { .pick-img video { transition: none; transform: none; } }
+
+/* ===== Sobre mí: frase que se ilumina palabra por palabra al bajar, sin tarjetas ni números ===== */
+.about { padding-block: clamp(80px, 9vw, 140px); background: #000; color: #f5f5f7; }
+.about-kick { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--neutral); margin-bottom: clamp(22px, 3vw, 34px); }
+.about-big { font-family: var(--font); font-weight: 650; font-size: clamp(2rem, 1rem + 3.6vw, 4.4rem); line-height: 1.08; letter-spacing: -0.04em; max-width: 22ch; text-wrap: balance; }
+.about-big span { color: #f5f5f7; }
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        .about-big span { color: #3a3a3c; animation: aboutWord linear both; animation-timeline: view(); animation-range: cover calc(16% + var(--i) * 0.9%) cover calc(20% + var(--i) * 0.9%); }
+    }
+}
+@keyframes aboutWord { to { color: #f5f5f7; } }
+.about-ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(28px, 4vw, 64px); margin-top: clamp(56px, 7vw, 96px); }
+.about-way { display: grid; gap: 10px; }
+.about-way strong { font-family: var(--font); font-weight: 650; font-size: clamp(1.25rem, 1rem + 0.7vw, 1.6rem); letter-spacing: -0.025em; line-height: 1.15; }
+.about-way span { font-size: 1rem; line-height: 1.55; color: #a1a1a6; max-width: 34ch; }
+.about-cta { display: inline-flex; align-items: center; gap: 10px; margin-top: clamp(44px, 5vw, 64px); min-height: 50px; padding: 0 24px; border-radius: 999px; background: #f5f5f7; color: var(--ink); font-weight: 600; text-decoration: none; transition: transform 0.3s var(--ease-out); }
+.about-cta .icon { width: 18px; height: 18px; }
+@media (hover: hover) { .about-cta:hover { transform: translateY(-2px); } }
+@media (max-width: 860px) { .about-ways { grid-template-columns: 1fr; gap: 30px; } }
