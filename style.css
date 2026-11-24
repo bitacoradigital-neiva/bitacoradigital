@@ -699,3 +699,46 @@ html.dlg-open { overflow: hidden; }
 .about-cta .icon { width: 18px; height: 18px; }
 @media (hover: hover) { .about-cta:hover { transform: translateY(-2px); } }
 @media (max-width: 860px) { .about-ways { grid-template-columns: 1fr; gap: 30px; } }
+
+/* ===== Barra de navegación: animaciones estilo Apple ===== */
+.nav-links { position: relative; }
+.nav-pill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.11);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18); opacity: 0; pointer-events: none; z-index: 0;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), width 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease; }
+.nav-links a { position: relative; z-index: 1; }
+.nav .nav-links.has-pill a.is-active { background: none; box-shadow: none; }
+/* Entrada: la barra baja con un leve zoom y los enlaces aparecen uno tras otro */
+@media (prefers-reduced-motion: no-preference) {
+    .nav .nav-inner { animation: navIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+    .nav .nav-links a, .nav .nav-cta { animation: navItemIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .nav .nav-links a:nth-child(2) { animation-delay: 0.45s; } .nav .nav-links a:nth-child(3) { animation-delay: 0.5s; }
+    .nav .nav-links a:nth-child(4) { animation-delay: 0.55s; } .nav .nav-links a:nth-child(5) { animation-delay: 0.6s; }
+    .nav .nav-links a:nth-child(6) { animation-delay: 0.65s; } .nav .nav-links a:nth-child(7) { animation-delay: 0.7s; }
+    .nav .nav-cta { animation-delay: 0.78s; }
+}
+@keyframes navIn { from { opacity: 0; transform: translateY(-16px) scale(0.96); } }
+@keyframes navItemIn { from { opacity: 0; transform: translateY(-6px); } }
+/* Logo: la aguja gira un poco al pasar el ratón */
+.nav-brand img { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@media (hover: hover) { .nav-brand:hover img { transform: rotate(-18deg) scale(1.06); } }
+/* Botón "Hablemos": se levanta al pasar el ratón y se hunde al presionar */
+.nav .nav-cta { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease; }
+@media (hover: hover) { .nav .nav-cta:hover { transform: translateY(-1px) scale(1.03); } }
+.nav .nav-cta:active { transform: scale(0.95); transition-duration: 0.1s; }
+/* Celular: el ícono del menú se transforma en una X girando, y el menú se abre creciendo desde arriba */
+.nav-toggle { position: relative; }
+.nav-toggle .icon { position: absolute; left: 50%; top: 50%; margin: -11px 0 0 -11px; transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.nav-toggle .icon-close, .nav-toggle[aria-expanded="true"] .icon-open { display: block; }
+.nav-toggle .icon-close { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+.nav-toggle[aria-expanded="true"] .icon-open { opacity: 0; transform: rotate(90deg) scale(0.6); }
+.nav-toggle[aria-expanded="true"] .icon-close { opacity: 1; transform: none; }
+.nav-toggle:active { transform: scale(0.92); }
+@media (prefers-reduced-motion: no-preference) {
+    .nav-sheet:not([hidden]) { animation: sheetIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: 90% 0; }
+    .nav-sheet:not([hidden]) a { animation: navItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .nav-sheet a:nth-child(2) { animation-delay: 0.04s; } .nav-sheet a:nth-child(3) { animation-delay: 0.08s; } .nav-sheet a:nth-child(4) { animation-delay: 0.12s; }
+    .nav-sheet a:nth-child(5) { animation-delay: 0.16s; } .nav-sheet a:nth-child(6) { animation-delay: 0.2s; } .nav-sheet a:nth-child(7) { animation-delay: 0.24s; }
+    .nav-sheet a:nth-child(8) { animation-delay: 0.28s; } .nav-sheet a:nth-child(9) { animation-delay: 0.32s; }
+}
+@keyframes sheetIn { from { opacity: 0; transform: translateY(-10px) scale(0.96); } }
+@media (prefers-reduced-motion: reduce) { .nav-pill, .nav-brand img, .nav .nav-cta, .nav-toggle .icon { transition: none; } }

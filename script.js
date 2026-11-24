@@ -51,9 +51,37 @@ function syncNav() {
     let active = -1;
     sections.forEach((sec, i) => { if (sec && docTop(sec) <= mid) active = i; });
     navLinks.forEach((a, i) => { if (a.classList.contains("is-active") !== (i === active)) a.classList.toggle("is-active", i === active); });
+    if (window.__navPill) window.__navPill();
     syncFloating();
 }
 window.addEventListener("scroll", () => { if (!navTick) { navTick = true; requestAnimationFrame(syncNav); } }, { passive: true });
+
+/* ---------- Barra: pastilla que se desliza entre los enlaces (estilo Apple) ---------- */
+(() => {
+    const bar = $(".nav-links");
+    if (!bar || window.matchMedia("(pointer: coarse)").matches) return;
+    const pill = document.createElement("span"); pill.className = "nav-pill"; pill.setAttribute("aria-hidden", "true");
+    bar.prepend(pill); bar.classList.add("has-pill");
+    let hover = null;
+    const place = (el) => {
+        if (!el) { pill.style.opacity = "0"; return; }
+        pill.style.opacity = "1";
+        pill.style.width = el.offsetWidth + "px";
+        pill.style.transform = `translateX(${el.offsetLeft}px)`;
+    };
+    const toActive = () => { if (!hover) place(bar.querySelector("a.is-active")); };
+    navLinks.forEach((a) => {
+        a.addEventListener("mouseenter", () => { hover = a; place(a); });
+        a.addEventListener("focus", () => { hover = a; place(a); });
+        a.addEventListener("blur", () => { hover = null; toActive(); });
+    });
+    bar.addEventListener("mouseleave", () => { hover = null; toActive(); });
+    window.__navPill = toActive;
+    // Primera posición sin animar (que no "vuele" desde la izquierda al cargar)
+    requestAnimationFrame(() => { pill.style.transition = "none"; toActive(); requestAnimationFrame(() => { pill.style.transition = ""; }); });
+    window.addEventListener("resize", toActive);
+    if (document.fonts) document.fonts.ready.then(toActive);
+})();
 
 const navToggle = $("#nav-toggle"), navSheet = $("#nav-sheet");
 function setMenu(open, focusBack = false) {
