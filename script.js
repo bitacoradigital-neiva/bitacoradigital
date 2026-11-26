@@ -19,7 +19,17 @@ const GAMA = (() => {
     const apple = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     if (saveData || /2g/.test(net) || cores <= 2 || mem <= 2) return "baja";
     if (apple) return "alta";
-    return cores <= 4 || mem <= 4 ? "media" : "alta";
+    if (cores <= 4 || mem <= 4) return "media";
+    // Gráficos integrados (Intel, Radeon integrada, celulares): video de 1280 px; tarjeta dedicada: 1600 px
+    try {
+        const gl = document.createElement("canvas").getContext("webgl");
+        const ext = gl && gl.getExtension("WEBGL_debug_renderer_info");
+        const gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "";
+        if (gl) { const lose = gl.getExtension("WEBGL_lose_context"); if (lose) lose.loseContext(); }
+        const dedicada = /RTX|GTX|Quadro|Radeon (RX|Pro)|RX \d{3,4}|Arc A\d/i.test(gpu);
+        if (gpu && !dedicada) return "media";
+    } catch (e) { /* sin WebGL: se queda en alta */ }
+    return "alta";
 })();
 document.documentElement.dataset.gama = GAMA;
 $("#year").textContent = String(new Date().getFullYear());
@@ -127,22 +137,22 @@ function initPicker() {
     const pv = $$(".pick video");
     // Las tarjetas miden ~600 px: la versión de 960 px se ve igual de nítida y pesa la mitad (4 a la vez no traban)
     pv.forEach((v) => $$("source", v).forEach((src) => { src.src = src.getAttribute("src").replace(/\.mp4$/, "-m.mp4"); }));
+    // En celulares y tablets, imagen de portada pequeña (720 px): las tarjetas miden menos de 400 px
+    if (light) pv.forEach((v) => { const p = v.getAttribute("poster"); if (p && !p.includes("-m.webp")) v.setAttribute("poster", p.replace(/\.webp$/, "-m.webp")); });
     // En celulares y tablets las tarjetas muestran la imagen fija (4 videos a la vez traban el scroll); el video va en la ficha
     if (!light && pv.length && "IntersectionObserver" in window && !reduceMotion && !saveData && GAMA !== "baja") {
-        // Se preparan una pantalla antes de llegar (la carga no coincide con el scroll) y arrancan uno tras otro
+        // Cada tarjeta muestra su imagen fija; el video se prepara al acercarse y arranca al pasar el ratón
+        // (cuatro videos a la vez daban tirones en computadores con gráficos integrados)
         const warm = new IntersectionObserver((entries) => entries.forEach((en) => {
             if (!en.isIntersecting) return; const v = en.target; warm.unobserve(v);
             if (v.preload !== "auto") { v.preload = "auto"; try { v.load(); } catch (e) {} }
-        }), { rootMargin: "100% 0px 100% 0px" });
-        let queue = Promise.resolve();
-        const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-            const v = en.target;
-            if (en.isIntersecting && !document.documentElement.classList.contains("dlg-open")) {
-                queue = queue.then(() => new Promise((r) => setTimeout(() => { if (v._vis) { const pr = v.play(); if (pr) pr.catch(() => {}); } r(); }, 220)));
-                v._vis = true;
-            } else { v._vis = false; if (!v.paused) v.pause(); }
-        }), { threshold: 0.5 });
-        pv.forEach((v) => { warm.observe(v); io.observe(v); });
+        }), { rootMargin: "50% 0px 50% 0px" });
+        pv.forEach((v) => {
+            warm.observe(v);
+            const card = v.closest(".pick");
+            card.addEventListener("mouseenter", () => { const pr = v.play(); if (pr) pr.catch(() => {}); });
+            card.addEventListener("mouseleave", () => { v.pause(); });
+        });
     }
     $$(".pick").forEach((btn) => btn.addEventListener("click", () => {
         const dlg = document.getElementById(btn.dataset.dlg);
@@ -388,7 +398,7 @@ async function buildReel() {
         const ratio = new Map();
         let current = null, pending = 0;
         // Computadores potentes: se reproducen todos los videos visibles. Resto: solo el que más se ve.
-        const multi = hd;
+        const multi = false; // un video a la vez en todos los equipos (varios a la vez daban tirones)
         const pick = () => {
             pending = 0;
             if (multi) {
@@ -485,15 +495,18 @@ function initProcessTimeline() {
     const fill = document.createElement("span");
     fill.className = "process-fill"; fill.setAttribute("aria-hidden", "true");
     list.appendChild(fill);
-    let shown = 1, frame = 0, lastFill = -1;
+    let shown = 1, frame = 0, lastFill = -1, listH = 0;
+    window.addEventListener("resize", () => { listH = 0; }, { passive: true });
     const paint = () => {
         frame = 0;
         // 1) Primero se mide todo…
         const vh = window.innerHeight, top0 = docTop(list);
         if (window.scrollY + vh * 2 < top0 || window.scrollY > top0 + list.offsetHeight + vh) return;
-        const line = vh * 0.5, r = list.getBoundingClientRect();
+        // Posiciones guardadas (docTop): no se mide la página en cada cuadro del scroll
+        const y = window.scrollY, h = listH || (listH = list.offsetHeight);
+        const r = { top: top0 - y, bottom: top0 - y + h, height: h }, line = vh * 0.5;
         if (r.bottom < -vh || r.top > vh * 2) return;
-        const tops = items.map((li) => li.getBoundingClientRect().top);
+        const tops = items.map((li) => docTop(li) - y);
         // 2) …y después se escribe (sin volver a medir en medio)
         const f = Math.round(Math.max(0, Math.min(1, (line - r.top) / r.height)) * 400) / 400;
         if (f !== lastFill) { lastFill = f; fill.style.transform = `scaleY(${f})`; }
@@ -505,7 +518,7 @@ function initProcessTimeline() {
         });
         if (active !== shown) {
             shown = active;
-            num.textContent = String(active).padStart(2, "0");
+            num.textContent = String(active);
             num.classList.toggle("swap", false);
             requestAnimationFrame(() => num.classList.toggle("swap", true)); // reinicia la animación del número sin forzar un recálculo
         }
