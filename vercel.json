@@ -26,5 +26,12 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/cotizador.html",
+      "destination": "/#cotizador",
+      "permanent": true
+    }
   ]
 }
